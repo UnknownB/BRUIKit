@@ -9,3 +9,4 @@ extension UILayoutGuide: BRWrapperProtocol {}
 extension NSLayoutConstraint: BRWrapperProtocol {}
 
 extension UIImage: BRWrapperProtocol {}
+extension UIButton: BRWrapperProtocol {}
