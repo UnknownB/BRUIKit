@@ -7,3 +7,5 @@ import BRFoundation
 extension UIView: BRWrapperProtocol {}
 extension UILayoutGuide: BRWrapperProtocol {}
 extension NSLayoutConstraint: BRWrapperProtocol {}
+
+extension UIImage: BRWrapperProtocol {}
