@@ -9,7 +9,7 @@ import UIKit
 import BRFoundation
 
 
-public class BRCoordinator<Step: BRStepFlow>: BRCoordinatorProtocol {
+open class BRCoordinator<Step: BRStepFlow>: BRCoordinatorProtocol {
     
     public var rootViewController: UINavigationController
 
@@ -20,13 +20,13 @@ public class BRCoordinator<Step: BRStepFlow>: BRCoordinatorProtocol {
     
     
     /// 讓 coordinator 出現在畫面上
-    public func start() {
+    open func start() {
         
     }
     
     
     /// 導航到指定頁面
-    public func goTo(step targetStep: Step, from startStep: Step = Step.firstStep) {
+    open func goTo(step targetStep: Step, from startStep: Step = Step.firstStep) {
         var viewControllers: [UIViewController] = []
         var currentStep: Step? = startStep
         while let step = currentStep {
@@ -42,7 +42,7 @@ public class BRCoordinator<Step: BRStepFlow>: BRCoordinatorProtocol {
     
 
     /// push 下一個 step
-    public func pushToNextStep(from step: Step) {
+    open func pushToNextStep(from step: Step) {
         guard let nextStep = Step.nextStep(from: step) else {
             BRLog.printUI.info("No next step for \(step)")
             return
@@ -53,13 +53,13 @@ public class BRCoordinator<Step: BRStepFlow>: BRCoordinatorProtocol {
     
     
     /// 自訂頁面完成後的跳轉行為
-    public func didFinishStep(_ step: Step) {
+    open func didFinishStep(_ step: Step) {
         
     }
 
     
     /// 自訂每一個步驟的頁面
-    public func makeViewController(for step: Step) -> UIViewController {
+    open func makeViewController(for step: Step) -> UIViewController {
         fatalError("Subclasses must override makeViewController(for:)")
     }
     
