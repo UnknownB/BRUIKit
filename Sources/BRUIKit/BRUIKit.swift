@@ -5,6 +5,7 @@ import UIKit
 import BRFoundation
 
 extension UIView: BRWrapperProtocol {}
+extension UIViewController: BRWrapperProtocol {}
 extension UILayoutGuide: BRWrapperProtocol {}
 extension NSLayoutConstraint: BRWrapperProtocol {}
 
