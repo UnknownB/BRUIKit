@@ -52,16 +52,31 @@ open class BRCoordinator<Step: BRStepFlow>: BRCoordinatorProtocol {
     }
     
     
-    /// 自訂頁面完成後的跳轉行為
-    open func didFinishStep(_ step: Step) {
-        
-    }
-
-    
     /// 自訂每一個步驟的頁面
     open func makeViewController(for step: Step) -> UIViewController {
         fatalError("Subclasses must override makeViewController(for:)")
     }
     
+    
+}
+
+
+open class BRStepCoordinator<Step: BRStepFlow>: BRCoordinator<Step>, BRStepCoordinatorProtocol {
+    
+    /// 自訂頁面完成後的跳轉行為
+    open func didFinishStep(_ step: Step) {
+        
+    }
+    
+}
+
+
+
+open class BREventCoordinator<Step: BRStepFlow, StepEvent: BRStepEvent>: BRCoordinator<Step>, BREventCoordinatorProtocol {
+        
+    /// 自訂頁面完成後的跳轉行為
+    open func didFinishStep(_ step: Step, with event: StepEvent?) {
+        
+    }
     
 }

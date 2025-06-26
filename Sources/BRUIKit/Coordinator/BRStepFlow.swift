@@ -32,3 +32,9 @@ public extension BRStepFlow {
 
 
 }
+
+
+// MARK: - StepEvent
+
+
+public protocol BRStepEvent: Equatable {}

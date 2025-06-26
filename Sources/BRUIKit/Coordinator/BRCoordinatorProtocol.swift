@@ -20,6 +20,19 @@ public protocol BRCoordinatorProtocol: AnyObject {
     func start()
     func goTo(step targetStep: Step, from startStep: Step)
     func pushToNextStep(from step: Step)
-    func didFinishStep(_ step: Step)
     func makeViewController(for step: Step) -> UIViewController
+}
+
+
+@MainActor
+public protocol BRStepCoordinatorProtocol: BRCoordinatorProtocol {
+    func didFinishStep(_ step: Step)
+}
+
+
+@MainActor
+public protocol BREventCoordinatorProtocol: BRCoordinatorProtocol {
+    associatedtype StepEvent: BRStepEvent
+
+    func didFinishStep(_ step: Step, with event: StepEvent?)
 }
