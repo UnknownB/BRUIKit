@@ -34,4 +34,18 @@ extension BRWrapper where Base: UIImage {
     }
     
     
+    /// 建立指定顏色與尺寸的純色圖片
+    public static func image(with color: UIColor, size: CGSize = CGSize(width: 1, height: 1)) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(size, false, 0)
+        defer {
+            UIGraphicsEndImageContext()
+        }
+
+        color.setFill()
+        UIBezierPath(rect: CGRect(origin: .zero, size: size)).fill()
+
+        return UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
+    }
+    
+    
 }

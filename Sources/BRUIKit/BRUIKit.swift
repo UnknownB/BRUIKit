@@ -11,4 +11,5 @@ extension NSLayoutConstraint: BRWrapperProtocol {}
 
 extension UIImage: BRWrapperProtocol {}
 extension UIButton: BRWrapperProtocol {}
+extension UIColor: BRWrapperProtocol {}
 extension UIFont: BRWrapperProtocol {}
