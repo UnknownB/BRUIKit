@@ -29,14 +29,6 @@ public extension BRWrapper where Base: UIButton {
         base.setTitleColor(color, for: state)
         return base
     }
-    
-    
-    @MainActor
-    @discardableResult
-    func backgroundColor(_ color: UIColor) -> Base {
-        base.backgroundColor = color
-        return base
-    }
 
     
     @MainActor
@@ -111,36 +103,7 @@ public extension BRWrapper where Base: UIButton {
         base.contentEdgeInsets = insets
         return base
     }
-    
-    
-    // MARK: - 顯示樣式
-
-
-    @MainActor
-    @discardableResult
-    func border(color: UIColor, width: CGFloat = 1) -> Base {
-        base.layer.borderColor = color.cgColor
-        base.layer.borderWidth = width
-        return base
-    }
-    
-    
-    @MainActor
-    @discardableResult
-    func cornerRadius(_ radius: CGFloat) -> Base {
-        base.layer.cornerRadius = radius
-        base.clipsToBounds = true
-        return base
-    }
-    
-    
-    @MainActor
-    @discardableResult
-    func clipsToBounds(_ flag: Bool) -> Base {
-        base.clipsToBounds = flag
-        return base
-    }
-    
+        
     
     // MARK: 狀態
     
