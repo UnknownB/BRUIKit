@@ -42,7 +42,7 @@ open class BRCoordinator<Step: BRStepFlow>: BRCoordinatorProtocol {
     
     
     /// 讓 coordinator 出現在畫面上
-    open func start() {
+    open func start(step: Step = .firstStep) {
         
     }
     
