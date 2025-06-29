@@ -33,11 +33,11 @@ import BRFoundation
 /// ```
 open class BRCoordinator<Step: BRStepFlow>: BRCoordinatorProtocol {
     
-    public var rootViewController: UINavigationController
+    public var navigationController: UINavigationController
 
     
     public required init() {
-        self.rootViewController = UINavigationController()
+        self.navigationController = UINavigationController()
     }
     
     
@@ -59,7 +59,7 @@ open class BRCoordinator<Step: BRStepFlow>: BRCoordinatorProtocol {
             }
             currentStep = Step.nextStep(from: step)
         }
-        rootViewController.setViewControllers(viewControllers, animated: false)
+        navigationController.setViewControllers(viewControllers, animated: false)
     }
     
 
@@ -70,7 +70,7 @@ open class BRCoordinator<Step: BRStepFlow>: BRCoordinatorProtocol {
             return
         }
         let viewController = makeViewController(for: nextStep)
-        rootViewController.pushViewController(viewController, animated: true)
+        navigationController.pushViewController(viewController, animated: true)
     }
     
     

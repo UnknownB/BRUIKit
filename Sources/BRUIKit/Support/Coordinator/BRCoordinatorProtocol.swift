@@ -13,7 +13,7 @@ import BRFoundation
 public protocol BRCoordinatorProtocol: AnyObject {
     associatedtype Step: BRStepFlow
 
-    var rootViewController: UINavigationController { get set }
+    var navigationController: UINavigationController { get set }
 
     init()
     
