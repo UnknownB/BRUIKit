@@ -6,25 +6,33 @@
 //
 
 import Testing
+import UIKit
 @testable import BRUIKit
 
-@Test("DSL 語法測試")
-func core() async throws {
+
+@Suite("BRLayoutTests")
+struct BRLayoutTests {
+ 
     
-    let layout = BRLayout()
-    
-    let viewContent = UIViewController()
-    let button = UIButton(type: .system)
-    
-    viewContent.view.addSubview(button)
-    
-    layout.activate {
-        button.widthAnchor.constraint(equalToConstant: 80)
-        button.heightAnchor.constraint(equalToConstant: 30)
+    @Test("DSL 語法測試")
+    @MainActor func core() throws {
+        
+        let layout = BRLayout()
+        
+        let viewContent = UIViewController()
+        let button = UIButton(type: .system)
+        
+        viewContent.view.addSubview(button)
+        
+        layout.activate {
+            button.widthAnchor.constraint(equalToConstant: 80)
+            button.heightAnchor.constraint(equalToConstant: 30)
+        }
+
+        viewContent.view.layoutIfNeeded()
+        
+        #expect(true)
     }
 
-    viewContent.view.layoutIfNeeded()
     
-    #expect(true)
 }
-
