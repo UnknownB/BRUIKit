@@ -17,8 +17,8 @@ public protocol BRCoordinatorProtocol: AnyObject {
 
     init()
     
-    func start(step: Step)
-    func goTo(step targetStep: Step, from startStep: Step)
+    func start(animated: Bool)
+    func goTo(step: Step, animated: Bool) -> BRCoordinatorProtocol?
     func pushToNextStep(from step: Step)
     func makeViewController(for step: Step) -> UIViewController
 }

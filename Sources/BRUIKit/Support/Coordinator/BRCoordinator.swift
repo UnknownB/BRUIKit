@@ -12,8 +12,8 @@ import BRFoundation
 /// 遵守 `BRCoordinatorProtocol` 協定的核心 Coordinator
 ///
 /// - 提供 4 個核心功能
-///     - start(step)：設定起始畫面
-///     - goTo(step, from)：從指定步驟持續堆疊頁面
+///     - start(animated)：進入起始畫面
+///     - goTo(step:animated:)：跳轉到指定步驟
 ///     - pushToNextStep(from)：跳下一頁
 ///     - makeViewController(for)：建立頁面
 ///
@@ -26,11 +26,6 @@ import BRFoundation
 ///
 ///
 /// final class AuthCoordinator<AuthStep>: BRCoordinator {
-///
-///     override func start(step: AuthStep = .firstStep) {
-///         super.start()
-///         goTo(step: step)
-///     }
 ///
 ///     override func makeViewController(for step: AuthStep) -> UIViewController {
 ///         switch step {
@@ -78,25 +73,19 @@ open class BRCoordinator<Step: BRStepFlow>: BRCoordinatorProtocol {
     }
     
     
-    /// 讓 coordinator 出現在畫面上
-    open func start(step: Step = .firstStep) {
-        
+    /// 開啟 coordinator 初始頁面
+    open func start(animated: Bool = false) {
+        goTo(step: .firstStep, animated: animated)
     }
     
     
     /// UINavigationController 將 viewControllers 調整成 `from` 到 `step`
-    open func goTo(step targetStep: Step, from startStep: Step = Step.firstStep) {
-        var viewControllers: [UIViewController] = []
-        var currentStep: Step? = startStep
-        while let step = currentStep {
-            let vc = makeViewController(for: step)
-            viewControllers.append(vc)
-            if step == targetStep {
-                break
-            }
-            currentStep = Step.nextStep(from: step)
-        }
-        navigationController.setViewControllers(viewControllers, animated: false)
+    @discardableResult
+    open func goTo(step: Step, animated: Bool = false) -> (any BRCoordinatorProtocol)? {
+        let steps = Step.steps(from: Step.firstStep, to: step)
+        let viewControllers = steps.map { makeViewController(for: $0) }
+        navigationController.setViewControllers(viewControllers, animated: animated)
+        return nil
     }
     
 
@@ -134,11 +123,6 @@ open class BRCoordinator<Step: BRStepFlow>: BRCoordinatorProtocol {
 ///
 /// // 使用 BRStepCoordinator
 /// final class AuthCoordinator<AuthStep>: BRStepCoordinator {
-///
-///     override func start(step: AuthStep = .firstStep) {
-///         super.start()
-///         goTo(step: step)
-///     }
 ///
 ///     override func makeViewController(for step: AuthStep) -> UIViewController {
 ///         switch step {
@@ -210,11 +194,6 @@ open class BRStepCoordinator<Step: BRStepFlow>: BRCoordinator<Step>, BRStepCoord
 ///
 /// // 使用 BREventCoordinator
 /// final class AuthCoordinator<AuthStep, AuthEvent>: BREventCoordinator {
-///
-///     override func start(step: AuthStep = .firstStep) {
-///         super.start()
-///         goTo(step: step)
-///     }
 ///
 ///     override func makeViewController(for step: AuthStep) -> UIViewController {
 ///         switch step {
