@@ -30,6 +30,7 @@ import Foundation
 public protocol BRStepFlow: CaseIterable, Equatable {
     static var firstStep: Self { get }
     static func nextStep(from step: Self) -> Self?
+    static func steps(from: Self, to: Self) -> [Self]
 }
 
 
@@ -54,6 +55,25 @@ public extension BRStepFlow {
             return nil
         }
         return cases[index + 1]
+    }
+    
+    
+    /// 產生從起始步驟到終點步驟的步驟陣列
+    ///
+    /// - 參數:
+    ///     - from: 起始步驟
+    ///     - to: 終點步驟
+    /// - 回傳
+    ///     - 起始至終點的步驟列表，若順序不合法則回傳空陣列
+    static func steps(from: Self, to: Self) -> [Self] {
+        let cases = Array(allCases)
+        let fromIndex = cases.firstIndex(of: from)!
+        let toIndex = cases.firstIndex(of: to)!
+        guard fromIndex <= toIndex else {
+            return []
+        }
+        let steps = Array(cases[fromIndex...toIndex])
+        return steps
     }
 
 
