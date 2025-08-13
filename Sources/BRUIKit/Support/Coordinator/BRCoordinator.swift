@@ -88,6 +88,13 @@ open class BRCoordinator<Step: BRStepFlow>: BRCoordinatorProtocol {
         return nil
     }
     
+    
+    /// push 指定 step
+    open func pushTo(step: Step, animated: Bool = true) {
+        let viewController = makeViewController(for: step)
+        navigationController.pushViewController(viewController, animated: animated)
+    }
+    
 
     /// push 下一個 step
     open func pushToNextStep(from step: Step) {
