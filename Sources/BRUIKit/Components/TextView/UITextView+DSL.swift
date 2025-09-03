@@ -85,7 +85,7 @@ public extension BRWrapper where Base: UITextView {
     @MainActor
     @discardableResult
     func lineHeight(_ min: CGFloat, _ max: CGFloat) -> Base {
-        var attributes = base.typingAttributes ?? [:]
+        var attributes = base.typingAttributes
         let style = attributes[.paragraphStyle] as? NSMutableParagraphStyle ?? NSMutableParagraphStyle()
 
         style.minimumLineHeight = min
@@ -101,11 +101,12 @@ public extension BRWrapper where Base: UITextView {
     @MainActor
     @discardableResult
     func lineSpacing(_ spacing: CGFloat) -> Base {
-        var attributes = base.typingAttributes ?? [:]
+        var attributes = base.typingAttributes
         let style = attributes[.paragraphStyle] as? NSMutableParagraphStyle ?? NSMutableParagraphStyle()
         
         style.lineSpacing = spacing
         attributes[.paragraphStyle] = style
+        
         base.typingAttributes = attributes
         return base
     }
