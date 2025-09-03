@@ -114,17 +114,11 @@ public extension BRWrapper where Base: UIStackView {
     /// 將一個子視圖加入 stackView 的 `arrangedSubviews`
     @MainActor
     @discardableResult
-    func addArranged(_ view: UIView) -> Base {
+    func addArranged(_ view: UIView, spacing: CGFloat? = nil) -> Base {
         base.addArrangedSubview(view)
-        return base
-    }
-    
-    
-    /// 將多個子視圖加入 stackView 的 `arrangedSubviews`
-    @MainActor
-    @discardableResult
-    func addArranged(_ views: [UIView]) -> Base {
-        views.forEach { base.addArrangedSubview($0) }
+        if let spacing = spacing {
+            base.setCustomSpacing(spacing, after: view)
+        }
         return base
     }
     
@@ -132,8 +126,26 @@ public extension BRWrapper where Base: UIStackView {
     /// 將一個子視圖加入 stackView 的 `arrangedSubviews` 的指定位置
     @MainActor
     @discardableResult
-    func insertArranged(_ view: UIView, at stackIndex: Int) -> Base {
+    func insertArranged(_ view: UIView, at stackIndex: Int, spacing: CGFloat? = nil) -> Base {
         base.insertArrangedSubview(view, at: stackIndex)
+        if let spacing = spacing {
+            base.setCustomSpacing(spacing, after: view)
+        }
+        return base
+    }
+    
+    
+    /// 將一個子視圖加入 stackView 的 `arrangedSubviews` 的指定位置
+    @MainActor
+    @discardableResult
+    func insertArranged(_ view: UIView, at arrangedView: UIView, spacing: CGFloat? = nil) -> Base {
+        guard let index = base.arrangedSubviews.firstIndex(of: arrangedView) else {
+            return base
+        }
+        base.insertArrangedSubview(view, at: index)
+        if let spacing = spacing {
+            base.setCustomSpacing(spacing, after: view)
+        }
         return base
     }
     
