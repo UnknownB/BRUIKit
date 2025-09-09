@@ -4,13 +4,6 @@
 //
 //  Created by BR on 2025/8/24.
 //
-//
-//  UIColorColorSpaceTests.swift
-//  BRUIKitTests
-//
-//  Created by BR on 2025/8/24.
-//
-
 
 import Testing
 import UIKit
