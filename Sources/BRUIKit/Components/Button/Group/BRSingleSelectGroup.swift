@@ -27,6 +27,7 @@ public class BRSingleSelectGroup<Button: UIButton> {
     public init() {}
     
     
+    /// 添加按鈕
     @MainActor
     public func addButton(_ button: Button) {
         buttons.append(button)
@@ -34,8 +35,9 @@ public class BRSingleSelectGroup<Button: UIButton> {
     }
     
     
+    /// 觸發按鈕事件
     @MainActor
-    @objc func buttonTapped(_ sender: UIControl) {
+    @objc func buttonTapped(_ sender: UIButton) {
         guard let tapped = sender as? Button else { return }
         
         for button in buttons {
