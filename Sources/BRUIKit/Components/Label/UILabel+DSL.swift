@@ -74,6 +74,22 @@ public extension BRWrapper where Base: UILabel {
         base.numberOfLines = number
         return base
     }
+    
+    
+    /// 設定行距（line spacing）
+    @MainActor
+    @discardableResult
+    func lineSpacing(_ spacing: CGFloat) -> Base {
+        guard let mutable = base.attributedText?.mutableCopy() as? NSMutableAttributedString else {
+            return base
+        }
+        let style = NSMutableParagraphStyle()
+        style.lineSpacing = spacing
+        var attrs: [NSAttributedString.Key: Any] = [.paragraphStyle: style]
+        mutable.addAttributes(attrs, range: NSRange(location: 0, length: mutable.length))
+        base.attributedText = mutable
+        return base
+    }
 
     
     @MainActor
