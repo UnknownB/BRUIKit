@@ -34,10 +34,19 @@ open class BRLabel: UILabel {
     
 
     open override var intrinsicContentSize: CGSize {
+        // 內邊距 計算修正
         let size = super.intrinsicContentSize
         let width = size.width + contentInsets.left + contentInsets.right
         let height = size.height + contentInsets.top + contentInsets.bottom
         return CGSize(width: width, height: height)
+    }
+    
+    
+    open override func textRect(forBounds bounds: CGRect, limitedToNumberOfLines numberOfLines: Int) -> CGRect {
+        // 內邊距 計算修正
+        let insetRect = bounds.inset(by: contentInsets)
+        let textRect = super.textRect(forBounds: insetRect, limitedToNumberOfLines: numberOfLines)
+        return textRect
     }
     
     
