@@ -35,7 +35,7 @@ public final class BRSegmentBar<Button: UIButton>: UIView {
     }
     
     
-    public var onSelectionChanged: ((Button?) -> Void)? {
+    public var didChangeSelection: ((Button?) -> Void)? {
         get {
             selectionGroup.didChangeSelection
         }
@@ -89,18 +89,24 @@ public final class BRSegmentBar<Button: UIButton>: UIView {
     
 
     @MainActor
-    public func selectButton(_ button: Button, scrollToVisible: Bool = true) {
+    public func selectButton(_ button: Button) {
         selectionGroup.selectButton(button)
-        
-        if scrollToVisible {
-            scrollToButton(button)
-        }
     }
     
 
     @MainActor
-    private func scrollToButton(_ button: Button) {
-        scrollView.scrollRectToVisible(button.frame.insetBy(dx: -16, dy: 0), animated: true)
+    public func scrollToButton(_ button: Button, animated: Bool = true) {
+        scrollView.scrollRectToVisible(button.frame.insetBy(dx: -16, dy: 0), animated: animated)
+    }
+    
+    
+    @MainActor
+    public func scrollToButton(at index: Int, animated: Bool = true) {
+        guard index >= 0, index < buttons.count else {
+            return
+        }
+        let button = buttons[index]
+        scrollToButton(button, animated: animated)
     }
     
     
