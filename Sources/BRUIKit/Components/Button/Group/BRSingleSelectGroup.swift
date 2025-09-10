@@ -20,6 +20,10 @@ public class BRSingleSelectGroup<Button: UIButton> {
     public private(set) var selectedButton: Button?
     
     
+    /// 是否允許取消選取（再次點擊已選中按鈕時）
+    public var allowsDeselection: Bool = false
+    
+    
     /// 當選中的按鈕改變時會呼叫
     public var didChangeSelection: ((Button?) -> Void)?
     
@@ -35,10 +39,30 @@ public class BRSingleSelectGroup<Button: UIButton> {
     }
     
     
+    /// 移除按鈕
+    @MainActor
+    public func removeButton(_ button: Button) {
+        buttons = buttons.br.removingFirstOccurrence(of: button)
+        if selectedButton == button {
+            selectedButton = nil
+            didChangeSelection?(nil)
+        }
+    }
+    
+    
     /// 觸發按鈕事件
     @MainActor
     @objc func buttonTapped(_ sender: UIButton) {
         guard let tapped = sender as? Button else { return }
+        
+        if tapped == selectedButton {
+            if allowsDeselection {
+                tapped.isSelected = false
+                selectedButton = nil
+                didChangeSelection?(nil)
+            }
+            return
+        }
         
         for button in buttons {
             let isSelected = (button == tapped)
