@@ -27,6 +27,7 @@ public class BRMultiSelectGroup<Button: UIButton> {
     public init() {}
     
     
+    /// 添加按鈕
     @MainActor
     public func addButton(_ button: Button) {
         buttons.append(button)
@@ -34,15 +35,22 @@ public class BRMultiSelectGroup<Button: UIButton> {
     }
     
     
+    /// 移除按鈕
     @MainActor
-    @objc func onButtonTapped(_ sender: UIControl) {
+    public func removeButton(_ button: Button) {
+        buttons = buttons.br.removingFirstOccurrence(of: button)
+        updateSelectedButtons()
+    }
+    
+    
+    /// 觸發按鈕事件
+    @MainActor
+    @objc func onButtonTapped(_ sender: UIButton) {
         guard let tapped = sender as? Button else {
             return
         }
         tapped.isSelected.toggle()
-        
-        selectedButtons = buttons.filter { $0.isSelected }
-        didChangeSelection?(selectedButtons)
+        updateSelectedButtons()
     }
     
     
@@ -52,6 +60,12 @@ public class BRMultiSelectGroup<Button: UIButton> {
         for button in buttons {
             button.isSelected = buttonsToSelect.contains(button)
         }
+        updateSelectedButtons()
+    }
+    
+    
+    @MainActor
+    private func updateSelectedButtons() {
         selectedButtons = buttons.filter { $0.isSelected }
         didChangeSelection?(selectedButtons)
     }
