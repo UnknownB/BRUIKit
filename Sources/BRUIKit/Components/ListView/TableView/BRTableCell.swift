@@ -70,8 +70,32 @@ public final class BRTableCellModel: Hashable {
 open class BRTableCell: UITableViewCell, BRCellProtocol {
     public typealias Model = BRTableCellModel
     
+    public let layout = BRLayout()
+
     
-    public func bind(with model: BRTableCellModel) {
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setupUI()
+        setupLayout()
+    }
+    
+    
+    public required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    open func setupUI() {
+        
+    }
+    
+    
+    open func setupLayout() {
+        
+    }
+    
+    
+    open func bind(with model: Model, isFirst: Bool, isLast: Bool) {
         if #available(iOS 14.0, *) {
             // cell 高度適當高度、有間距
             var config = self.defaultContentConfiguration()

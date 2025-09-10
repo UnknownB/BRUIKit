@@ -9,5 +9,5 @@
 @MainActor
 public protocol BRCellProtocol {
     associatedtype Model: Hashable
-    func bind(with model: Model)
+    func bind(with model: Model, isFirst: Bool, isLast: Bool)
 }

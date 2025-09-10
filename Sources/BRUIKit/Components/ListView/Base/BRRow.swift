@@ -23,7 +23,7 @@ public struct BRRow: Hashable, @unchecked Sendable {
     public let model: AnyHashable
     public let viewType: UIView.Type
     public let reuseIdentifier: String
-    public var bindCell: @MainActor @Sendable (UIView) -> Void
+    public var bindCell: @MainActor @Sendable (UIView, Bool, Bool) -> Void
     
     public let isEditable: Bool
     public let isMovable: Bool
@@ -65,9 +65,9 @@ public struct BRRow: Hashable, @unchecked Sendable {
         self.viewType = viewType
         self.reuseIdentifier = String(describing: viewType)
         
-        bindCell = { view in
+        bindCell = { (view, isFirst, isLast) in
             if let cell = view as? View {
-                cell.bind(with: model)
+                cell.bind(with: model, isFirst: isFirst, isLast: isLast)
             }
         }
         

@@ -92,7 +92,7 @@ open class BRCollectionCell: UICollectionViewCell, BRCellProtocol {
     public typealias Model = BRCollectionCellModel
     
     
-    public func bind(with model: BRCollectionCellModel) {
+    public func bind(with model: BRCollectionCellModel, isFirst: Bool, isLast: Bool) {
         if #available(iOS 14.0, *) {
             var config = UIListContentConfiguration.cell()
             config.image = model.image

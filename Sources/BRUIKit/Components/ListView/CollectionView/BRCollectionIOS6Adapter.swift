@@ -173,7 +173,10 @@ public final class BRCollectionIOS6Adapter: NSObject, UICollectionViewDataSource
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let row = list.sections[indexPath.section].rows[indexPath.row]
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: row.reuseIdentifier, for: indexPath)
-        row.bindCell(cell)
+        let isFirst = indexPath.row == 0
+        let isLast = indexPath.row  == collectionView.numberOfItems(inSection: indexPath.section) - 1
+        
+        row.bindCell(cell, isFirst, isLast)
         return cell
     }
     

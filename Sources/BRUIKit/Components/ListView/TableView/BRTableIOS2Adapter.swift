@@ -196,8 +196,12 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let row = list.sections[indexPath.section].rows[indexPath.row]
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: row.reuseIdentifier, for: indexPath)
-        row.bindCell(cell)
+        let isFirst = indexPath.row == 0
+        let isLast = indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
+        
+        row.bindCell(cell, isFirst, isLast)
         return cell
     }
     

@@ -61,7 +61,10 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
         self.tableView = tableView
         super.init(tableView: tableView) { tableView, indexPath, row in
             let cell = tableView.dequeueReusableCell(withIdentifier: row.reuseIdentifier, for: indexPath)
-            row.bindCell(cell)
+            let isFirst = indexPath.row == 0
+            let isLast = indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
+            
+            row.bindCell(cell, isFirst, isLast)
             return cell
         }
         tableView.dataSource = self
