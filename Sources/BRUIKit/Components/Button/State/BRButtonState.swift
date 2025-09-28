@@ -31,6 +31,4 @@ public protocol BRButtonStateProtocol: AnyObject {
     func setTitleColor(_ color: UIColor?, for state: BRButtonState)
     func setImage(_ image: UIImage?, for state: BRButtonState)
     func setBackgroundImage(_ image: UIImage?, for state: BRButtonState)
-    
-    func applyButtonState()
 }

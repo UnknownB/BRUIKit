@@ -17,67 +17,47 @@ import UIKit
 ///
 open class BRButton: UIButton, BRButtonStateProtocol {
     
+    private let stateHelper = BRButtonStateHelper()
+
+    
+    // MARK: - State
+    
     
     public var buttonState: BRButtonState = .off {
         didSet {
-            applyButtonState()
+            stateHelper.applyState(to: self)
         }
     }
     
-    
-    private var stateTitles: [BRButtonState: String] = [:]
-    private var stateTitleColors: [BRButtonState: UIColor] = [:]
-    private var stateImages: [BRButtonState: UIImage] = [:]
-    private var stateBackgrounds: [BRButtonState: UIImage] = [:]
-
 
     public func setTitle(_ title: String?, for state: BRButtonState) {
-        stateTitles[state] = title
+        stateHelper.titles[state] = title
         if buttonState == state {
-            applyButtonState()
+            super.setTitle(title, for: .normal)
         }
     }
     
     
     public func setTitleColor(_ color: UIColor?, for state: BRButtonState) {
-        stateTitleColors[state] = color
+        stateHelper.titleColors[state] = color
         if buttonState == state {
-            applyButtonState()
+            super.setTitleColor(color, for: .normal)
         }
     }
     
     
     public func setImage(_ image: UIImage?, for state: BRButtonState) {
-        stateImages[state] = image
+        stateHelper.images[state] = image
         if buttonState == state {
-            applyButtonState()
+            super.setImage(image, for: .normal)
         }
     }
     
     
     public func setBackgroundImage(_ image: UIImage?, for state: BRButtonState) {
-        stateBackgrounds[state] = image
+        stateHelper.backgrounds[state] = image
         if buttonState == state {
-            applyButtonState()
-        }
-    }
-    
-    
-    public func applyButtonState() {
-        if let title = stateTitles[buttonState] ?? title(for: .normal) {
-            super.setTitle(title, for: .normal)
-        }
-        
-        if let titleColor = stateTitleColors[buttonState] ?? titleColor(for: .normal) {
-            super.setTitleColor(titleColor, for: .normal)
-        }
-        
-        if let image = stateImages[buttonState] ?? image(for: .normal) {
-            super.setImage(image, for: .normal)
-        }
-        
-        if let backgroundImage = stateBackgrounds[buttonState] ?? backgroundImage(for: .normal) {
-            super.setBackgroundImage(backgroundImage, for: .normal)
+            super.setBackgroundImage(image, for: .normal)
         }
     }
     
