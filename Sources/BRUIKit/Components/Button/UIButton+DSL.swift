@@ -103,7 +103,6 @@ public extension BRWrapper where Base: UIButton {
         base.contentEdgeInsets = insets
         return base
     }
-        
     
     // MARK: 狀態
     
@@ -128,21 +127,6 @@ public extension BRWrapper where Base: UIButton {
     @discardableResult
     func highlighted(_ isHighlighted: Bool) -> Base {
         base.isHighlighted = isHighlighted
-        return base
-    }
-    
-    
-    @MainActor
-    @discardableResult
-    func alpha(_ value: CGFloat) -> Base {
-        base.alpha = value
-        return base
-    }
-
-    @MainActor
-    @discardableResult
-    func hidden(_ flag: Bool) -> Base {
-        base.isHidden = flag
         return base
     }
     
