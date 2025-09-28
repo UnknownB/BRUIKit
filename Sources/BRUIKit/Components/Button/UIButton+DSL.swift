@@ -86,6 +86,9 @@ public extension BRWrapper where Base: UIButton {
         return base
     }
     
+    
+    // MARK: - 圖片位置
+    
 
     @MainActor
     @discardableResult
@@ -103,6 +106,25 @@ public extension BRWrapper where Base: UIButton {
         base.contentEdgeInsets = insets
         return base
     }
+    
+    
+    /// 水平對齊設定
+    @MainActor
+    @discardableResult
+    func contentHorizontalAlignment(_ alignment: UIControl.ContentHorizontalAlignment) -> Base {
+        base.contentHorizontalAlignment = alignment
+        return base
+    }
+    
+    
+    /// 垂直對齊設定
+    @MainActor
+    @discardableResult
+    func contentVerticalAlignment(_ alignment: UIControl.ContentVerticalAlignment) -> Base {
+        base.contentVerticalAlignment = alignment
+        return base
+    }
+
     
     // MARK: 狀態
     
