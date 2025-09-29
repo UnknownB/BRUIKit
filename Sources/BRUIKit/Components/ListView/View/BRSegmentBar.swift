@@ -8,23 +8,14 @@
 import UIKit
 
 
-public final class BRSegmentBar<Button: UIButton>: UIView {
+/// BRSegmentBar 提供在一組 Button Bar 之中單選按鈕功能
+open class BRSegmentBar<Button: UIButton>: UIView {
 
-    private let layout = BRLayout()
+    
+    public let layout = BRLayout()
     private let selectionGroup = BRSingleSelectGroup<Button>()
-    
-    
-    private let scrollView = UIScrollView()
-        .br.showsHorizontalIndicator(false)
-    
-    
-    private let stackView = UIStackView()
-        .br.axis(.horizontal)
-        .br.spacing(8)
-        .br.alignment(.fill)
-        .br.distribution(.fill)
-    
-    
+
+
     public var buttons: [Button] {
         selectionGroup.buttons
     }
@@ -43,7 +34,21 @@ public final class BRSegmentBar<Button: UIButton>: UIView {
             selectionGroup.didChangeSelection = newValue
         }
     }
+
     
+    // MARK: - UI 元件
+    
+    
+    private let scrollView = UIScrollView()
+        .br.showsHorizontalIndicator(false)
+    
+    
+    private let stackView = UIStackView()
+        .br.axis(.horizontal)
+        .br.spacing(8)
+        .br.alignment(.fill)
+        .br.distribution(.fill)
+        
     
     // MARK: - LifeCycle
     
@@ -88,6 +93,7 @@ public final class BRSegmentBar<Button: UIButton>: UIView {
     }
     
 
+    /// 指定選擇的按鈕
     @MainActor
     public func selectButton(_ button: Button) {
         selectionGroup.selectButton(button)
@@ -105,12 +111,14 @@ public final class BRSegmentBar<Button: UIButton>: UIView {
     }
     
 
+    /// 滾動到指定的按鈕
     @MainActor
     public func scrollToButton(_ button: Button, animated: Bool = true) {
         scrollView.scrollRectToVisible(button.frame.insetBy(dx: -16, dy: 0), animated: animated)
     }
     
     
+    /// 滾動到指定的索引值
     @MainActor
     public func scrollToButton(at index: Int, animated: Bool = true) {
         guard index >= 0, index < buttons.count else {
