@@ -5,6 +5,7 @@
 //  Created by BR on 2025/9/9.
 //
 
+import BRFoundation
 import UIKit
 
 
@@ -17,8 +18,28 @@ import UIKit
 ///
 open class BRButton: UIButton, BRButtonStateProtocol {
     
+    private var lastWidth: CGFloat = 0
     private let stateHelper = BRButtonStateHelper()
-
+    private let layoutHelper = BRButtonLayoutHelper()
+    
+    // MARK: - LifeCycle
+    
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        if bounds.width != lastWidth {
+            lastWidth = bounds.width
+            invalidateIntrinsicContentSize()
+        }
+        layoutHelper.applyLayout(for: self)
+    }
+    
+    
+    public override var intrinsicContentSize: CGSize {
+        let newSize = layoutHelper.intrinsicContentSize(for: self, using: super.intrinsicContentSize)
+        return newSize
+    }
+    
     
     // MARK: - State
     
@@ -59,6 +80,51 @@ open class BRButton: UIButton, BRButtonStateProtocol {
         if buttonState == state {
             super.setBackgroundImage(image, for: .normal)
         }
+    }
+    
+    
+    // MARK: - Layout
+    
+    
+    /// 設定圖片與文字的排版方式
+    public var layoutMode: BRButtonLayout = .fitContent {
+        didSet { setNeedsLayout() }
+    }
+    
+    
+    /// 設定圖片在按鈕中的位置
+    public var imagePosition: BRPosition = .left {
+        didSet { setNeedsLayout() }
+    }
+    
+    
+    /// 設定圖片尺寸
+    public var imageSize: CGSize? = nil {
+        didSet { setNeedsLayout() }
+    }
+    
+    
+    /// 設定圖片與文字的間距
+    public var imagePadding: CGFloat = 0 {
+        didSet { setNeedsLayout() }
+    }
+    
+    
+    /// 設定圖片額外的內縮值
+    public var imageInsets: UIEdgeInsets = .zero {
+        didSet { setNeedsLayout() }
+    }
+    
+    
+    /// 設定水平對齊模式
+    open override var contentHorizontalAlignment: UIControl.ContentHorizontalAlignment {
+        didSet { setNeedsLayout() }
+    }
+    
+    
+    /// 設定垂直對齊模式
+    open override var contentVerticalAlignment: UIControl.ContentVerticalAlignment {
+        didSet { setNeedsLayout() }
     }
     
     
