@@ -93,6 +93,17 @@ public final class BRSegmentBar<Button: UIButton>: UIView {
         selectionGroup.selectButton(button)
     }
     
+    
+    /// 以索引值指定選擇按鈕
+    @MainActor
+    public func selectButton(at index: Int) {
+        guard index >= 0, index < buttons.count else {
+            return
+        }
+        let button = buttons[index]
+        selectionGroup.selectButton(button)
+    }
+    
 
     @MainActor
     public func scrollToButton(_ button: Button, animated: Bool = true) {
