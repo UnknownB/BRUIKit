@@ -129,6 +129,14 @@ public extension BRWrapper where Base: UIButton {
     }
     
     
+    @MainActor
+    @discardableResult
+    func imageContentMode(_ mode: UIView.ContentMode) -> Base {
+        base.imageView?.contentMode = mode
+        return base
+    }
+    
+    
     // MARK: - 狀態
     
 
