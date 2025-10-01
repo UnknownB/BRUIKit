@@ -12,6 +12,50 @@ import BRFoundation
 public extension BRWrapper where Base: BRButton {
     
     
+    // MARK: - State
+    
+    
+    /// 設定按鈕狀態
+    @MainActor
+    @discardableResult
+    func buttonState(_ state: BRButtonState) -> Base {
+        base.buttonState = state
+        return base
+    }
+
+
+    @MainActor
+    @discardableResult
+    func setTitle(_ title: String?, for state: BRButtonState) -> Base {
+        base.setTitle(title, for: state)
+        return base
+    }
+    
+    
+    @MainActor
+    @discardableResult
+    func setTitleColor(_ color: UIColor?, for state: BRButtonState) -> Base {
+        base.setTitleColor(color, for: state)
+        return base
+    }
+    
+    
+    @MainActor
+    @discardableResult
+    func setImage(_ image: UIImage?, for state: BRButtonState) -> Base {
+        base.setImage(image, for: state)
+        return base
+    }
+
+    
+    @MainActor
+    @discardableResult
+    func setBackgroundImage(_ image: UIImage?, for state: BRButtonState) -> Base {
+        base.setBackgroundImage(image, for: state)
+        return base
+    }
+    
+    
     // MARK: - Layout
     
     
