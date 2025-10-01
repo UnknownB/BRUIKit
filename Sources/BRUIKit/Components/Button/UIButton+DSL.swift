@@ -12,7 +12,36 @@ import BRFoundation
 public extension BRWrapper where Base: UIButton {
 
     
-    // MARK: - 按鈕設定
+    // MARK: - 內容
+    
+
+    @MainActor
+    @discardableResult
+    func contentInsets(_ insets: UIEdgeInsets) -> Base {
+        base.contentEdgeInsets = insets
+        return base
+    }
+    
+    
+    /// 水平對齊設定
+    @MainActor
+    @discardableResult
+    func contentHorizontalAlignment(_ alignment: UIControl.ContentHorizontalAlignment) -> Base {
+        base.contentHorizontalAlignment = alignment
+        return base
+    }
+    
+    
+    /// 垂直對齊設定
+    @MainActor
+    @discardableResult
+    func contentVerticalAlignment(_ alignment: UIControl.ContentVerticalAlignment) -> Base {
+        base.contentVerticalAlignment = alignment
+        return base
+    }
+
+    
+    // MARK: - 文本
 
     
     @MainActor
@@ -30,22 +59,6 @@ public extension BRWrapper where Base: UIButton {
         return base
     }
 
-    
-    @MainActor
-    @discardableResult
-    func image(_ image: UIImage?, for state: UIControl.State = .normal) -> Base {
-        base.setImage(image, for: state)
-        return base
-    }
-
-    
-    @MainActor
-    @discardableResult
-    func backgroundImage(_ image: UIImage?, for state: UIControl.State = .normal) -> Base {
-        base.setBackgroundImage(image, for: state)
-        return base
-    }
-    
     
     @MainActor
     @discardableResult
@@ -87,9 +100,25 @@ public extension BRWrapper where Base: UIButton {
     }
     
     
-    // MARK: - 圖片位置
+    // MARK: - 圖片
     
+    
+    @MainActor
+    @discardableResult
+    func image(_ image: UIImage?, for state: UIControl.State = .normal) -> Base {
+        base.setImage(image, for: state)
+        return base
+    }
 
+    
+    @MainActor
+    @discardableResult
+    func backgroundImage(_ image: UIImage?, for state: UIControl.State = .normal) -> Base {
+        base.setBackgroundImage(image, for: state)
+        return base
+    }
+    
+    
     @MainActor
     @discardableResult
     func imagePadding(_ spacing: CGFloat) -> Base {
@@ -99,34 +128,8 @@ public extension BRWrapper where Base: UIButton {
         return base
     }
     
-
-    @MainActor
-    @discardableResult
-    func contentInsets(_ insets: UIEdgeInsets) -> Base {
-        base.contentEdgeInsets = insets
-        return base
-    }
     
-    
-    /// 水平對齊設定
-    @MainActor
-    @discardableResult
-    func contentHorizontalAlignment(_ alignment: UIControl.ContentHorizontalAlignment) -> Base {
-        base.contentHorizontalAlignment = alignment
-        return base
-    }
-    
-    
-    /// 垂直對齊設定
-    @MainActor
-    @discardableResult
-    func contentVerticalAlignment(_ alignment: UIControl.ContentVerticalAlignment) -> Base {
-        base.contentVerticalAlignment = alignment
-        return base
-    }
-
-    
-    // MARK: 狀態
+    // MARK: - 狀態
     
 
     @MainActor
