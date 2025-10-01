@@ -9,16 +9,15 @@ import UIKit
 
 
 /// 自訂義按鈕狀態
-///
-/// - off
-///     - 未選取
-/// - partial
-///     - 部分選取
-/// - on
-///     - 全部選取
 public enum BRButtonState {
+    
+    /// 未選取
     case off
+    
+    /// 部分選取
     case partial
+    
+    /// 全部選取
     case on
 }
 
