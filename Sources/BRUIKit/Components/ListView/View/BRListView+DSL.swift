@@ -12,11 +12,14 @@ import UIKit
 public extension BRWrapper where Base: BRListView {
 
 
+    // MARK: - StackView
+    
+    
     /// 設定 stackView 中子視圖之間的間距
     @MainActor
     @discardableResult
     func spacing(_ value: CGFloat) -> Base {
-        base.stackView.spacing = value
+        base.stackView.br.spacing(value)
         return base
     }
 
@@ -26,7 +29,7 @@ public extension BRWrapper where Base: BRListView {
     @discardableResult
     @available(iOS 11.0, *)
     func customSpacing(_ spacing: CGFloat, after arrangedSubview: UIView) -> Base {
-        base.stackView.setCustomSpacing(spacing, after: arrangedSubview)
+        base.stackView.br.customSpacing(spacing, after: arrangedSubview)
         return base
     }
 
@@ -55,7 +58,7 @@ public extension BRWrapper where Base: BRListView {
     @MainActor
     @discardableResult
     func alignment(_ alignment: UIStackView.Alignment) -> Base {
-        base.stackView.alignment = alignment
+        base.stackView.br.alignment(alignment)
         return base
     }
 
@@ -75,7 +78,7 @@ public extension BRWrapper where Base: BRListView {
     @MainActor
     @discardableResult
     func distribution(_ distribution: UIStackView.Distribution) -> Base {
-        base.stackView.distribution = distribution
+        base.stackView.br.distribution(distribution)
         return base
     }
 
@@ -84,9 +87,7 @@ public extension BRWrapper where Base: BRListView {
     @MainActor
     @discardableResult
     func margins(_ insets: UIEdgeInsets) -> Base {
-        base.contentInset = insets
-        base.layoutMargins = insets
-        base.stackView.isLayoutMarginsRelativeArrangement = true
+        base.stackView.br.margins(insets)
         return base
     }
 
@@ -95,7 +96,7 @@ public extension BRWrapper where Base: BRListView {
     @MainActor
     @discardableResult
     func layoutMarginsRelative(_ enabled: Bool) -> Base {
-        base.stackView.isLayoutMarginsRelativeArrangement = enabled
+        base.stackView.br.layoutMarginsRelative(enabled)
         return base
     }
 
@@ -107,10 +108,7 @@ public extension BRWrapper where Base: BRListView {
     @MainActor
     @discardableResult
     func addArranged(_ view: UIView, spacing: CGFloat? = nil) -> Base {
-        base.stackView.addArrangedSubview(view)
-        if let spacing = spacing {
-            base.stackView.setCustomSpacing(spacing, after: view)
-        }
+        base.stackView.br.addArranged(view, spacing: spacing)
         return base
     }
 
@@ -119,10 +117,7 @@ public extension BRWrapper where Base: BRListView {
     @MainActor
     @discardableResult
     func insertArranged(_ view: UIView, at stackIndex: Int, spacing: CGFloat? = nil) -> Base {
-        base.stackView.insertArrangedSubview(view, at: stackIndex)
-        if let spacing = spacing {
-            base.stackView.setCustomSpacing(spacing, after: view)
-        }
+        base.stackView.br.insertArranged(view, at: stackIndex, spacing: spacing)
         return base
     }
 
@@ -131,13 +126,7 @@ public extension BRWrapper where Base: BRListView {
     @MainActor
     @discardableResult
     func insertArranged(_ view: UIView, at arrangedView: UIView, spacing: CGFloat? = nil) -> Base {
-        guard let index = base.stackView.arrangedSubviews.firstIndex(of: arrangedView) else {
-            return base
-        }
-        base.stackView.insertArrangedSubview(view, at: index)
-        if let spacing = spacing {
-            base.stackView.setCustomSpacing(spacing, after: view)
-        }
+        base.stackView.br.insertArranged(view, at: arrangedView, spacing: spacing)
         return base
     }
 
@@ -146,8 +135,19 @@ public extension BRWrapper where Base: BRListView {
     @MainActor
     @discardableResult
     func removeArranged(_ view: UIView) -> Base {
-        base.stackView.removeArrangedSubview(view)
-        view.removeFromSuperview()
+        base.br.removeArranged(view)
+        return base
+    }
+
+    
+    // MARK: - ScrollView
+    
+    
+    /// 設定是否顯示垂直方向的捲軸
+    @MainActor
+    @discardableResult
+    func showsVerticalIndicator(_ enabled: Bool) -> Base {
+        base.scrollView.br.showsVerticalIndicator(enabled)
         return base
     }
 
