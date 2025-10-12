@@ -4,12 +4,11 @@
 import UIKit
 import BRFoundation
 
-extension UIView: BRWrapperProtocol {}
-extension UIViewController: BRWrapperProtocol {}
-extension UILayoutGuide: BRWrapperProtocol {}
-extension NSLayoutConstraint: BRWrapperProtocol {}
+extension UIView: @retroactive BRWrapperProtocol {}
+extension UIViewController: @retroactive BRWrapperProtocol {}
+extension UILayoutGuide: @retroactive BRWrapperProtocol {}
+extension NSLayoutConstraint: @retroactive BRWrapperProtocol {}
 
-extension UIImage: BRWrapperProtocol {}
-extension UIButton: BRWrapperProtocol {}
-extension UIColor: BRWrapperProtocol {}
-extension UIFont: BRWrapperProtocol {}
+extension UIImage: @retroactive BRWrapperProtocol {}
+extension UIColor: @retroactive BRWrapperProtocol {}
+extension UIFont: @retroactive BRWrapperProtocol {}
