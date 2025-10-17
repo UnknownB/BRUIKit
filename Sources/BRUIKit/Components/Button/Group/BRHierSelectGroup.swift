@@ -60,7 +60,6 @@ public class BRHierSelectGroup<Parent: BRButton, Child: BRButton> {
     @MainActor
     public func removeChildButton(_ button: Child) {
         childButtons = childButtons.br.removingFirstOccurrence(of: button)
-        let parentState = newParentState()
         setParentState(newParentState(), changeChildren: false)
     }
 

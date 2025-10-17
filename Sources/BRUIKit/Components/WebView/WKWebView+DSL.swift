@@ -10,6 +10,8 @@ import UIKit
 import WebKit
 import BRFoundation
 
+
+@MainActor
 public extension BRWrapper where Base: WKWebView {
 
 

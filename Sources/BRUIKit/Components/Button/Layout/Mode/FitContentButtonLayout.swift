@@ -8,14 +8,13 @@
 import BRFoundation
 import UIKit
 
-
+@MainActor
 enum FitContentButtonLayout {
     
     
     static func applyLayout(for button: BRButton) -> (CGRect, CGRect) {
         let metrics = BRButtonLayoutMetrics(for: button)
 
-        let contentRect1 = button.bounds.inset(by: button.contentEdgeInsets)
         let contentRect = metrics.contentRect
         var imageRect = metrics.imageRect
         var titleRect = metrics.titleRect

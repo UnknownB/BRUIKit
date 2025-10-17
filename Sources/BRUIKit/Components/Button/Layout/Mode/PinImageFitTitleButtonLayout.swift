@@ -9,6 +9,7 @@ import BRFoundation
 import UIKit
 
 
+@MainActor
 enum PinImageFitTitleButtonLayout {
     
     

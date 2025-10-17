@@ -135,7 +135,7 @@ public extension BRWrapper where Base: BRListView {
     @MainActor
     @discardableResult
     func removeArranged(_ view: UIView) -> Base {
-        base.br.removeArranged(view)
+        base.stackView.br.removeArranged(view)
         return base
     }
 

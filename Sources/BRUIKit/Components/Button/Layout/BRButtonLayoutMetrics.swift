@@ -10,6 +10,7 @@ import UIKit
 
 
 /// Button 排版引擎的數據準備層
+@MainActor
 public struct BRButtonLayoutMetrics {
     
     public let contentRect: CGRect

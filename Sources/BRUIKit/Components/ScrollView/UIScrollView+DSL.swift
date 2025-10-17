@@ -147,7 +147,7 @@ public extension BRWrapper where Base: UIScrollView {
     /// 滾動到指定的 View
     @MainActor
     @discardableResult
-    public func scrollToView(_ view: UIView, animated: Bool = true, dx: CGFloat = 0, dy: CGFloat = 0) -> Base {
+    func scrollToView(_ view: UIView, animated: Bool = true, dx: CGFloat = 0, dy: CGFloat = 0) -> Base {
         base.scrollRectToVisible(view.frame.insetBy(dx: dx, dy: dy), animated: animated)
         return base
     }

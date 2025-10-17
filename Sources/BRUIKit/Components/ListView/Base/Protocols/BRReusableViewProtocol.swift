@@ -9,7 +9,7 @@ import Foundation
 
 
 @MainActor
-public protocol BRReusableViewProtocol: AnyObject {
+public protocol BRReusableViewProtocol: AnyObject, Sendable {
     var title: String? { get set }
     init()
 }
