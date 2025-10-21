@@ -76,38 +76,47 @@ public extension BRWrapper where Base: UITextView {
         base.textAlignment = alignment
         return base
     }
-
     
-    // MARK: - 行高與間距
-
     
-    /// 設定行高
-    @MainActor
+    /// 設定連結字型
     @discardableResult
-    func lineHeight(_ min: CGFloat, _ max: CGFloat) -> Base {
-        var attributes = base.typingAttributes
-        let style = attributes[.paragraphStyle] as? NSMutableParagraphStyle ?? NSMutableParagraphStyle()
-
-        style.minimumLineHeight = min
-        style.maximumLineHeight = max
-        attributes[.paragraphStyle] = style
-        
-        base.typingAttributes = attributes
+    public func linkFont(font: UIFont) -> Base {
+        base.linkTextAttributes[.font] = font
+        return base
+    }
+    
+    
+    /// 設定連結字型
+    @discardableResult
+    public func linkColor(color: UIColor?) -> Base {
+        base.linkTextAttributes[.foregroundColor] = color
+        return base
+    }
+    
+    
+    /// 設定連結樣式
+    @discardableResult
+    public func linkStyle(style: NSUnderlineStyle) -> Base {
+        base.linkTextAttributes[.underlineStyle] = style.rawValue
         return base
     }
 
+    
+    // MARK: - 行高與間距
+    
     
     /// 設定行距（line spacing）
     @MainActor
     @discardableResult
     func lineSpacing(_ spacing: CGFloat) -> Base {
-        var attributes = base.typingAttributes
-        let style = attributes[.paragraphStyle] as? NSMutableParagraphStyle ?? NSMutableParagraphStyle()
-        
+        guard let mutable = base.attributedText?.mutableCopy() as? NSMutableAttributedString else {
+            return base
+        }
+        let style = NSMutableParagraphStyle()
         style.lineSpacing = spacing
-        attributes[.paragraphStyle] = style
-        
-        base.typingAttributes = attributes
+        let attrs: [NSAttributedString.Key: Any] = [.paragraphStyle: style]
+        mutable.addAttributes(attrs, range: NSRange(location: 0, length: mutable.length))
+        base.attributedText = mutable
         return base
     }
 
