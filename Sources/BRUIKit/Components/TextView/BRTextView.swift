@@ -58,32 +58,33 @@ open class BRTextView: UITextView, UITextViewDelegate {
     }
     
     
+    open override var textContainerInset: UIEdgeInsets {
+        didSet {
+            placeholderLabel.br.contentInsets(textContainerInset)
+        }
+    }
+    
+    
     // MARK: - UI
     
     
     private func setup() {
         RTF.setup(for: self)
         delegate = self
+        
         placeholderLabel.numberOfLines = 0
-        placeholderLabel.font = font
         placeholderLabel.isUserInteractionEnabled = false
         addSubview(placeholderLabel)
-        NotificationCenter.default.addObserver(self, selector: #selector(textDidChange), name: UITextView.textDidChangeNotification, object: self)
-    }
-    
-    
-    open override func layoutSubviews() {
-        super.layoutSubviews()
-        let inset = textContainerInset
-        let horizontalPadding = textContainer.lineFragmentPadding
-        let maxWidth = bounds.width - inset.left - inset.right - horizontalPadding * 2
         
-        placeholderLabel.frame = CGRect(
-            x: inset.left + horizontalPadding,
-            y: inset.top,
-            width: maxWidth,
-            height: placeholderLabel.sizeThatFits(CGSize(width: maxWidth, height: .greatestFiniteMagnitude)).height
-        )
+        BRLayout().activate {
+            placeholderLabel.br.top == self.br.top
+            placeholderLabel.br.left == self.br.left + 6 // 視覺調整
+            placeholderLabel.br.bottom == self.br.bottom
+            placeholderLabel.br.right == self.br.right
+            placeholderLabel.br.width <= self.br.width
+        }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(textDidChange), name: UITextView.textDidChangeNotification, object: self)
     }
     
     

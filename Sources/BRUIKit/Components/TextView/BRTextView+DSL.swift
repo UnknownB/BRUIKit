@@ -60,6 +60,25 @@ public extension BRWrapper where Base: BRTextView {
     }
     
     
+    /// 設定佔位符內縮值
+    @MainActor
+    @discardableResult
+    func placeholderInsets(_ insets: UIEdgeInsets) -> Base {
+        base.placeholderLabel.br.contentInsets(insets)
+        return base
+    }
+    
+    
+    /// 設定佔位符行距
+    @MainActor
+    @discardableResult
+    func placeholderLineSpacing(_ spacing: CGFloat) -> Base {
+        base.placeholderLabel.br.lineSpacing(spacing)
+        return base
+    }
+
+    
+    
     // MARK: - 富文本
     
     
@@ -118,5 +137,22 @@ public extension BRWrapper where Base: BRTextView {
         return base
     }
     
+    
+    /// 設定行距（line spacing）
+    @MainActor
+    @discardableResult
+    func lineSpacing(_ spacing: CGFloat) -> Base {
+        base.placeholderLabel.br.lineSpacing(spacing)
+        guard let mutable = base.attributedText?.mutableCopy() as? NSMutableAttributedString else {
+            return base
+        }
+        let style = NSMutableParagraphStyle()
+        style.lineSpacing = spacing
+        let attrs: [NSAttributedString.Key: Any] = [.paragraphStyle: style]
+        mutable.addAttributes(attrs, range: NSRange(location: 0, length: mutable.length))
+        base.attributedText = mutable
+        return base
+    }
+
     
 }
