@@ -12,8 +12,10 @@ open class BRTextView: UITextView, UITextViewDelegate {
     
     public let RTF = TextViewRTF()
     public let placeholderLabel = BRLabel()
-    
+
     public typealias TappableAction = () -> Void
+    
+    public var onTextDidChange: ((BRTextView) -> Void)?
     
     
     // MARK: - LifeCycle
@@ -90,6 +92,7 @@ open class BRTextView: UITextView, UITextViewDelegate {
     
     @objc private func textDidChange() {
         placeholderLabel.isHidden = !text.isEmpty
+        onTextDidChange?(self)
     }
     
     
