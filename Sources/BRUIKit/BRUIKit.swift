@@ -1,7 +1,7 @@
 // The Swift Programming Language
 // https://docs.swift.org/swift-book
 
-import UIKit
+@_exported import UIKit
 import BRFoundation
 
 extension UIView: @retroactive BRWrapperProtocol {}
