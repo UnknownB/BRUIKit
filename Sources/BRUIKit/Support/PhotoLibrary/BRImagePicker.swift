@@ -43,6 +43,7 @@ public final class BRImagePicker: NSObject {
     
     // MARK: - Entry
     
+    
     public func pick(from source: Source) async throws -> UIImage {
         switch source {
         case .camera:
@@ -159,11 +160,17 @@ extension BRImagePicker: PHPickerViewControllerDelegate {
         provider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
             guard let self = self else { return }
             if let img = image as? UIImage {
-                continuation?.resume(returning: img)
+                DispatchQueue.main.async { [self] in
+                    continuation?.resume(returning: img)
+                }
             } else {
-                continuation?.resume(throwing: PickerError.loadFailed)
+                DispatchQueue.main.async { [self] in
+                    continuation?.resume(throwing: PickerError.loadFailed)
+                }
             }
-            continuation = nil
+            DispatchQueue.main.async { [self] in
+                continuation = nil
+            }
         }
     }
     

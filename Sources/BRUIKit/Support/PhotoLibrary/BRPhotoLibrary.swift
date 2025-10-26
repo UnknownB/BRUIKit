@@ -29,7 +29,7 @@ public enum BRPhotoLibrary {
     }
 
         
-    public static func requestAuthorization(completion: @escaping (PHAuthorizationStatus, Error?) -> Void) {
+    public static func requestAuthorization(completion: @escaping @Sendable (PHAuthorizationStatus, Error?) -> Void) {
         PHPhotoLibrary.shared().performChanges {
         } completionHandler: { [self] success, error in
             completion(status, error)
@@ -43,7 +43,7 @@ public enum BRPhotoLibrary {
     }
 
     
-    public static func saveVideoToLibrary(_ fileURL: URL, completion: @escaping (Bool, Error?) -> Void) {
+    public static func saveVideoToLibrary(_ fileURL: URL, completion: @escaping @Sendable (Bool, Error?) -> Void) {
         PHPhotoLibrary.shared().performChanges {
             PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: fileURL)
         } completionHandler: { success, error in
@@ -59,7 +59,7 @@ public enum BRPhotoLibrary {
     }
 
     
-    public static func savePhotoToLibrary(_ image: UIImage, completion: @escaping (Bool, Error?) -> Void) {
+    public static func savePhotoToLibrary(_ image: UIImage, completion: @escaping @Sendable (Bool, Error?) -> Void) {
         PHPhotoLibrary.shared().performChanges {
             PHAssetChangeRequest.creationRequestForAsset(from: image)
         } completionHandler: { success, error in
@@ -75,7 +75,7 @@ public enum BRPhotoLibrary {
     }
     
     
-    public static func deleteLatestAsset(with mediaType: PHAssetMediaType, completion: @escaping (Bool, Error?) -> Void) {
+    public static func deleteLatestAsset(with mediaType: PHAssetMediaType, completion: @escaping @Sendable (Bool, Error?) -> Void) {
         PHPhotoLibrary.shared().performChanges { [self] in
             if let lastAsset = fetchLatestAsset(with: mediaType) {
                 PHAssetChangeRequest.deleteAssets([lastAsset] as NSFastEnumeration)
