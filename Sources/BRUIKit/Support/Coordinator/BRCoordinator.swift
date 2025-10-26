@@ -99,7 +99,7 @@ open class BRCoordinator<Step: BRStepFlow>: BRCoordinatorProtocol {
     /// push 下一個 step
     open func pushToNextStep(from step: Step) {
         guard let nextStep = Step.nextStep(from: step) else {
-            BRLog.printUI.info("No next step for \(step)")
+            #BRLog(.library, .info, "No next step for \(step)")
             return
         }
         let viewController = makeViewController(for: nextStep)
