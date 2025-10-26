@@ -9,6 +9,7 @@ import BRFoundation
 import UIKit
 
 
+@MainActor
 public extension BRWrapper where Base: BRLabel {
     
     

@@ -9,6 +9,7 @@ import UIKit
 import BRFoundation
 
 
+@MainActor
 public extension BRWrapper where Base: BRTextView {
 
     

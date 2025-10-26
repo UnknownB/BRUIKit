@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 
 
+@MainActor
 public final class LabelRTF {
 
     public let layoutManager = NSLayoutManager()
@@ -87,6 +88,7 @@ public final class LabelRTF {
     // MARK: - Tap
     
     
+    @discardableResult
     public func addTappable(for word: String, action: @escaping BRLabel.TappableAction, in attributed: NSAttributedString?) -> Self {
         guard
             let attributed = attributed,
