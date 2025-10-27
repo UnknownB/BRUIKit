@@ -15,7 +15,7 @@ open class BRTextView: UITextView, UITextViewDelegate {
 
     public typealias TappableAction = () -> Void
     
-    public var onTextDidChange: ((BRTextView) -> Void)?
+    open var onTextDidChange: ((BRTextView) -> Void)?
     
     
     // MARK: - LifeCycle
@@ -99,7 +99,7 @@ open class BRTextView: UITextView, UITextViewDelegate {
     // MARK: - UITextViewDelegate
     
     
-    public func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+    open func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         if let action = RTF.actions[URL] {
             action()
             return false // prevent system default

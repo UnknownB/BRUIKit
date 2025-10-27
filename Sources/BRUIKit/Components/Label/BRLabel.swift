@@ -15,7 +15,7 @@ open class BRLabel: UILabel {
     
     
     /// label 的內邊距
-    public var contentInsets: UIEdgeInsets = .zero
+    open var contentInsets: UIEdgeInsets = .zero
     
     
     // MARK: - LifeCycle

@@ -37,7 +37,7 @@ open class BRWebView: WKWebView {
     
     
     @discardableResult
-    public func load(url: URL) -> WKNavigation? {
+    open func load(url: URL) -> WKNavigation? {
         self.load(URLRequest(url: url))
     }
     

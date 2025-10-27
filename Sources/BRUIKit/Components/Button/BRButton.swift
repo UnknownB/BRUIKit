@@ -25,7 +25,7 @@ open class BRButton: UIButton, BRButtonStateProtocol {
     // MARK: - LifeCycle
     
     
-    public override func layoutSubviews() {
+    open override func layoutSubviews() {
         super.layoutSubviews()
         if bounds.width != lastWidth {
             lastWidth = bounds.width
@@ -35,7 +35,7 @@ open class BRButton: UIButton, BRButtonStateProtocol {
     }
     
     
-    public override var intrinsicContentSize: CGSize {
+    open override var intrinsicContentSize: CGSize {
         let newSize = layoutHelper.intrinsicContentSize(for: self, using: super.intrinsicContentSize)
         return newSize
     }
@@ -44,14 +44,14 @@ open class BRButton: UIButton, BRButtonStateProtocol {
     // MARK: - State
     
     
-    public var buttonState: BRButtonState = .off {
+    open var buttonState: BRButtonState = .off {
         didSet {
             stateHelper.applyState(to: self)
         }
     }
     
 
-    public func setTitle(_ title: String?, for state: BRButtonState) {
+    open func setTitle(_ title: String?, for state: BRButtonState) {
         stateHelper.titles[state] = title
         if buttonState == state {
             super.setTitle(title, for: .normal)
@@ -59,7 +59,7 @@ open class BRButton: UIButton, BRButtonStateProtocol {
     }
     
     
-    public func setTitleColor(_ color: UIColor?, for state: BRButtonState) {
+    open func setTitleColor(_ color: UIColor?, for state: BRButtonState) {
         stateHelper.titleColors[state] = color
         if buttonState == state {
             super.setTitleColor(color, for: .normal)
@@ -67,7 +67,7 @@ open class BRButton: UIButton, BRButtonStateProtocol {
     }
     
     
-    public func setImage(_ image: UIImage?, for state: BRButtonState) {
+    open func setImage(_ image: UIImage?, for state: BRButtonState) {
         stateHelper.images[state] = image
         if buttonState == state {
             super.setImage(image, for: .normal)
@@ -75,7 +75,7 @@ open class BRButton: UIButton, BRButtonStateProtocol {
     }
     
     
-    public func setBackgroundImage(_ image: UIImage?, for state: BRButtonState) {
+    open func setBackgroundImage(_ image: UIImage?, for state: BRButtonState) {
         stateHelper.backgrounds[state] = image
         if buttonState == state {
             super.setBackgroundImage(image, for: .normal)
@@ -87,31 +87,31 @@ open class BRButton: UIButton, BRButtonStateProtocol {
     
     
     /// 設定圖片與文字的排版方式
-    public var layoutMode: BRButtonLayout = .fitContent {
+    open var layoutMode: BRButtonLayout = .fitContent {
         didSet { setNeedsLayout() }
     }
     
     
     /// 設定圖片在按鈕中的位置
-    public var imagePosition: BRPosition = .left {
+    open var imagePosition: BRPosition = .left {
         didSet { setNeedsLayout() }
     }
     
     
     /// 設定圖片尺寸
-    public var imageSize: CGSize? = nil {
+    open var imageSize: CGSize? = nil {
         didSet { setNeedsLayout() }
     }
     
     
     /// 設定圖片與文字的間距
-    public var imagePadding: CGFloat = 0 {
+    open var imagePadding: CGFloat = 0 {
         didSet { setNeedsLayout() }
     }
     
     
     /// 設定圖片額外的內縮值
-    public var imageInsets: UIEdgeInsets = .zero {
+    open var imageInsets: UIEdgeInsets = .zero {
         didSet { setNeedsLayout() }
     }
     
