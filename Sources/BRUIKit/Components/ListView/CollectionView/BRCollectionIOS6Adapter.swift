@@ -33,6 +33,18 @@ public final class BRCollectionIOS6Adapter: NSObject, UICollectionViewDataSource
     public var didMoveRow: ((IndexPath, IndexPath, BRRow) -> Void)?
     
     
+    /// 滾動中
+    public var onScrollViewDidScroll: ((UIScrollView) -> Void)?
+
+    
+    /// 滾動停止
+    public var onScrollViewDidEnd: ((UIScrollView) -> Void)?
+    
+    
+    /// 拖曳停止
+    public var onScrollViewDidEndDragging: ((UIScrollView, Bool) -> Void)?
+
+    
     /// 更新清單
     public func update(list newList: BRList, animated: Bool = true) {
         registerAll(in: newList)
@@ -203,6 +215,26 @@ public final class BRCollectionIOS6Adapter: NSObject, UICollectionViewDataSource
         let movedRow = list.sections[sourceIndexPath.section].rows.remove(at: sourceIndexPath.row)
         list.sections[destinationIndexPath.section].rows.insert(movedRow, at: destinationIndexPath.row)
         didMoveRow?(sourceIndexPath, destinationIndexPath, movedRow)
+    }
+    
+    
+    // MARK: - Scroll
+    
+    
+    /// 滾動中
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        onScrollViewDidScroll?(scrollView)
+    }
+    
+    
+    /// 停止滾動
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        onScrollViewDidEnd?(scrollView)
+    }
+    
+    
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        onScrollViewDidEndDragging?(scrollView, decelerate)
     }
     
     

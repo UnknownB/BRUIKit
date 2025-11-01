@@ -34,6 +34,18 @@ public final class BRCollectionIOS13Adapter: UICollectionViewDiffableDataSource<
     public var didMoveRow: ((IndexPath, IndexPath, BRRow) -> Void)?
     
     
+    /// 滾動中
+    public var onScrollViewDidScroll: ((UIScrollView) -> Void)?
+
+    
+    /// 滾動停止
+    public var onScrollViewDidEnd: ((UIScrollView) -> Void)?
+    
+    
+    /// 拖曳停止
+    public var onScrollViewDidEndDragging: ((UIScrollView, Bool) -> Void)?
+    
+    
     /// 更新清單
     public func update(list: BRList, animated: Bool = true) {
         registerAll(in: list)
@@ -46,7 +58,7 @@ public final class BRCollectionIOS13Adapter: UICollectionViewDiffableDataSource<
         }
         apply(snapshot, animatingDifferences: animated)
     }
-
+    
     
     // MARK: - LifeCycle
     
@@ -124,7 +136,7 @@ public final class BRCollectionIOS13Adapter: UICollectionViewDiffableDataSource<
         row.onSelect?()
         didSelectRow?(indexPath, row)
     }
-
+    
     
     // MARK: - Edit
     
@@ -153,6 +165,24 @@ public final class BRCollectionIOS13Adapter: UICollectionViewDiffableDataSource<
         apply(snapshot, animatingDifferences: true)
         
         didMoveRow?(sourceIndexPath, destinationIndexPath, movedRow)
+    }
+    
+    
+    // MARK: - Scroll
+    
+    
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        onScrollViewDidScroll?(scrollView)
+    }
+    
+    
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        onScrollViewDidEnd?(scrollView)
+    }
+    
+    
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        onScrollViewDidEndDragging?(scrollView, decelerate)
     }
 
     
