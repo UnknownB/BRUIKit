@@ -10,6 +10,17 @@ import PhotosUI
 import AVFoundation
 
 
+public struct BRPickedImage {
+    public let image: UIImage
+    public let data: Data
+    
+    public init(image: UIImage, data: Data) {
+        self.image = image
+        self.data = data
+    }
+}
+
+
 @MainActor
 @available(iOS 13.0, *)
 public final class BRImagePicker: NSObject {
@@ -30,7 +41,7 @@ public final class BRImagePicker: NSObject {
     
     
     private weak var presentingVC: UIViewController?
-    private var continuation: CheckedContinuation<UIImage, Error>?
+    private var continuation: CheckedContinuation<BRPickedImage, Error>?
     
     
     // MARK: - Init
@@ -44,7 +55,7 @@ public final class BRImagePicker: NSObject {
     // MARK: - Entry
     
     
-    public func pick(from source: Source) async throws -> UIImage {
+    public func pick(from source: Source) async throws -> BRPickedImage {
         switch source {
         case .camera:
             try await checkCameraPermission()
@@ -58,7 +69,7 @@ public final class BRImagePicker: NSObject {
     // MARK: - Camera
     
     
-    private func presentCamera() async throws -> UIImage {
+    private func presentCamera() async throws -> BRPickedImage {
         guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
             throw PickerError.cameraUnavailable
         }
@@ -75,11 +86,11 @@ public final class BRImagePicker: NSObject {
     // MARK: - Photo Library
     
     
-    private func presentPhotoLibrary() async throws -> UIImage {
+    private func presentPhotoLibrary() async throws -> BRPickedImage {
         if #available(iOS 14, *) {
             var config = PHPickerConfiguration(photoLibrary: .shared())
             config.selectionLimit = 1
-            config.filter = .images
+            config.filter = .any(of: [.images, .livePhotos])
             let picker = PHPickerViewController(configuration: config)
             picker.delegate = self
             return try await withCheckedThrowingContinuation { continuation in
@@ -133,12 +144,13 @@ extension BRImagePicker: UIImagePickerControllerDelegate, UINavigationController
     
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true)
-        guard let image = info[.originalImage] as? UIImage else {
+        guard let image = info[.originalImage] as? UIImage,
+              let data = image.jpegData(compressionQuality: 1.0) else {
             continuation?.resume(throwing: PickerError.loadFailed)
             continuation = nil
             return
         }
-        continuation?.resume(returning: image)
+        continuation?.resume(returning: BRPickedImage(image: image, data: data))
         continuation = nil
     }
     
@@ -157,20 +169,31 @@ extension BRImagePicker: PHPickerViewControllerDelegate {
             continuation = nil
             return
         }
-        provider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
-            guard let self = self else { return }
-            if let img = image as? UIImage {
-                DispatchQueue.main.async { [self] in
-                    continuation?.resume(returning: img)
+
+        if provider.hasItemConformingToTypeIdentifier("public.image") {
+            provider.loadDataRepresentation(forTypeIdentifier: "public.image") { [weak self] data, error in
+                guard let self = self, let data = data else {
+                    DispatchQueue.main.async {
+                        self?.continuation?.resume(throwing: PickerError.loadFailed)
+                        self?.continuation = nil
+                    }
+                    return
                 }
-            } else {
-                DispatchQueue.main.async { [self] in
-                    continuation?.resume(throwing: PickerError.loadFailed)
+                if let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        self.continuation?.resume(returning: BRPickedImage(image: image, data: data))
+                        self.continuation = nil
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.continuation?.resume(throwing: PickerError.loadFailed)
+                        self.continuation = nil
+                    }
                 }
             }
-            DispatchQueue.main.async { [self] in
-                continuation = nil
-            }
+        } else {
+            continuation?.resume(throwing: PickerError.loadFailed)
+            continuation = nil
         }
     }
     
