@@ -139,6 +139,38 @@ public extension BRWrapper where Base: UIImage {
     }
     
     
+    // MARK: - 尺寸計算
+    
+    
+    /// 計算在指定顯示尺寸下，保持圖片比例的最佳顯示尺寸
+    /// - Parameter targetSize: 顯示區域的尺寸
+    /// - Returns: 適合顯示的尺寸
+    func bestFitSize(for targetSize: CGSize) -> CGSize {
+        let widthRatio  = targetSize.width / base.size.width
+        let heightRatio = targetSize.height / base.size.height
+        
+        let scaleFactor = min(widthRatio, heightRatio, 1)
+        let scaledWidth  = base.size.width * scaleFactor
+        let scaledHeight = base.size.height * scaleFactor
+        
+        return CGSize(width: scaledWidth, height: scaledHeight)
+    }
+    
+    
+    /// 計算剛好達到 scrollView 可以單方向滾動的縮放比例
+    /// - Parameter targetSize: scrollView 的可視尺寸
+    /// - Returns: 適合的縮放倍率
+    func scrollableScale(for targetSize: CGSize) -> CGFloat {
+        let bestFitSize  = bestFitSize(for: targetSize)
+        let widthRatio = targetSize.width / bestFitSize.width
+        let heightRatio = targetSize.height / bestFitSize.height
+        
+        let scaleFactor = max(widthRatio, heightRatio)
+        
+        return scaleFactor
+    }
+    
+    
     // MARK: - 裁切
 
     
