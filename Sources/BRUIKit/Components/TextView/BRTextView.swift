@@ -90,7 +90,7 @@ open class BRTextView: UITextView, UITextViewDelegate {
     }
     
     
-    @objc private func textDidChange() {
+    @objc open func textDidChange() {
         placeholderLabel.isHidden = !text.isEmpty
         onTextDidChange?(self)
     }
