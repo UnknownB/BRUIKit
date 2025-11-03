@@ -10,17 +10,7 @@ import PhotosUI
 import AVFoundation
 
 
-public struct BRPickedImage {
-    public let image: UIImage
-    public let data: Data
-    
-    public init(image: UIImage, data: Data) {
-        self.image = image
-        self.data = data
-    }
-}
-
-
+/// 封裝系統原始 UIImagePicker 透過相機、相簿取得 BRMediaContent
 @MainActor
 @available(iOS 13.0, *)
 public final class BRImagePicker: NSObject {
@@ -41,7 +31,7 @@ public final class BRImagePicker: NSObject {
     
     
     private weak var presentingVC: UIViewController?
-    private var continuation: CheckedContinuation<BRPickedImage, Error>?
+    private var continuation: CheckedContinuation<BRMediaContent, Error>?
     
     
     // MARK: - Init
@@ -55,7 +45,7 @@ public final class BRImagePicker: NSObject {
     // MARK: - Entry
     
     
-    public func pick(from source: Source) async throws -> BRPickedImage {
+    public func pick(from source: Source) async throws -> BRMediaContent {
         switch source {
         case .camera:
             try await checkCameraPermission()
@@ -69,7 +59,7 @@ public final class BRImagePicker: NSObject {
     // MARK: - Camera
     
     
-    private func presentCamera() async throws -> BRPickedImage {
+    private func presentCamera() async throws -> BRMediaContent {
         guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
             throw PickerError.cameraUnavailable
         }
@@ -86,7 +76,7 @@ public final class BRImagePicker: NSObject {
     // MARK: - Photo Library
     
     
-    private func presentPhotoLibrary() async throws -> BRPickedImage {
+    private func presentPhotoLibrary() async throws -> BRMediaContent {
         if #available(iOS 14, *) {
             var config = PHPickerConfiguration(photoLibrary: .shared())
             config.selectionLimit = 1
@@ -150,7 +140,7 @@ extension BRImagePicker: UIImagePickerControllerDelegate, UINavigationController
             continuation = nil
             return
         }
-        continuation?.resume(returning: BRPickedImage(image: image, data: data))
+        continuation?.resume(returning: BRMediaContent(image: image, data: data))
         continuation = nil
     }
     
@@ -181,7 +171,7 @@ extension BRImagePicker: PHPickerViewControllerDelegate {
                 }
                 if let image = UIImage(data: data) {
                     DispatchQueue.main.async {
-                        self.continuation?.resume(returning: BRPickedImage(image: image, data: data))
+                        self.continuation?.resume(returning: BRMediaContent(image: image, data: data))
                         self.continuation = nil
                     }
                 } else {
