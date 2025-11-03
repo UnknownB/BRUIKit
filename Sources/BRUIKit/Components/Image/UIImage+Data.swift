@@ -76,4 +76,17 @@ public extension BRWrapper where Base: UIImage {
     }
     
     
+    // MARK: - 載入檔案
+    
+    
+    static func load(_ data: Data) -> UIImage? {
+        let type = data.br.mimeType
+        if type == .gif {
+            return UIImage.br.animatedGIF(data: data)
+        } else {
+            return UIImage(data: data)
+        }
+    }
+    
+    
 }
