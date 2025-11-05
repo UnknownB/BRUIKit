@@ -144,12 +144,19 @@ extension BRImagePicker: UIImagePickerControllerDelegate, UINavigationController
     
     public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true)
-        guard let image = info[.originalImage] as? UIImage,
-              let data = image.jpegData(compressionQuality: 1.0) else {
+        guard let image = info[.originalImage] as? UIImage else {
             continuation?.resume(throwing: PickerError.loadFailed)
             continuation = nil
             return
         }
+        var data: Data?
+        
+        if let url = info[.imageURL] as? URL {
+            data = try? Data(contentsOf: url)
+        } else {
+            data = image.jpegData(compressionQuality: 1.0)
+        }
+        
         continuation?.resume(returning: BRMediaContent(image: image, data: data))
         continuation = nil
     }
