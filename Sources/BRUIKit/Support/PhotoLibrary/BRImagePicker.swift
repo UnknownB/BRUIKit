@@ -5,6 +5,7 @@
 //  Created by BR on 2025/10/23.
 //
 
+import BRFoundation
 import UIKit
 import PhotosUI
 import AVFoundation
@@ -77,24 +78,33 @@ public final class BRImagePicker: NSObject {
     
     
     private func presentPhotoLibrary() async throws -> BRMediaContent {
-        if #available(iOS 14, *) {
-            var config = PHPickerConfiguration(photoLibrary: .shared())
-            config.selectionLimit = 1
-            config.filter = .any(of: [.images, .livePhotos])
-            let picker = PHPickerViewController(configuration: config)
-            picker.delegate = self
-            return try await withCheckedThrowingContinuation { continuation in
-                self.continuation = continuation
-                presentingVC?.present(picker, animated: true)
-            }
-        } else {
-            let picker = UIImagePickerController()
-            picker.sourceType = .photoLibrary
-            picker.delegate = self
-            return try await withCheckedThrowingContinuation { continuation in
-                self.continuation = continuation
-                presentingVC?.present(picker, animated: true)
-            }
+        try await presentPhotoLibraryIOS2()
+    }
+    
+    
+    /// 顯示相簿
+    /// - Note: iOS 18、26，Release 環境將異常崩潰
+    @available(iOS 14.0, *)
+    private func presentPhotoLibraryIOS14() async throws -> BRMediaContent {
+        var config = PHPickerConfiguration(photoLibrary: .shared())
+        config.selectionLimit = 1
+        config.filter = .any(of: [.images, .livePhotos])
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = self
+        return try await withCheckedThrowingContinuation { continuation in
+            self.continuation = continuation
+            presentingVC?.present(picker, animated: true)
+        }
+    }
+    
+    
+    private func presentPhotoLibraryIOS2() async throws -> BRMediaContent {
+        let picker = UIImagePickerController()
+        picker.sourceType = .photoLibrary
+        picker.delegate = self
+        return try await withCheckedThrowingContinuation { continuation in
+            self.continuation = continuation
+            presentingVC?.present(picker, animated: true)
         }
     }
     
@@ -161,7 +171,13 @@ extension BRImagePicker: PHPickerViewControllerDelegate {
         }
 
         if provider.hasItemConformingToTypeIdentifier("public.image") {
+            
+            // 在 release 環境會發生異常錯誤而 crash
             provider.loadDataRepresentation(forTypeIdentifier: "public.image") { [weak self] data, error in
+                if let error = error {
+                    #BRLog(.library, .error, "PHPicker loadDataRepresentation failed: \(error)")
+                    return
+                }
                 guard let self = self, let data = data else {
                     DispatchQueue.main.async {
                         self?.continuation?.resume(throwing: PickerError.loadFailed)
