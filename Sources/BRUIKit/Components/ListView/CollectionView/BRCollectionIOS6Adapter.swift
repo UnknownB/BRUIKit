@@ -153,17 +153,15 @@ public final class BRCollectionIOS6Adapter: NSObject, UICollectionViewDataSource
               ? list.sections[indexPath.section].header
               : list.sections[indexPath.section].footer
         
-        guard let title = supplementary.title else {
+        guard case .view(_, _, let configure) = supplementary.content else {
             return UICollectionReusableView()
         }
+        let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: supplementary.collReuseIdentifier, for: indexPath)
         
-        let view = collectionView.dequeueReusableSupplementaryView(
-            ofKind: kind,
-            withReuseIdentifier: supplementary.collReuseIdentifier,
-            for: indexPath
-        )
-        
-        (view as? BRReusableViewProtocol)?.title = title
+        if let view = view as? BRReusableViewProtocol {
+            configure(view)
+        }
+
         return view
     }
     

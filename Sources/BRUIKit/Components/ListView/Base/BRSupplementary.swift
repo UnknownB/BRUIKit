@@ -25,56 +25,67 @@ public struct BRSupplementary: Hashable, Sendable {
         case footer
     }
     
+    public enum Content: Hashable, Sendable {
+        case title(String)
+        case view(key: String, type: BRReusableViewProtocol.Type, configure: @Sendable (any BRReusableViewProtocol) -> Void)
+        
+
+        public func hash(into hasher: inout Hasher) {
+            switch self {
+            case .title(let text):
+                hasher.combine("title")
+                hasher.combine(text)
+            case .view(let key, let type, _):
+                hasher.combine("view")
+                hasher.combine(key)
+                hasher.combine(String(describing: type))
+            }
+        }
+        
+        public static func == (lhs: Content, rhs: Content) -> Bool {
+            switch (lhs, rhs) {
+            case (.title(let lt), .title(let rt)):
+                return lt == rt
+            case (.view, .view):
+                return true
+            default:
+                return false
+            }
+        }
+    }
+    
     public let kind: Kind
-    public let title: String?
-    private let viewType: BRReusableViewProtocol.Type?
+    public let content: Content?
     
-    
-    // MARK: - Hashable
-    
-    
-    public static func == (lhs: BRSupplementary, rhs: BRSupplementary) -> Bool {
-        lhs.title == rhs.title
-    }
-    
-    
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(title)
-    }
-    
-    
+
     // MARK: - Init
     
     
     /// - kind
     ///     - Section 的 header or footer
-    /// - title
-    ///     - 作為此結構的 Hashable 識別資訊，以及 header or footer 顯示文字
-    /// - viewType
-    ///     - 遵循 BRCellReusableViewProtocol 的 UIView 類型，預設 nil 時，會走各自的預設元件
-    public init(kind: Kind, title: String?, viewType: BRReusableViewProtocol.Type?) {
+    /// - content
+    ///     - 作為此結構的 Hashable 識別資訊，以及 header or footer 顯示元件
+    public init(kind: Kind, content: Content? = nil) {
         self.kind = kind
-        self.title = title
-        self.viewType = viewType
+        self.content = content
     }
     
     
     // MARK: - TableView
     
     
-    public var tableViewType: BRReusableViewProtocol.Type? {
-        viewType
-    }
-    
-    
     @MainActor
-    public var tableReusableView: BRReusableViewProtocol? {
-        guard let viewType else {
+    public var tableReusableView: (any BRReusableViewProtocol)? {
+        guard let content else { return nil }
+        
+        switch content {
+        case .title(_):
             return nil
+        case .view(_, let type, let configure):
+            let view = type.init()
+            configure(view)
+            return view
         }
-        let view = viewType.init()
-        view.title = title
-        return view
     }
     
     
@@ -82,7 +93,10 @@ public struct BRSupplementary: Hashable, Sendable {
     
     
     public var collViewType: BRReusableViewProtocol.Type {
-        viewType ?? BRReusableView.self
+        guard case .view(_, let type, _) = content else {
+            return BRReusableView.self
+        }
+        return type
     }
     
     

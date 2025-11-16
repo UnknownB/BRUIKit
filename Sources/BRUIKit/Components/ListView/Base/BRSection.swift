@@ -44,17 +44,13 @@ public struct BRSection: Hashable, Sendable {
     
     
     /// - header
-    ///     - 指定 header title，預設為 nil
-    /// - headerType
-    ///     - 可指定遵循 BRCellReusableViewProtocol 協議的 UIView 類型，預設為系統原始 UI 樣式
+    ///     - 指定 header title or view，預設為 nil
     /// - footer
-    ///     - 指定 footer title，預設為 nil
-    /// - footerType
-    ///     - 可指定遵循 BRCellReusableViewProtocol 協議的 UIView 類型，預設為系統原始 UI 樣式
-    public init(header: String? = nil, headerType: BRReusableViewProtocol.Type? = nil, footer: String? = nil, footerType: BRReusableViewProtocol.Type? = nil, @BRListBuilder builder: () -> [BRRow]
+    ///     - 指定 footer title or view，預設為 nil
+    public init(header: BRSupplementary.Content? = nil, footer: BRSupplementary.Content? = nil, @BRListBuilder builder: () -> [BRRow]
     ) {
-        self.header = .init(kind: .header, title: header, viewType: headerType)
-        self.footer = .init(kind: .footer, title: footer, viewType: footerType)
+        self.header = .init(kind: .header, content: header)
+        self.footer = .init(kind: .footer, content: footer)
         self.rows = builder()
     }
 }

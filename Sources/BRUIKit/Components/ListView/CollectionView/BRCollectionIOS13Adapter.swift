@@ -82,13 +82,14 @@ public final class BRCollectionIOS13Adapter: UICollectionViewDiffableDataSource<
                 ? self.list.sections[indexPath.section].header
                 : self.list.sections[indexPath.section].footer
             
-            guard let title = supplementary.title else {
+            guard case .view(_, _, let configure) = supplementary.content else {
                 return nil
             }
-            
             let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: supplementary.collReuseIdentifier, for: indexPath)
             
-            (view as? BRReusableViewProtocol)?.title = title
+            if let view = view as? BRReusableViewProtocol {
+                configure(view)
+            }
             return view
         }
 
