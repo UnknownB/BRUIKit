@@ -41,7 +41,7 @@ open class BRWebViewBlacklist {
     
     /// 檢查 URL 是否在黑名單
     public func contains(_ url: URL) -> Bool {
-        let urlString = url.absoluteString
+        let urlString = url.absoluteString.removingPercentEncoding ?? url.absoluteString
         
         if blacklist.contains(urlString) {
             return true
