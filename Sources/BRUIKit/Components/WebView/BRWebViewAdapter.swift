@@ -5,12 +5,19 @@
 //  Created by BR on 2025/10/8.
 //
 
+import BRFoundation
 import WebKit
 import Combine
 
 
 @available(iOS 13.0, *)
-open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigationDelegate {    
+open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigationDelegate {
+    
+    public struct NewWebViewContext {
+        public let parent: WKWebView
+        public let child: WKWebView
+        public let request: URLRequest
+    }
     
     public let webView: WKWebView
     public let jsBridge: BRWebViewJSBridge
@@ -34,8 +41,16 @@ open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigat
     public var onDidFail: ((Error) -> Void)?
     
     
-    /// 開啟新的頁面
+    /// 開啟新的分頁
     public var onOpenNewTab: ((URL) -> Void)?
+    
+    
+    /// 開啟新的視窗頁面
+    public var onCreateNewWebView: ((NewWebViewContext) -> Void)?
+    
+    
+    /// 關閉新的視窗頁面
+    public var onCloseNewWebView: ((WKWebView) -> Void)?
     
     
     /// JavaScript 提示視窗
@@ -181,6 +196,34 @@ open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigat
     
     
     // MARK: - WKUIDelegate
+    
+    
+    /// 支援 window.open 或 target="_blank"
+    public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        
+        guard navigationAction.request.url != nil else {
+            #BRLog(.library, .info, "Invalid window.open detected. request: \(navigationAction.request)")
+            return nil
+        }
+        
+        if let onCreateNewWebView = onCreateNewWebView {
+            let newWebView = WKWebView(frame: .zero, configuration: configuration)
+            newWebView.navigationDelegate = self
+            newWebView.uiDelegate = self
+            let newWebViewContext = NewWebViewContext(parent: webView, child: newWebView, request: navigationAction.request)
+            onCreateNewWebView(newWebViewContext)
+            return newWebView
+        } else {
+            webView.load(navigationAction.request)
+            return nil
+        }
+    }
+    
+    
+    /// 關閉新視窗頁面
+    public func webViewDidClose(_ webView: WKWebView) {
+        onCloseNewWebView?(webView)
+    }
 
     
     /// JavaScript 提示視窗
