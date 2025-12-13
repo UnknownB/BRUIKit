@@ -108,6 +108,7 @@ open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigat
         webView.uiDelegate = self
         webView.navigationDelegate = self
         setupCombineBindings()
+        setupEvent()
     }
     
     
@@ -139,6 +140,20 @@ open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigat
         webView.publisher(for: \.canGoForward)
             .assign(to: \.canGoForward, on: self)
             .store(in: &cancellables)
+    }
+    
+    
+    private func setupEvent() {
+        BRTask.bind(to: $loadingURL, on: self) { [self] url in
+            guard let url = url else { return }
+            if blacklist.contains(url) {
+                webView.stopLoading()
+                let previousURL = webView.backForwardList.backItem?.url
+                if let previous = previousURL {
+                    webView.load(URLRequest(url: previous))
+                }
+            }
+        }
     }
     
     
