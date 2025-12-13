@@ -73,6 +73,10 @@ open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigat
     @Published public var currentURL: URL? = nil
     
     
+    /// 即將載入的 URL
+    @Published public var loadingURL: URL? = nil
+    
+    
     /// 網頁是否正在載入 (從 Navigation Delegate 推導)
     @Published public var isLoading: Bool = false
     
@@ -114,6 +118,10 @@ open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigat
         
         webView.publisher(for: \.url)
             .assign(to: \.currentURL, on: self)
+            .store(in: &cancellables)
+        
+        webView.publisher(for: \.url, options: [.new])
+            .assign(to: \.loadingURL, on: self)
             .store(in: &cancellables)
         
         webView.publisher(for: \.isLoading)
