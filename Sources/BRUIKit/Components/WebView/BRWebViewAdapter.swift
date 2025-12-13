@@ -168,30 +168,25 @@ open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigat
     
     
     /// 開啟 URL 事件處理
-    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping @MainActor (WKNavigationActionPolicy) -> Void) {
+    public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
         guard let url = navigationAction.request.url else {
-            decisionHandler(.allow)
-            return
+            return .cancel
         }
         
         if blacklist.contains(url) {
-            decisionHandler(.cancel)
-            return
+            return .cancel
         }
         
         // 開新頁面
         if navigationAction.targetFrame == nil {
             if let onOpenNewTab = onOpenNewTab {
                 onOpenNewTab(url)
-                decisionHandler(.cancel)
             } else {
-                decisionHandler(.cancel)
                 webView.load(navigationAction.request)
             }
-            return
+            return .cancel
         }
-        
-        decisionHandler(.allow)
+        return .allow
     }
     
     
