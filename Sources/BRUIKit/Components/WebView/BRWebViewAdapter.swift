@@ -190,6 +190,16 @@ open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigat
     }
     
     
+    /// redirect (重定向) 跳轉事件處理
+    public func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse) async -> WKNavigationResponsePolicy {
+        guard let url = navigationResponse.response.url else {
+            return .cancel
+        }
+        let isBlack = blacklist.contains(url)
+        return isBlack ? .cancel : .allow
+    }
+        
+    
     // MARK: - WKUIDelegate
     
     
