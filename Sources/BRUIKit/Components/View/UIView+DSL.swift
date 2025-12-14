@@ -65,6 +65,14 @@ public extension BRWrapper where Base: UIView {
     }
     
     
+    @MainActor
+    @discardableResult
+    func configure(_ closure: @escaping (Base) -> Void) -> Base {
+        closure(base)
+        return base
+    }
+
+    
     // MARK: - 狀態
     
     
