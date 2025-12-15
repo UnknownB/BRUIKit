@@ -11,11 +11,11 @@ import UIKit
 /// BRListView 使用 UIScrollView 與 UIStackView 封裝成垂直滾動的 ListView
 open class BRListView: UIView {
 
-    let layout = BRLayout()
+    public let layout = BRLayout()
     
-    let scrollView = UIScrollView()
+    public let scrollView = UIScrollView()
         
-    let stackView = UIStackView()
+    public let stackView = UIStackView()
         .br.axis(.vertical)
         .br.alignment(.fill)
         .br.distribution(.fill)
