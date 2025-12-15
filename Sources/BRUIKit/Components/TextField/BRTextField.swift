@@ -11,7 +11,7 @@ open class BRTextField: UITextField, ObservableObject {
 
     private let stateHelper = BRTextFieldStateHelper()
     private let validator = BRTextFieldValidator()
-    private(set) var rules: [BRTextFieldRule] = []
+    private(set) public var rules: [BRTextFieldRule] = []
 
     /// 輸入緩衝，預設為1秒
     public var debounce: TimeInterval = 1
