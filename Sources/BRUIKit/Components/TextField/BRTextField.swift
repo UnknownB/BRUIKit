@@ -144,6 +144,22 @@ open class BRTextField: UITextField, ObservableObject {
     }
     
     
+    // MARK: - Password
+    
+    
+    open func setSecureTextEntryButton(_ button: UIButton) {
+        button.addTarget(self, action: #selector(onSecureButtonTapped(_:)), for: .touchUpInside)
+        self.br.rightView(button, mode: .always)
+        self.isSecureTextEntry = true
+    }
+    
+    
+    @objc private func onSecureButtonTapped(_ sender: UIButton) {
+        isSecureTextEntry.toggle()
+        sender.isSelected.toggle()
+    }
+
+    
     // MARK: - Event
     
 

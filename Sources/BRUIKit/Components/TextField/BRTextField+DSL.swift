@@ -46,4 +46,13 @@ public extension BRWrapper where Base: BRTextField {
     }
     
     
+    /// 設定加密按鈕
+    @MainActor
+    @discardableResult
+    func setSecureTextEntryButton(_ button: UIButton) -> Base {
+        base.setSecureTextEntryButton(button)
+        return base
+    }
+    
+    
 }
