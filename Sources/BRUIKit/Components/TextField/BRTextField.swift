@@ -13,6 +13,8 @@ open class BRTextField: UITextField, ObservableObject {
     private let validator = BRTextFieldValidator()
     private(set) public var rules: [BRTextFieldRule] = []
 
+    private var isRequired = false
+    
     /// 輸入緩衝，預設為1秒
     public var debounce: TimeInterval = 1
     
@@ -85,7 +87,10 @@ open class BRTextField: UITextField, ObservableObject {
     
     /// 已驗證
     open var isValid: Bool {
-        rules.filter({ $0.status == .failed }).count == 0
+        if isRequired, text?.isEmpty == true {
+            return false
+        }
+        return rules.filter({ $0.status == .failed }).count == 0
     }
     
     
@@ -105,14 +110,17 @@ open class BRTextField: UITextField, ObservableObject {
     
     
     /// 添加必填規則
+    @discardableResult
     open func addRequiredRule(at events: [BRTextFieldRule.Event]) -> BRTextFieldRule {
         let rule = BRTextFieldRule.required(with: self, events: events)
         rules.append(rule)
+        isRequired = true
         return rule
     }
     
     
     /// 添加最小長度規則
+    @discardableResult
     open func addMinLengthRule(at events: [BRTextFieldRule.Event], length: Int) -> BRTextFieldRule {
         let rule = BRTextFieldRule.min(with: self, events: events, length: length)
         rules.append(rule)
@@ -121,6 +129,7 @@ open class BRTextField: UITextField, ObservableObject {
     
     
     /// 添加最大長度規則
+    @discardableResult
     open func addMaxLengthRule(at events: [BRTextFieldRule.Event], length: Int) -> BRTextFieldRule {
         let rule = BRTextFieldRule.max(with: self, events: events, length: length)
         rules.append(rule)
@@ -129,6 +138,7 @@ open class BRTextField: UITextField, ObservableObject {
 
 
     /// 添加正則表示法規則
+    @discardableResult
     open func addRegexRule(at events: [BRTextFieldRule.Event], pattern: String) -> BRTextFieldRule {
         let rule = BRTextFieldRule.regex(with: self, events: events, pattern: pattern)
         rules.append(rule)
@@ -137,6 +147,7 @@ open class BRTextField: UITextField, ObservableObject {
     
     
     /// 添加自訂規則
+    @discardableResult
     open func addCustomRule(at events: [BRTextFieldRule.Event], constraint: @escaping BRTextFieldRule.Constraint) -> BRTextFieldRule {
         let rule = BRTextFieldRule.init(textField: self, events: events, constraint: constraint)
         rules.append(rule)
