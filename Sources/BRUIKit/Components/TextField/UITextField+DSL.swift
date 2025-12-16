@@ -106,6 +106,15 @@ public extension BRWrapper where Base: UITextField {
         base.isSecureTextEntry = flag
         return base
     }
+    
+    
+    /// 設定文字內容類型（如 .emailAddress, .password 等）
+    @MainActor
+    @discardableResult
+    func textContentType(_ type: UITextContentType) -> Base {
+        base.textContentType = type
+        return base
+    }
 
     
     /// 設定鍵盤類型（如 .emailAddress, .numberPad 等）
