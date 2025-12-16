@@ -164,6 +164,15 @@ public extension BRWrapper where Base: UIButton {
     }
     
     
+    /// Disabled 時顯示灰階遮罩
+    @MainActor
+    @discardableResult
+    func adjustsImageWhenDisabled(_ flag: Bool) -> Base {
+        base.adjustsImageWhenDisabled = flag
+        return base
+    }
+    
+    
     // MARK: 事件
     
     
