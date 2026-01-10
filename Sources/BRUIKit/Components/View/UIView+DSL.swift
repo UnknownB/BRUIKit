@@ -127,6 +127,27 @@ public extension BRWrapper where Base: UIView {
     }
     
     
+    /// 抗壓縮屬性，當空間不夠時數值越小越容易被壓縮， `.required` 不可壓縮
+    @MainActor
+    @discardableResult
+    func setContentCompressionResistancePriority(_ priority: UILayoutPriority, for axis: NSLayoutConstraint.Axis) -> Base {
+        base.setContentCompressionResistancePriority(priority, for: axis)
+        return base
+    }
+    
+    
+    /// 抗拉伸屬性，當空間變多時是否能拉伸，`.required` 不可拉伸
+    @MainActor
+    @discardableResult
+    func setContentHuggingPriority(_ priority: UILayoutPriority, for axis: NSLayoutConstraint.Axis) -> Base {
+        base.setContentHuggingPriority(priority, for: axis)
+        return base
+    }
+    
+        
+    // MARK: - 附加圖層
+    
+    
     @MainActor
     @discardableResult
     func addSubView(_ view: UIView) -> Base {
