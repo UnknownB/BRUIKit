@@ -8,13 +8,16 @@
 import UIKit
 
 
-open class BRTextView: UITextView, UITextViewDelegate {
+open class BRTextView: UITextView, UITextViewDelegate, BRResponderProtocol {
+    
     
     public let RTF = TextViewRTF()
     public let placeholderLabel = BRLabel()
 
     public typealias TappableAction = () -> Void
-    
+
+    public var keyboardPadding: CGFloat?
+
     open var onTextDidChange: ((BRTextView) -> Void)?
     
     
