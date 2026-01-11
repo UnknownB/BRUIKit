@@ -13,7 +13,8 @@ open class BRTextFieldView: UIStackView {
 
     public let titleLabel = BRLabel()
     public let textField = BRTextField()
-    public let ruleListView = BRListView()
+    public let ruleStackView = UIStackView()
+        .br.axis(.vertical)
     public let hintLabel = BRLabel()
         .br.lines(0)
     
@@ -41,7 +42,7 @@ open class BRTextFieldView: UIStackView {
             .br.spacing(4)
             .br.addArranged(titleLabel)
             .br.addArranged(textField)
-            .br.addArranged(ruleListView)
+            .br.addArranged(ruleStackView)
             .br.addArranged(hintLabel)
     }
 
@@ -67,6 +68,8 @@ open class BRTextFieldView: UIStackView {
         } else {
             hintLabel.isHidden = true
         }
+        self.layoutSubviews()
+        textField.keyboardPadding = ruleStackView.frame.height + hintLabel.frame.height + self.spacing + 5
     }
     
     
@@ -75,7 +78,7 @@ open class BRTextFieldView: UIStackView {
             return
         }
         
-        let view = ruleListView.stackView.arrangedSubviews.first { view in
+        let view = ruleStackView.arrangedSubviews.first { view in
             if let view = view as? BRTextFieldRuleView {
                 return view.rule.title == rule.title
             }
@@ -86,11 +89,11 @@ open class BRTextFieldView: UIStackView {
             view.updateState()
         } else {
             let view = BRTextFieldRuleView(rule: rule)
-            ruleListView.br.addArranged(view)
+            ruleStackView.br.addArranged(view)
             view.updateState()
         }
     }
-
+    
     
 }
 

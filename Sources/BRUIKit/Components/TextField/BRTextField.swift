@@ -7,7 +7,9 @@
 
 import UIKit
 
-open class BRTextField: UITextField, ObservableObject {
+open class BRTextField: UITextField, ObservableObject, BRResponderProtocol {
+    
+    public var keyboardPadding: CGFloat?
 
     private let stateHelper = BRTextFieldStateHelper()
     private let validator = BRTextFieldValidator()
