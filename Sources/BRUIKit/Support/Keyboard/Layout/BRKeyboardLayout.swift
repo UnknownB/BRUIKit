@@ -100,7 +100,15 @@ final class BRKeyboardLayout {
     
     private func handleScrollMode(session: BRKeyboardSession, keyboard: BRKeyboardContext, isKeyboardVisible: Bool) {
         UIView.animate(withDuration: keyboard.animationDuration, delay: 0, options: keyboard.animationOptions) {
+            // 校正常數：補償 tabBar / 系統邊界殘留
+            let safeAreaCoverAdjustment = 40.0
             
+            let originalFrame = session.responder.window?.frame ?? .zero
+            let keyboardHeight = keyboard.frame.height
+            let safeAreaBottomInset = session.viewController.view.safeAreaInsets.bottom
+            let cutHeight = keyboardHeight - safeAreaBottomInset - safeAreaCoverAdjustment
+            session.containerView.frame = originalFrame.inset(by: .init(top: 0, left: 0, bottom: cutHeight, right: 0))
+
             guard let anchorScrollView = session.responder.br.findSuperview(of: UIScrollView.self) else { return }
             
             if self.originalScrollViewBottomInset == nil {
@@ -113,15 +121,6 @@ final class BRKeyboardLayout {
             let bottomInset = keyboardPadding + toolbarHeight
             anchorScrollView.contentInset.bottom = bottomInset
             anchorScrollView.scrollIndicatorInsets.bottom = bottomInset
-            
-            // 校正常數：補償 tabBar / 系統邊界殘留
-            let safeAreaCoverAdjustment = 40.0
-            
-            let originalFrame = session.responder.window?.frame ?? .zero
-            let keyboardHeight = keyboard.frame.height
-            let safeAreaBottomInset = session.viewController.view.safeAreaInsets.bottom
-            let cutHeight = keyboardHeight - safeAreaBottomInset - safeAreaCoverAdjustment
-            session.containerView.frame = originalFrame.inset(by: .init(top: 0, left: 0, bottom: cutHeight, right: 0))
         }
     }
     
