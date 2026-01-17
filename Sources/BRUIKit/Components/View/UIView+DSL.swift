@@ -33,8 +33,9 @@ public extension BRWrapper where Base: UIView {
     
     @MainActor
     @discardableResult
-    func cornerRadius(_ radius: CGFloat) -> Base {
+    func cornerRadius(_ radius: CGFloat, maskedConers: CACornerMask = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner, .layerMinXMinYCorner, .layerMaxXMinYCorner]) -> Base {
         base.layer.cornerRadius = radius
+        base.layer.maskedCorners = maskedConers
         base.clipsToBounds = true
         return base
     }
