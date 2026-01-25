@@ -54,7 +54,13 @@ public enum BRKeyboard {
     public static var nextResponder: UIResponder? {
         BRKeyboardManager.shared.inputUI.nextResponder
     }
+    
 
+    /// 操作工具列
+    public static var toolbar: BRKeyboardToolbarProtocol {
+        BRKeyboardManager.shared.inputUI.toolbar
+    }
+    
     
     // MARK: - Configuration
     
@@ -80,75 +86,10 @@ public enum BRKeyboard {
     }
     
     
-    /// 設定工具列 `上一個焦點按鈕` 色彩
-    ///
-    /// - iOS 26+ 預設值為黑與白，依據背景色自動切換
-    /// - iOS 13+ 預設值為系統藍
-    public static var toolbarPrevButtonTintColor: UIColor? {
-        get { BRKeyboardManager.shared.inputUI.toolbar.prevButton.tintColor }
-        set { BRKeyboardManager.shared.inputUI.toolbar.prevButton.tintColor = newValue }
-    }
-    
-    
-    /// 設定工具列 `下一個焦點按鈕` 色彩
-    ///
-    /// - iOS 26+ 預設值為黑與白，依據背景色自動切換
-    /// - iOS 13+ 預設值為系統藍
-    public static var toolbarNextButtonTintColor: UIColor? {
-        get { BRKeyboardManager.shared.inputUI.toolbar.nextButton.tintColor }
-        set { BRKeyboardManager.shared.inputUI.toolbar.nextButton.tintColor = newValue }
-    }
-    
-    
-    /// 設定工具列 `完成按鈕` 色彩
-    ///
-    /// - iOS 26+ 預設值為黑與白，依據背景色自動切換
-    /// - iOS 13+ 預設值為系統藍
-    public static var toolbarDoneButtonTintColor: UIColor? {
-        get { BRKeyboardManager.shared.inputUI.toolbar.doneButton.tintColor }
-        set { BRKeyboardManager.shared.inputUI.toolbar.doneButton.tintColor = newValue }
-    }
-    
-    
-    /// 設定工具列 `上一個焦點按鈕` 文字，預設為 nil
-    public static var toolbarPrevButtonTitle: String? {
-        get { BRKeyboardManager.shared.inputUI.toolbar.prevButton.title }
-        set { BRKeyboardManager.shared.inputUI.toolbar.prevButton.title = newValue }
-    }
-    
-    
-    /// 設定工具列 `下一個焦點按鈕` 文字，預設為 nil
-    public static var toolbarNextButtonTitle: String? {
-        get { BRKeyboardManager.shared.inputUI.toolbar.nextButton.title }
-        set { BRKeyboardManager.shared.inputUI.toolbar.nextButton.title = newValue }
-    }
-    
-    
-    /// 設定工具列 `完成按鈕` 文字，預設為 nil
-    public static var toolbarDoneButtonTitle: String? {
-        get { BRKeyboardManager.shared.inputUI.toolbar.doneButton.title }
-        set { BRKeyboardManager.shared.inputUI.toolbar.doneButton.title = newValue }
-    }
-    
-    
-    /// 設定工具列 `上一個焦點按鈕` 圖片，預設為 "chevron.up"
-    public static var toolbarPrevButtonImage: UIImage? {
-        get { BRKeyboardManager.shared.inputUI.toolbar.prevButton.image }
-        set { BRKeyboardManager.shared.inputUI.toolbar.prevButton.image = newValue }
-    }
-
-
-    /// 設定工具列 `下一個焦點按鈕` 圖片，預設為 "chevron.down"
-    public static var toolbarNextButtonImage: UIImage? {
-        get { BRKeyboardManager.shared.inputUI.toolbar.nextButton.image }
-        set { BRKeyboardManager.shared.inputUI.toolbar.nextButton.image = newValue }
-    }
-    
-    
-    /// 設定工具列 `完成按鈕` 圖片，預設為 "checkmark"
-    public static var toolbarDoneButtonImage: UIImage? {
-        get { BRKeyboardManager.shared.inputUI.toolbar.doneButton.image }
-        set { BRKeyboardManager.shared.inputUI.toolbar.doneButton.image = newValue }
+    /// 操作工具列
+    public static var onToolbarMaskChange: ((UIViewController) -> Void)? {
+        get { BRKeyboardManager.shared.inputUI.toolbar.onToolbarMaskChange }
+        set { BRKeyboardManager.shared.inputUI.toolbar.onToolbarMaskChange = newValue }
     }
     
     
@@ -157,7 +98,6 @@ public enum BRKeyboard {
         get { BRKeyboardManager.shared.enableDebugLog }
         set { BRKeyboardManager.shared.enableDebugLog = newValue }
     }
-
     
     
     // MARK: - Methods

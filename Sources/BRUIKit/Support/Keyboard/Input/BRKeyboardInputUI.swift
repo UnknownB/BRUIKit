@@ -20,16 +20,19 @@ final class BRKeyboardInputUI: NSObject, UITextFieldDelegate {
     private weak var originalTextFieldDelegate: UITextFieldDelegate?
     private var originalTextFieldReturnKey: UIReturnKeyType = .default
     
-    let toolbar = BRKeyboardToolbar()
-
     
+    /// 工具列
+    lazy var toolbar = makeToolbar()
+    
+    
+    /// 啟動工具列
     var enableToolbar: Bool = true {
         didSet {
-            guard let currentResponder else {
+            guard let currentResponder, let viewController = currentResponder.br.viewController() else {
                 return
             }
             if enableToolbar {
-                handleToolbar(with: currentResponder)
+                handleToolbar(with: currentResponder, activateViewController: viewController)
             } else {
                 restoreToolbar(with: currentResponder)
             }
@@ -37,12 +40,14 @@ final class BRKeyboardInputUI: NSObject, UITextFieldDelegate {
     }
     
 
+    /// 上一個焦點元件
     var prevResponder: UIResponder? {
         guard let index = currentResponderIndex, index > 0 else { return nil }
         return sortedResponders[index - 1]
     }
     
     
+    /// 下一個焦點元件
     var nextResponder: UIResponder? {
         guard let index = currentResponderIndex, index + 1 < sortedResponders.count else { return nil }
         return sortedResponders[index + 1]
@@ -68,6 +73,8 @@ final class BRKeyboardInputUI: NSObject, UITextFieldDelegate {
         }
         sortedResponders = sortedResponders(from: viewController)
         currentResponderIndex = currentResponderIndex(from: currentResponder)
+        handleReturn(with: currentResponder)
+        handleToolbar(with: currentResponder, activateViewController: viewController)
     }
 
     
@@ -84,7 +91,7 @@ final class BRKeyboardInputUI: NSObject, UITextFieldDelegate {
         currentResponderIndex = currentResponderIndex(from: view)
         
         handleReturn(with: view)
-        handleToolbar(with: view)
+        handleToolbar(with: view, activateViewController: activateViewController)
     }
     
     
@@ -169,22 +176,32 @@ final class BRKeyboardInputUI: NSObject, UITextFieldDelegate {
     // MARK: - Toolbar
     
     
-    private func handleToolbar(with responder: UIResponder) {
+    private func makeToolbar() -> BRKeyboardToolbarProtocol {
+        if #available(iOS 26.0, *) {
+            return BRKeyboardToolbarIOS26()
+        } else {
+            return BRKeyboardToolbarIOS13()
+        }
+    }
+    
+    
+    private func handleToolbar(with responder: UIResponder, activateViewController: UIViewController) {
         toolbar.bind(prev: prevResponder, next: nextResponder)
+        toolbar.updateToolbarMaskView(with: activateViewController)
         if enableToolbar, let textField = responder as? UITextField, textField.inputAccessoryView == nil {
-            textField.inputAccessoryView = toolbar
+            textField.inputAccessoryView = toolbar.accessoryView
         }
         if enableToolbar, let textView = responder as? UITextView, textView.inputAccessoryView == nil {
-            textView.inputAccessoryView = toolbar
+            textView.inputAccessoryView = toolbar.accessoryView
         }
     }
     
     
     private func restoreToolbar(with responder: UIResponder) {
-        if let textField = responder as? UITextField, textField.inputAccessoryView == toolbar {
+        if let textField = responder as? UITextField, textField.inputAccessoryView == toolbar.accessoryView {
             textField.inputAccessoryView = nil
         }
-        if let textView = responder as? UITextView, textView.inputAccessoryView == toolbar {
+        if let textView = responder as? UITextView, textView.inputAccessoryView == toolbar.accessoryView {
             textView.inputAccessoryView = nil
         }
     }
