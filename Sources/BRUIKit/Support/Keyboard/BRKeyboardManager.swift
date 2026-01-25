@@ -39,6 +39,10 @@ final class BRKeyboardManager {
     public var enableDebugLog: Bool = false
     
     
+    /// 是否觸發左滑返回手勢
+    private var didPopGesture: Bool = false
+    
+    
     private init() {}
 
     
@@ -81,6 +85,7 @@ final class BRKeyboardManager {
     /// - O 鍵盤顯示中切換焦點
     /// - X 鍵盤顯示中切換輸入法
     /// - X 鍵盤顯示中翻轉螢幕
+    /// - X 鍵盤顯示中觸發 pop 手勢
     /// - X 輸入框失去焦點
     /// - X 所有輸入框都失去焦點，觸發鍵盤收起
     @objc private func onTextDidBegin(_ sender: Notification) {
@@ -102,13 +107,19 @@ final class BRKeyboardManager {
     /// - X 鍵盤顯示中切換焦點
     /// - X 鍵盤顯示中切換輸入法
     /// - X 鍵盤顯示中翻轉螢幕
+    /// - X 鍵盤顯示中觸發 pop 手勢
     /// - O 輸入框失去焦點
     /// - O 所有輸入框都失去焦點，觸發鍵盤收起
     @objc private func onTextDidEndEditing(_ sender: Notification) {
         if enableDebugLog {
             #BRLog(.library, .debug, #function)
         }
-        inputUI.removeResponder()
+        
+        // 左滑手勢 begin 時 call dissmissKeyboard() 避免 layout 異常
+        // 左滑手勢 cancel 時回到原本頁面，然而 responder 會再次獲得焦點，卻不會觸發 onTextDidBegin，也無法重新掛載 toolbar ，因此需要改在 end 時執行
+        if !didPopGesture {
+            inputUI.removeResponder()
+        }
     }
 
     
@@ -122,6 +133,7 @@ final class BRKeyboardManager {
     /// - O 鍵盤顯示中切換焦點
     /// - O 鍵盤顯示中切換輸入法
     /// - O 鍵盤顯示中翻轉螢幕
+    /// - O 鍵盤顯示中觸發 pop 手勢
     /// - X 輸入框失去焦點
     /// - X 所有輸入框都失去焦點，觸發鍵盤收起
     @objc private func onKeyboardWillShow(_ sender: Notification) {
@@ -152,6 +164,8 @@ final class BRKeyboardManager {
             tapBlank.addGesture(with: session)
         }
         
+        viewController.navigationController?.interactivePopGestureRecognizer?.addTarget(self, action: #selector(onPopGesture))
+        
         let layoutModel = layout.moveUp(session: session, keyboard: keyboard)
         
         if enableDebugLog {
@@ -167,6 +181,7 @@ final class BRKeyboardManager {
     /// - X 鍵盤顯示中切換焦點
     /// - X 鍵盤顯示中切換輸入法
     /// - O 鍵盤顯示中翻轉螢幕
+    /// - X 鍵盤顯示中觸發 pop 手勢
     /// - X 輸入框失去焦點
     /// - O 所有輸入框都失去焦點，觸發鍵盤收起
     @objc private func onKeyboardWillHide(_ sender: Notification) {
@@ -179,6 +194,27 @@ final class BRKeyboardManager {
         layout.moveDown(session: session, keyboard: keyboard) {
             self.session = nil
             self.keyboardContext = nil
+        }        
+    }
+    
+    
+    @objc private func onPopGesture(_ gesture: UIGestureRecognizer) {
+        switch gesture.state {
+        case .began:
+            didPopGesture = true
+            dismissKeyboard()
+        case .cancelled:
+            didPopGesture = false
+        case .ended:
+            // .ended 有機率是 .cancelled 沒有實際返回上一頁
+            let location = gesture.location(in: gesture.view)
+            if let view = gesture.view, location.x < view.center.x {
+                return
+            }
+            didPopGesture = false
+            inputUI.removeResponder()
+        default:
+            break
         }
     }
     
