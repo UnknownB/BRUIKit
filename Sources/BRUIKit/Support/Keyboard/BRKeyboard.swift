@@ -34,7 +34,7 @@ public enum BRKeyboard {
     
     /// 鍵盤是否顯示中
     public static var isKeyboardVisible: Bool {
-        BRKeyboardManager.shared.isKeyboardVisible
+        BRKeyboardManager.shared.layout.isKeyboardVisible
     }
 
     

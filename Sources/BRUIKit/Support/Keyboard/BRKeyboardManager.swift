@@ -35,11 +35,6 @@ final class BRKeyboardManager {
     public private(set) var keyboardContext: BRKeyboardContext?
     
     
-    /// 鍵盤是否顯示中
-    public private(set) var isKeyboardVisible: Bool = false
-
-    
-    
     /// 啟動 Log 狀態追蹤，預設為 false
     public var enableDebugLog: Bool = false
     
@@ -157,13 +152,11 @@ final class BRKeyboardManager {
             tapBlank.addGesture(with: session)
         }
         
-        let layoutModel = layout.moveUp(session: session, keyboard: keyboard, isKeyboardVisible: isKeyboardVisible)
+        let layoutModel = layout.moveUp(session: session, keyboard: keyboard)
         
         if enableDebugLog {
             #BRLog(.library, .debug, "[BRKeyboard] moveUp layoutModel: \(layoutModel.rawValue)")
         }
-        
-        isKeyboardVisible = true
     }
 
     
@@ -187,8 +180,6 @@ final class BRKeyboardManager {
             self.session = nil
             self.keyboardContext = nil
         }
-        
-        isKeyboardVisible = false
     }
     
     
