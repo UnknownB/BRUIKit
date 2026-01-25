@@ -16,7 +16,12 @@ public extension BRWrapper where Base: UIView {
     /// 是否允許減少高度
     @MainActor
     func canDecreaseHeight() -> Bool {
-        if base.constraints.contains(where: { $0.firstItem === base && $0.firstAttribute == .height && $0.relation != .lessThanOrEqual}) {
+        if base.constraints.contains(where: {
+            $0.firstItem === base &&
+            $0.firstAttribute == .height &&
+            $0.relation != .lessThanOrEqual &&
+            $0.priority == .required
+        }) {
             return false
         }
         guard let superview = base.superview else {
