@@ -206,7 +206,7 @@ open class BRTextField: UITextField, ObservableObject, BRResponderProtocol {
     
     private func updateState() {
         if isValid {
-            fieldState = isFocused ? .focused : .normal
+            fieldState = isFirstResponder ? .focused : .normal
         } else {
             fieldState = .failed
         }
