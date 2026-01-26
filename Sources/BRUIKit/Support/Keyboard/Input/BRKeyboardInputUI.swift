@@ -106,8 +106,12 @@ final class BRKeyboardInputUI: NSObject, UITextFieldDelegate {
     
     
     private func sortedResponders(from viewController: UIViewController) -> [UIResponder] {
-        var responders: [UIResponder] = []
-        let views = viewController.view.br.findSubviews(of: UIView.self)
+        guard let containerView = viewController.view else {
+            return []
+        }
+        let views = containerView.br.findSubviews(of: UIView.self)
+        
+        var responders: [UIView] = []
         let textFields = views
             .compactMap { $0 as? UITextField }
             .filter { $0.canBecomeFirstResponder }
@@ -121,8 +125,9 @@ final class BRKeyboardInputUI: NSObject, UITextFieldDelegate {
         
         return responders
             .sorted {
-                let rectL = ($0 as? UIView)?.frame ?? .zero
-                let rectR = ($1 as? UIView)?.frame ?? .zero
+                let rectL = $0.convert($0.bounds, to: containerView)
+                let rectR = $1.convert($1.bounds, to: containerView)
+                
                 if rectL.minY != rectR.minY {
                     return rectL.minY < rectR.minY
                 } else {
