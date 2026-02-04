@@ -43,14 +43,7 @@ public struct BRSupplementary: Hashable, Sendable {
         }
         
         public static func == (lhs: Content, rhs: Content) -> Bool {
-            switch (lhs, rhs) {
-            case (.title(let lt), .title(let rt)):
-                return lt == rt
-            case (.view, .view):
-                return true
-            default:
-                return false
-            }
+            return lhs == rhs
         }
     }
     
@@ -92,15 +85,17 @@ public struct BRSupplementary: Hashable, Sendable {
     // MARK: - CollectionView
     
     
-    public var collViewType: BRReusableViewProtocol.Type {
-        guard case .view(_, let type, _) = content else {
-            return BRReusableView.self
+    public var collViewType: BRReusableViewProtocol.Type? {
+        guard let content else { return nil }
+
+        if case .view(_, let type, _) = content {
+            return type
         }
-        return type
+        return BRReusableView.self
     }
     
     
-    public var collReuseIdentifier: String {
+    public var collReuseIdentifier: String? {
         String(describing: collViewType)
     }
     

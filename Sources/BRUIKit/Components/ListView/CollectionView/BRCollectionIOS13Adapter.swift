@@ -77,20 +77,21 @@ public final class BRCollectionIOS13Adapter: UICollectionViewDiffableDataSource<
         
         supplementaryViewProvider = { [weak self] (collectionView, kind, indexPath) -> UICollectionReusableView? in
             guard let self = self else { return nil }
-            
             let supplementary: BRSupplementary = (kind == UICollectionView.elementKindSectionHeader)
                 ? self.list.sections[indexPath.section].header
                 : self.list.sections[indexPath.section].footer
             
-            guard case .view(_, _, let configure) = supplementary.content else {
-                return nil
+            if let id = supplementary.collReuseIdentifier {
+                let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath)
+                if case .view(_, _, let configure) = supplementary.content, let view = view as? BRReusableViewProtocol {
+                    configure(view)
+                } else if case .title(let text) = supplementary.content, let view = view as? BRReusableView {
+                    view.title = text
+                }
+                return view
             }
-            let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: supplementary.collReuseIdentifier, for: indexPath)
             
-            if let view = view as? BRReusableViewProtocol {
-                configure(view)
-            }
-            return view
+            return nil
         }
 
         collectionView.dataSource = self
@@ -107,16 +108,13 @@ public final class BRCollectionIOS13Adapter: UICollectionViewDiffableDataSource<
                 collectionView.register(row.viewType, forCellWithReuseIdentifier: row.reuseIdentifier)
             }
             
-            collectionView.register(
-                section.header.collViewType.self,
-                forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-                withReuseIdentifier: section.header.collReuseIdentifier
-            )
-            collectionView.register(
-                section.footer.collViewType.self,
-                forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
-                withReuseIdentifier: section.footer.collReuseIdentifier
-            )
+            if let headerType = section.header.collViewType, let id = section.header.collReuseIdentifier {
+                collectionView.register(headerType, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: id)
+            }
+            
+            if let footerType = section.footer.collViewType, let id = section.footer.collReuseIdentifier {
+                collectionView.register(footerType, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: id)
+            }
         }
     }
     
