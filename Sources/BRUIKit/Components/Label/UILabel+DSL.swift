@@ -94,20 +94,9 @@ public extension BRWrapper where Base: UILabel {
     
     @MainActor
     @discardableResult
-    func lineHeight(_ height: CGFloat) -> Base {
-        guard let text = base.text else { return base }
-
-        let style = NSMutableParagraphStyle()
-        style.minimumLineHeight = height
-        style.maximumLineHeight = height
-        style.alignment = base.textAlignment
-
-        let attr = NSAttributedString(string: text, attributes: [
-            .paragraphStyle: style,
-            .font: base.font ?? UIFont.systemFont(ofSize: 17),
-            .foregroundColor: base.textColor ?? .black
-        ])
-        base.attributedText = attr
+    func minimumScaleFactor(_ scale: CGFloat) -> Base {
+        base.adjustsFontSizeToFitWidth = true
+        base.minimumScaleFactor = scale
         return base
     }
     
