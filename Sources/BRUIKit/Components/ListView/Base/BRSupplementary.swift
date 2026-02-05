@@ -25,30 +25,33 @@ public struct BRSupplementary: Hashable, Sendable {
         case footer
     }
     
-    public enum Content: Hashable, Sendable {
+    public enum Content: Sendable {
         case title(String)
         case view(key: String, type: BRReusableViewProtocol.Type, configure: @Sendable (any BRReusableViewProtocol) -> Void)
-        
-
-        public func hash(into hasher: inout Hasher) {
-            switch self {
-            case .title(let text):
-                hasher.combine("title")
-                hasher.combine(text)
-            case .view(let key, let type, _):
-                hasher.combine("view")
-                hasher.combine(key)
-                hasher.combine(String(describing: type))
-            }
-        }
-        
-        public static func == (lhs: Content, rhs: Content) -> Bool {
-            return lhs == rhs
+    }
+    
+    public let id = UUID()
+    public let kind: Kind
+    public let content: Content?
+    
+    
+    public func hash(into hasher: inout Hasher) {
+        switch content {
+        case .title(let text):
+            hasher.combine("title")
+            hasher.combine(text)
+        case .view(let key, let type, _):
+            hasher.combine("view")
+            hasher.combine(key)
+            hasher.combine(String(describing: type))
+        default:
+            hasher.combine(id)
         }
     }
     
-    public let kind: Kind
-    public let content: Content?
+    public static func == (lhs: BRSupplementary, rhs: BRSupplementary) -> Bool {
+        return lhs == rhs
+    }
     
 
     // MARK: - Init
@@ -85,9 +88,7 @@ public struct BRSupplementary: Hashable, Sendable {
     // MARK: - CollectionView
     
     
-    public var collViewType: BRReusableViewProtocol.Type? {
-        guard let content else { return nil }
-
+    public var collViewType: BRReusableViewProtocol.Type {
         if case .view(_, let type, _) = content {
             return type
         }
@@ -95,7 +96,7 @@ public struct BRSupplementary: Hashable, Sendable {
     }
     
     
-    public var collReuseIdentifier: String? {
+    public var collReuseIdentifier: String {
         String(describing: collViewType)
     }
     
