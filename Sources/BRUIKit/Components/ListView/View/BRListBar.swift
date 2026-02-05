@@ -11,11 +11,11 @@ import UIKit
 /// BRListBar 使用 UIScrollView 與 UIStackView 封裝成水平滾動的 ListBar
 open class BRListBar: UIView {
 
-    let layout = BRLayout()
+    public let layout = BRLayout()
     
-    let scrollView = UIScrollView()
+    public let scrollView = UIScrollView()
         
-    let stackView = UIStackView()
+    public let stackView = UIStackView()
         .br.axis(.horizontal)
         .br.alignment(.fill)
         .br.distribution(.fill)
