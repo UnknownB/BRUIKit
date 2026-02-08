@@ -39,10 +39,10 @@ public class BRCollectionView: UIView {
         self.addSubview(collectionView)
         
         layout.activate {
-            collectionView.br.top == safeAreaLayoutGuide.br.top
-            collectionView.br.left == safeAreaLayoutGuide.br.left
-            collectionView.br.right == safeAreaLayoutGuide.br.right
-            collectionView.br.bottom == safeAreaLayoutGuide.br.bottom
+            collectionView.br.top == self.br.top
+            collectionView.br.left == self.br.left
+            collectionView.br.right == self.br.right
+            collectionView.br.bottom == self.br.bottom
         }
     }
     
