@@ -9,15 +9,17 @@ import UIKit
 
 
 public class BRTableView: UIView {
-    
-    
     private let layout = BRLayout()
 
-    
     public let tableView: UITableView
-
-
     public let adapter: BRTableAdapter
+    
+    
+    public override var backgroundColor: UIColor? {
+        didSet {
+            tableView.backgroundColor = backgroundColor
+        }
+    }
     
     
     // MARK: - LifeCycle
