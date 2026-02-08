@@ -9,15 +9,17 @@ import UIKit
 
 
 public class BRCollectionView: UIView {
-    
-    
     private let layout = BRLayout()
 
-    
     public let collectionView: UICollectionView
-    
-    
     public let adapter: BRCollectionAdapter
+
+    
+    public override var backgroundColor: UIColor? {
+        didSet {
+            collectionView.backgroundColor = backgroundColor
+        }
+    }
     
     
     // MARK: - LifeCycle
