@@ -39,10 +39,10 @@ public class BRTableView: UIView {
         self.addSubview(tableView)
         
         layout.activate {
-            tableView.br.top == safeAreaLayoutGuide.br.top
-            tableView.br.left == safeAreaLayoutGuide.br.left
-            tableView.br.right == safeAreaLayoutGuide.br.right
-            tableView.br.bottom == safeAreaLayoutGuide.br.bottom
+            tableView.br.top == self.br.top
+            tableView.br.left == self.br.left
+            tableView.br.right == self.br.right
+            tableView.br.bottom == self.br.bottom
         }
     }
     
