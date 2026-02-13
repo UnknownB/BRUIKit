@@ -30,27 +30,38 @@ public struct BRSupplementary: Hashable, Sendable {
         case view(key: String, type: BRReusableViewProtocol.Type, configure: @Sendable (any BRReusableViewProtocol) -> Void)
     }
     
+    private enum Identity: Hashable {
+        case title(Kind, String)
+        case view(Kind, String, ObjectIdentifier)
+        case none(Kind, UUID)
+    }
+    
     public let id = UUID()
     public let kind: Kind
     public let content: Content?
     
     
-    public func hash(into hasher: inout Hasher) {
+    private var identity: Identity {
         switch content {
         case .title(let text):
-            hasher.combine("title")
-            hasher.combine(text)
+            return .title(kind, text)
+            
         case .view(let key, let type, _):
-            hasher.combine("view")
-            hasher.combine(key)
-            hasher.combine(String(describing: type))
-        default:
-            hasher.combine(id)
+            return .view(kind, key, ObjectIdentifier(type))
+            
+        case nil:
+            return .none(kind, id)
         }
     }
     
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(identity)
+    }
+    
+    
     public static func == (lhs: BRSupplementary, rhs: BRSupplementary) -> Bool {
-        return lhs == rhs
+        return lhs.identity == rhs.identity
     }
     
 

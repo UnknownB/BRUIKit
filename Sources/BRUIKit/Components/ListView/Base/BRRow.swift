@@ -34,7 +34,7 @@ public struct BRRow: Hashable, @unchecked Sendable {
     
     
     public static func == (lhs: BRRow, rhs: BRRow) -> Bool {
-        lhs.hashValue == rhs.hashValue
+        lhs.model == rhs.model
     }
     
     
@@ -73,10 +73,7 @@ public struct BRRow: Hashable, @unchecked Sendable {
         
         self.isEditable = isEditable
         self.isMovable = isMovable
-        
-        self.onSelect = onSelect.map { callback in
-            { callback(model) }
-        }
+        self.onSelect = onSelect.map { closure in { closure(model) } }
     }
     
     

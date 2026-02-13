@@ -21,22 +21,40 @@ import UIKit
 /// - footerType
 ///     - 可指定遵循 BRCellReusableViewProtocol 協議的 UIView 類型，預設為系統原始 UI 樣式
 public struct BRSection: Hashable, Sendable {
+    
+    private enum Identity: Hashable {
+        case supplementary(BRSupplementary?, BRSupplementary?)
+        case none(UUID)
+    }
+    
+    
+    public let id = UUID()
     public var header: BRSupplementary
     public var footer: BRSupplementary
     public var rows: [BRRow]
+    
+    
+    private var identity: Identity {
+        let header = header.content == nil ? nil : header
+        let footer = footer.content == nil ? nil : footer
+        
+        if header == nil && footer == nil {
+            return .none(id)
+        }
+        return .supplementary(header, footer)
+    }
     
     
     // MARK: - Hashable
     
     
     public static func == (lhs: BRSection, rhs: BRSection) -> Bool {
-        lhs.hashValue == rhs.hashValue
+        lhs.identity == rhs.identity
     }
     
     
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(header)
-        hasher.combine(footer)
+        hasher.combine(identity)
     }
     
     
