@@ -8,103 +8,81 @@
 import UIKit
 
 
-public final class BRCollectionCellModel: Hashable {
-    public var image: UIImage?
-    public var text: String?
-    public var detail: String?
+open class BRCollectionCell<Model: BRCollectionCellModel>: UICollectionViewCell, BRCellProtocol {
     
-    public var backgroundColor: UIColor?
-    public var backgroundView: UIView?
-    public var selectedBackgroundView: UIView?
-    
-    public var isSelected: Bool = false
-    public var isHighlighted: Bool = false
+    open var model: Model?
+    public let layout = BRLayout()
     
     
-    public static func == (lhs: BRCollectionCellModel, rhs: BRCollectionCellModel) -> Bool {
-        lhs.text == rhs.text && lhs.detail == rhs.detail
-    }
-
-    
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(text)
-        hasher.combine(detail)
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupUI()
+        setupLayout()
     }
     
     
-    public init(_ text: String? = nil) {
-        self.text = text
+    public required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
-    @discardableResult
-    public func image(_ image: UIImage?) -> Self {
-        self.image = image
-        return self
+    
+    open func setupUI() {
+        
     }
     
-    @discardableResult
-    public func text(_ text: String?) -> Self {
-        self.text = text
-        return self
+    
+    open func setupLayout() {
+        
     }
     
-    @discardableResult
-    public func detail(_ detail: String?) -> Self {
-        self.detail = detail
-        return self
+    
+    open func bind(with model: Model, isFirst: Bool, isLast: Bool) {
+        self.model = model
+        bindStyle(with: model, isFirst: isFirst, isLast: isLast)
+        bindContent(with: model, isFirst: isFirst, isLast: isLast)
     }
     
-    @discardableResult
-    public func backgroundColor(_ color: UIColor?) -> Self {
-        self.backgroundColor = color
-        return self
-    }
     
-    @discardableResult
-    public func backgroundView(_ view: UIView?) -> Self {
-        self.backgroundView = view
-        return self
-    }
-    
-    @discardableResult
-    public func selectedBackgroundView(_ view: UIView?) -> Self {
-        self.selectedBackgroundView = view
-        return self
-    }
-    
-    @discardableResult
-    public func isSelected(_ flag: Bool) -> Self {
-        self.isSelected = flag
-        return self
-    }
-    
-    @discardableResult
-    public func isHighlighted(_ flag: Bool) -> Self {
-        self.isHighlighted = flag
-        return self
-    }
-
-    
-}
-
-
-open class BRCollectionCell: UICollectionViewCell, BRCellProtocol {
-    public typealias Model = BRCollectionCellModel
-    
-    
-    public func bind(with model: BRCollectionCellModel, isFirst: Bool, isLast: Bool) {
-        if #available(iOS 14.0, *) {
-            var config = UIListContentConfiguration.cell()
-            config.image = model.image
-            config.text = model.text
-            config.secondaryText = model.detail
-            self.contentConfiguration = config
-        }
+    open func bindStyle(with model: Model, isFirst: Bool, isLast: Bool) {
         self.isSelected = model.isSelected
-        self.isHighlighted = model.isHighlighted
         self.selectedBackgroundView = model.selectedBackgroundView
         self.backgroundView = model.backgroundView
         self.backgroundColor = model.backgroundColor
     }
+    
+    
+    open func bindContent(with model: Model, isFirst: Bool, isLast: Bool) {
+        if #available(iOS 14.0, *) {
+            bindContentIOS14(with: model, isFirst: isFirst, isLast: isLast)
+        }
+    }
+    
+    
+    @available(iOS 14.0, *)
+    private func bindContentIOS14(with model: Model, isFirst: Bool, isLast: Bool) {
+        var config = UIListContentConfiguration.cell()
+        config.image = model.image
+        config.text = model.text
+        config.secondaryText = model.detail
+        
+        if let imageRadius = model.imageRadius {
+            config.imageProperties.cornerRadius = imageRadius
+        }
+        
+        if let textFont = model.textFont {
+            config.textProperties.font = textFont
+        }
+        
+        if let textAlignment = model.textAlignment {
+            config.textProperties.alignment = textAlignment.br.listTextAlignment
+        }
+        
+        if let textColor = model.textColor {
+            config.textProperties.color = textColor
+        }
+        
+        self.contentConfiguration = config
+    }
+    
+    
 }
-
