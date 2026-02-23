@@ -273,6 +273,16 @@ public extension BRWrapper where Base: UIScrollView {
         base.keyboardDismissMode = mode
         return base
     }
+        
+    
+    // MARK: - Refresh
+    
+    
+    @discardableResult
+    func refreshControl(_ control: UIRefreshControl?) -> Base {
+        base.refreshControl = control
+        return base
+    }
     
     
 }
