@@ -8,68 +8,9 @@
 import UIKit
 
 
-public final class BRTableCellModel: Hashable {
-    public var image: UIImage?
-    public var text: String?
-    public var detail: String?
-    public var selectionStyle: UITableViewCell.SelectionStyle = .none
-    public var accessoryType: UITableViewCell.AccessoryType = .none
-    public var accessoryView: UIView? = nil
+open class BRTableCell<Model: BRTableCellModel>: UITableViewCell, BRCellProtocol {
     
-    
-    public static func == (lhs: BRTableCellModel, rhs: BRTableCellModel) -> Bool {
-        lhs.text == rhs.text && lhs.detail == rhs.detail
-    }
-
-    
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(text)
-        hasher.combine(detail)
-    }
-    
-    
-    public init(_ text: String?) {
-        self.text = text
-    }
-    
-    
-    @discardableResult
-    public func image(_ image: UIImage?) -> Self {
-        self.image = image
-        return self
-    }
-    
-    @discardableResult
-    public func text(_ text: String?) -> Self {
-        self.text = text
-        return self
-    }
-    
-    @discardableResult
-    public func detail(_ detail: String?) -> Self {
-        self.detail = detail
-        return self
-    }
-    
-    @discardableResult
-    public func selectionStyle(_ style: UITableViewCell.SelectionStyle) -> Self {
-        self.selectionStyle = style
-        return self
-    }
-    
-    @discardableResult
-    public func accessory(_ type: UITableViewCell.AccessoryType, view: UIView?) -> Self {
-        self.accessoryType = type
-        self.accessoryView = view
-        return self
-    }
-    
-}
-
-
-open class BRTableCell: UITableViewCell, BRCellProtocol {
-    public typealias Model = BRTableCellModel
-    
+    open var model: Model?
     public let layout = BRLayout()
 
     
@@ -96,25 +37,74 @@ open class BRTableCell: UITableViewCell, BRCellProtocol {
     
     
     open func bind(with model: Model, isFirst: Bool, isLast: Bool) {
+        self.model = model
+        bindStyle(with: model, isFirst: isFirst, isLast: isLast)
+        bindContent(with: model, isFirst: isFirst, isLast: isLast)
+    }
+    
+    
+    open func bindStyle(with model: Model, isFirst: Bool, isLast: Bool) {
+        self.isSelected = model.isSelected
+        self.selectedBackgroundView = model.selectedBackgroundView
+        self.backgroundView = model.backgroundView
+        self.backgroundColor = model.backgroundColor
+
+        self.selectionStyle = model.selectionStyle
+        self.accessoryType = model.accessoryType
+        self.accessoryView = model.accessoryView
+        self.separatorInset = model.separatorInset
+    }
+    
+    
+    open func bindContent(with model: Model, isFirst: Bool, isLast: Bool) {
         if #available(iOS 14.0, *) {
-            // cell 高度適當高度、有間距
-            var config = self.defaultContentConfiguration()
-            config.image = model.image
-            config.text = model.text
-            config.secondaryText = model.detail
-            self.contentConfiguration = config
-            self.selectionStyle = model.selectionStyle
-            self.accessoryType = model.accessoryType
-            self.accessoryView = model.accessoryView
+            bindContentIOS14(with: model, isFirst: isFirst, isLast: isLast)
         } else {
-            // cell 高度切齊、無間距
-            self.imageView?.image = model.image
-            self.textLabel?.text = model.text
-            self.detailTextLabel?.text = model.detail
-            self.selectionStyle = model.selectionStyle
-            self.accessoryType = model.accessoryType
-            self.accessoryView = model.accessoryView
+            bindContentIOS2(with: model, isFirst: isFirst, isLast: isLast)
         }
     }
+    
+    
+    @available(iOS 14.0, *)
+    private func bindContentIOS14(with model: Model, isFirst: Bool, isLast: Bool) {
+        var config = self.defaultContentConfiguration()
+        config.image = model.image
+        config.text = model.text
+        config.secondaryText = model.detail
+        
+        if let imageRadius = model.imageRadius {
+            config.imageProperties.cornerRadius = imageRadius
+        }
+
+        if let textFont = model.textFont {
+            config.textProperties.font = textFont
+        }
+        
+        if let textAlignment = model.textAlignment {
+            config.textProperties.alignment = textAlignment.br.listTextAlignment
+        }
+        
+        if let textColor = model.textColor {
+            config.textProperties.color = textColor
+        }
+
+        self.contentConfiguration = config
+    }
+    
+    
+    private func bindContentIOS2(with model: Model, isFirst: Bool, isLast: Bool) {
+        imageView?.image = model.image
+        imageView?.contentMode = model.imageContentMode ?? .scaleToFill
+        imageView?.layer.cornerRadius = model.imageRadius ?? 0
+        
+        textLabel?.font = model.textFont
+        textLabel?.textAlignment = model.textAlignment ?? .natural
+        textLabel?.text = model.text
+        textLabel?.textColor = model.textColor
+        
+        detailTextLabel?.text = model.detail
+    }
+    
+
 }
 
