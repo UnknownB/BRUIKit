@@ -12,5 +12,6 @@ extension NSLayoutConstraint: @retroactive BRWrapperProtocol {}
 extension UIImage: @retroactive BRWrapperProtocol {}
 extension UIColor: @retroactive BRWrapperProtocol {}
 extension UIFont: @retroactive BRWrapperProtocol {}
+extension UITableView: @retroactive BRWrapperProtocol {}
 
 extension NSTextAlignment: @retroactive BRWrapperProtocol {}
