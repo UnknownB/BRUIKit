@@ -59,7 +59,7 @@ final class BRKeyboardLayout {
             let originalFrame = session?.responder.window?.frame ?? .zero
             session?.containerView.frame = originalFrame
             if self.originalScrollViewBottomInset != nil {
-                guard let anchorScrollView = session?.responder.br.findSuperview(of: UIScrollView.self) else { return }
+                guard let anchorScrollView = self.mainScrollView else { return }
                 anchorScrollView.contentInset.bottom = self.originalScrollViewBottomInset!
                 anchorScrollView.scrollIndicatorInsets.bottom = self.originalScrollViewBottomInset!
             }
