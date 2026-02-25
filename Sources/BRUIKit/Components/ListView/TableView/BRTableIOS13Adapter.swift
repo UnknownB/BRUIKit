@@ -96,13 +96,13 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     
     
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        list.sections[section].header.tableReusableView as? UIView
+        list.sections[section].header.tableReusableView
     }
     
     
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if case .title(let title) = list.sections[section].header.content?.storage {
-            return title != nil ? UITableView.automaticDimension : 0.01
+        if list.sections[section].header.content != nil {
+            return UITableView.automaticDimension
         }
         return 0.01
     }
@@ -117,13 +117,13 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     
     
     public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        list.sections[section].footer.tableReusableView as? UIView
+        list.sections[section].footer.tableReusableView
     }
 
 
     public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if case .title(let title) = list.sections[section].footer.content?.storage {
-            return title != nil ? UITableView.automaticDimension : 0.01
+        if list.sections[section].footer.content != nil {
+            return UITableView.automaticDimension
         }
         return 0.01
     }
