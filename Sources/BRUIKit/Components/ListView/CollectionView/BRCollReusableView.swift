@@ -1,5 +1,5 @@
 //
-//  BRReusableView.swift
+//  BRCollReusableView.swift
 //  BRUIKit
 //
 //  Created by BR on 2025/8/21.
@@ -9,19 +9,19 @@ import UIKit
 
 
 @MainActor
-open class BRReusableView: UICollectionReusableView {
+open class BRCollReusableView: UICollectionReusableView {
     
-    private let layout = BRLayout()
-    
-    
-    public var title: String? {
-        didSet {
-            titleLabel.text = title
-        }
-    }
+    public let layout = BRLayout()
+    public lazy var tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(onTapped))
     
     
-    private let titleLabel = UILabel()
+    open var onTap: (() -> Void)?
+
+    
+    // MARK: - UI 元件
+    
+    
+    public let titleLabel = UILabel()
         .br.font(.semibold, 15)
         .br.color(.gray)
     
@@ -31,25 +31,24 @@ open class BRReusableView: UICollectionReusableView {
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
+        self.addGestureRecognizer(tapGestureRecognizer)
+        setupUI()
         setupLayout()
     }
     
     public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupLayout()
-    }
-    
-    
-    public required init() {
-        super.init(frame: .zero)
-        setupLayout()
+        fatalError("init(coder:) has not been implemented")
     }
     
     
     // MARK: - UI
+    
+    
+    open func setupUI() {
+    }
 
     
-    private func setupLayout() {
+    open func setupLayout() {
         addSubview(titleLabel)
         
         layout.activate {
@@ -59,4 +58,14 @@ open class BRReusableView: UICollectionReusableView {
             titleLabel.br.bottom == self.br.bottom
         }
     }
+    
+    
+    // MARK: - Event
+    
+    
+    @objc func onTapped() {
+        onTap?()
+    }
+    
+    
 }

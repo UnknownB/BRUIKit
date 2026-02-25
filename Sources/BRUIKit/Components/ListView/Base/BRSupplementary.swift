@@ -137,7 +137,7 @@ public struct BRSupplementary: Hashable, Sendable {
         if case .view(_, let type, _) = content?.storage {
             return type
         }
-        return BRReusableView.self
+        return BRCollReusableView.self
     }
     
     

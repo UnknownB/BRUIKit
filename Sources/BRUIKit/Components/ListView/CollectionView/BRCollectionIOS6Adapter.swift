@@ -155,8 +155,8 @@ public final class BRCollectionIOS6Adapter: NSObject, UICollectionViewDataSource
         let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: id, for: indexPath)
         if case .view(_, _, let configure) = supplementary.content?.storage, let view = view as? UIView {
             configure(view)
-        } else if case .title(let text) = supplementary.content?.storage, let view = view as? BRReusableView {
-            view.title = text
+        } else if case .title(let text) = supplementary.content?.storage, let view = view as? BRCollReusableView {
+            view.titleLabel.text = text
         }
         return view
     }
