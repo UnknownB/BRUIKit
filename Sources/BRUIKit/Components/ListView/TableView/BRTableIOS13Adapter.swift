@@ -77,6 +77,17 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     
     private func registerAll(in list: BRList) {
         for section in list.sections {
+            
+            if let headerType = section.header.tableReusableType {
+                let headerID = section.header.tableReusableID
+                tableView.register(headerType, forHeaderFooterViewReuseIdentifier: headerID)
+            }
+            
+            if let footerType = section.footer.tableReusableType {
+                let footerID = section.footer.tableReusableID
+                tableView.register(footerType, forHeaderFooterViewReuseIdentifier: footerID)
+            }
+            
             for row in section.rows {
                 tableView.register(row.viewType, forCellReuseIdentifier: row.reuseIdentifier)
             }
@@ -96,7 +107,7 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     
     
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        list.sections[section].header.tableReusableView
+        list.sections[section].header.tableReusableView(with: tableView)
     }
     
     
@@ -117,7 +128,7 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     
     
     public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        list.sections[section].footer.tableReusableView
+        list.sections[section].footer.tableReusableView(with: tableView)
     }
 
 

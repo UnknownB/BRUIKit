@@ -100,18 +100,33 @@ public struct BRSupplementary: Hashable, Sendable {
     // MARK: - TableView
     
     
-    @MainActor
-    public var tableReusableView: UIView? {
-        guard let content else { return nil }
-        
-        switch content.storage {
-        case .title(_):
-            return nil
-        case .view(_, let type, let configure):
-            let view = type.init()
-            configure(view)
-            return view
+    public var tableReusableType: UIView.Type? {
+        if case .view(_, let type, _) = content?.storage, type is UITableViewHeaderFooterView.Type {
+            return type
         }
+        return nil
+    }
+    
+    
+    public var tableReusableID: String {
+        String(describing: tableReusableType)
+    }
+    
+    
+    @MainActor public func tableReusableView(with tableView: UITableView) -> UIView? {
+        if case .view(key: _, type: let type, configure: let configure) = content?.storage {
+            if type is UITableViewHeaderFooterView.Type {
+                if let view = tableView.dequeueReusableHeaderFooterView(withIdentifier: tableReusableID) {
+                    configure(view)
+                    return view
+                }
+            } else {
+                let view = type.init()
+                configure(view)
+                return view
+            }
+        }
+        return nil
     }
     
     
