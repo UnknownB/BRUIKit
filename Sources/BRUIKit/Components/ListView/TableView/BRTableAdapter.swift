@@ -36,6 +36,12 @@ open class BRTableAdapter: NSObject, BRListAdapterProtocol, BRTableAdapterProtoc
     }
     
     
+    public var insertAnimate: UITableView.RowAnimation {
+        get { adapter.insertAnimate }
+        set { adapter.insertAnimate = newValue }
+    }
+    
+    
     public var sectionIndexTitles: [String]? {
         get { adapter.sectionIndexTitles }
         set { adapter.sectionIndexTitles = newValue }

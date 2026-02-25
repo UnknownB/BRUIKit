@@ -24,6 +24,13 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     public var canMoveRows: Bool = true
     
     
+    /// 插入動畫
+    public var insertAnimate: UITableView.RowAnimation {
+        get { defaultRowAnimation }
+        set { defaultRowAnimation = newValue }
+    }
+    
+    
     /// tableView 右邊的索引列
     public var sectionIndexTitles: [String]?
     
