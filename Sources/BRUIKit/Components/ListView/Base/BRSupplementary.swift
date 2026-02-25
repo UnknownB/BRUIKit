@@ -25,9 +25,28 @@ public struct BRSupplementary: Hashable, Sendable {
         case footer
     }
     
-    public enum Content: Sendable {
-        case title(String)
-        case view(key: String, type: BRReusableViewProtocol.Type, configure: @Sendable (any BRReusableViewProtocol) -> Void)
+    public struct Content: Sendable {
+        
+        enum Storage: Sendable {
+            case title(String)
+            case view(key: String, type: UIView.Type, configure: @MainActor (UIView) -> Void)
+        }
+        let storage: Storage
+        
+        private init(storage: Storage) {
+            self.storage = storage
+        }
+        
+        public static func title(_ text: String) -> Self {
+            .init(storage: .title(text))
+        }
+        
+        public static func view<View: UIView>(key: String, type: View.Type, configure: @MainActor @escaping (View) -> Void) -> Self {
+            .init(storage: .view(key: key, type: type) { reusableView in
+                guard let view = reusableView as? View else { return }
+                configure(view)
+            })
+        }
     }
     
     private enum Identity: Hashable {
@@ -42,7 +61,7 @@ public struct BRSupplementary: Hashable, Sendable {
     
     
     private var identity: Identity {
-        switch content {
+        switch content?.storage {
         case .title(let text):
             return .title(kind, text)
             
@@ -82,10 +101,10 @@ public struct BRSupplementary: Hashable, Sendable {
     
     
     @MainActor
-    public var tableReusableView: (any BRReusableViewProtocol)? {
+    public var tableReusableView: UIView? {
         guard let content else { return nil }
         
-        switch content {
+        switch content.storage {
         case .title(_):
             return nil
         case .view(_, let type, let configure):
@@ -99,8 +118,8 @@ public struct BRSupplementary: Hashable, Sendable {
     // MARK: - CollectionView
     
     
-    public var collViewType: BRReusableViewProtocol.Type {
-        if case .view(_, let type, _) = content {
+    public var collViewType: UIView.Type {
+        if case .view(_, let type, _) = content?.storage {
             return type
         }
         return BRReusableView.self

@@ -9,7 +9,7 @@ import UIKit
 
 
 @MainActor
-open class BRReusableView: UICollectionReusableView, BRReusableViewProtocol {
+open class BRReusableView: UICollectionReusableView {
     
     private let layout = BRLayout()
     
