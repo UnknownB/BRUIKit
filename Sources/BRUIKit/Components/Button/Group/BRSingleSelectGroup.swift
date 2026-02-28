@@ -20,11 +20,29 @@ public class BRSingleSelectGroup<Button: UIButton> {
     public private(set) var selectedButton: Button?
     
     
+    /// 上一個被選中的按鈕
+    public private(set) var lastSelectedButton: Button?
+    
+    
+    /// 目前被選中的按鈕索引值
+    public var selectedIndex: Int? {
+        guard let selectedButton else { return nil }
+        return buttons.firstIndex(of: selectedButton)
+    }
+    
+    
+    /// 上一個被選中的按鈕索引值
+    public var lastSelectedIndex: Int? {
+        guard let lastSelectedButton else { return nil }
+        return buttons.firstIndex(of: lastSelectedButton)
+    }
+    
+    
     /// 是否允許取消選取（再次點擊已選中按鈕時）
     public var allowsDeselection: Bool = false
     
     
-    /// 當選中的按鈕改變時會呼叫
+    /// 已更動被選中的按鈕
     public var didChangeSelection: ((Button?) -> Void)?
     
     
@@ -54,6 +72,7 @@ public class BRSingleSelectGroup<Button: UIButton> {
     @MainActor
     @objc func buttonTapped(_ sender: UIButton) {
         guard let tapped = sender as? Button else { return }
+        lastSelectedButton = selectedButton
         
         if tapped == selectedButton {
             if allowsDeselection {

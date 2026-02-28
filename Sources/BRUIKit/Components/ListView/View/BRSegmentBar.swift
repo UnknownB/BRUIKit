@@ -16,16 +16,37 @@ open class BRSegmentBar<Button: UIButton>: UIView {
     private let selectionGroup = BRSingleSelectGroup<Button>()
 
 
+    /// 按鈕清單
     public var buttons: [Button] {
         selectionGroup.buttons
     }
     
     
+    /// 目前被選中的按鈕
     public var selectedButton: Button? {
         selectionGroup.selectedButton
     }
     
     
+    /// 上一個被選中的按鈕
+    public var lastSelectedButton: Button? {
+        selectionGroup.lastSelectedButton
+    }
+    
+    
+    /// 目前被選中的按鈕索引值
+    public var selectedIndex: Int? {
+        selectionGroup.selectedIndex
+    }
+    
+    
+    /// 上一個被選中的按鈕索引值
+    public var lastSelectedIndex: Int? {
+        selectionGroup.lastSelectedIndex
+    }
+    
+    
+    /// 已更動被選中的按鈕
     public var didChangeSelection: ((Button?) -> Void)? {
         get {
             selectionGroup.didChangeSelection
@@ -39,7 +60,7 @@ open class BRSegmentBar<Button: UIButton>: UIView {
     // MARK: - UI 元件
     
     
-    private let scrollView = UIScrollView()
+    public let scrollView = UIScrollView()
         .br.showsHorizontalIndicator(false)
     
     
