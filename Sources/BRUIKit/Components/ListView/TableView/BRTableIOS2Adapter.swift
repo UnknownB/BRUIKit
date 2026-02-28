@@ -31,6 +31,14 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
     public var deleteAnimate: UITableView.RowAnimation = .automatic
     
     
+    /// 指定 section header 高度
+    public var headerHeight: ((Int) -> CGFloat)?
+    
+    
+    /// 指定 section footer 高度
+    public var footerHeight: ((Int) -> CGFloat)?
+    
+    
     /// tableView 右邊的索引列
     public var sectionIndexTitles: [String]?
     
@@ -166,11 +174,11 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
     
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         if list.sections[section].header.content != nil {
-            return UITableView.automaticDimension
+            return headerHeight?(section) ?? UITableView.automaticDimension
         }
-        return 0.01
+        return headerHeight?(section) ?? 0.01
     }
-    
+
     
     public func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         if case .title(let title) = list.sections[section].footer.content?.storage {
@@ -187,9 +195,9 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
     
     public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         if list.sections[section].footer.content != nil {
-            return UITableView.automaticDimension
+            return footerHeight?(section) ?? UITableView.automaticDimension
         }
-        return 0.01
+        return footerHeight?(section) ?? 0.01
     }
     
     

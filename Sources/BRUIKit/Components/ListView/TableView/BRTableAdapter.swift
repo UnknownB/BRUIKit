@@ -42,6 +42,18 @@ open class BRTableAdapter: NSObject, BRListAdapterProtocol, BRTableAdapterProtoc
     }
     
     
+    public var headerHeight: ((Int) -> CGFloat)? {
+        get { adapter.headerHeight }
+        set { adapter.headerHeight = newValue }
+    }
+
+    
+    public var footerHeight: ((Int) -> CGFloat)? {
+        get { adapter.footerHeight }
+        set { adapter.footerHeight = newValue }
+    }
+
+    
     public var sectionIndexTitles: [String]? {
         get { adapter.sectionIndexTitles }
         set { adapter.sectionIndexTitles = newValue }

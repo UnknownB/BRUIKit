@@ -15,6 +15,8 @@ public protocol BRTableAdapterProtocol {
     var canEditRows: Bool { get set }
     var canMoveRows: Bool { get set }
     var insertAnimate: UITableView.RowAnimation { get set }
+    var headerHeight: ((Int) -> CGFloat)? { get set }
+    var footerHeight: ((Int) -> CGFloat)? { get set }
     var sectionIndexTitles: [String]? { get set }
     var didSelectRow: ((IndexPath, BRRow) -> Void)? { get set }
     var didDeleteRow: ((IndexPath, BRRow) -> Void)? { get set }
