@@ -56,7 +56,7 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
     
     
     /// 更新清單
-    public func update(list newList: BRList, animated: Bool = true) {
+    public func update(list newList: BRList, animated: Bool = true, completion: (() -> Void)? = nil) {
         registerAll(in: newList)
         
         if !animated || list.sections.isEmpty {
@@ -113,7 +113,9 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
                     tableView.deleteRows(at: [IndexPath(row: oldIndex, section: sectionIndex)], with: deleteAnimate)
                 }
             }
-        }, completion: nil)
+        }) { _ in
+            completion?()
+        }
     }
     
     

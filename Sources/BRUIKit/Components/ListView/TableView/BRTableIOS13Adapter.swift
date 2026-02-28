@@ -56,7 +56,7 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     
     
     /// 更新清單
-    public func update(list: BRList, animated: Bool = true) {
+    public func update(list: BRList, animated: Bool = true, completion: (() -> Void)? = nil) {
         registerAll(in: list)
         self.list = list
         
@@ -65,7 +65,7 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
             snapshot.appendSections([section])
             snapshot.appendItems(section.rows, toSection: section)
         }
-        apply(snapshot, animatingDifferences: animated)
+        apply(snapshot, animatingDifferences: animated, completion: completion)
     }
 
     

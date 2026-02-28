@@ -8,7 +8,7 @@
 import UIKit
 
 
-open class BRCollectionAdapter: NSObject, BRListAdapterProtocol, BRCollectionAdapterProtocol {
+open class BRCollectionAdapter: NSObject, BRCollectionAdapterProtocol {
     
     
     private var adapter: BRCollectionAdapterProtocol

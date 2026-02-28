@@ -8,7 +8,7 @@
 import UIKit
 
 
-open class BRTableAdapter: NSObject, BRListAdapterProtocol, BRTableAdapterProtocol {
+open class BRTableAdapter: NSObject, BRTableAdapterProtocol {
     
     
     private var adapter: BRTableAdapterProtocol
@@ -94,8 +94,8 @@ open class BRTableAdapter: NSObject, BRListAdapterProtocol, BRTableAdapterProtoc
     // MARK: - Protocol Methods
     
     
-    public func update(list: BRList, animated: Bool = true) {
-        adapter.update(list: list, animated: animated)
+    public func update(list: BRList, animated: Bool = true, completion: (() -> Void)? = nil) {
+        adapter.update(list: list, animated: animated, completion: completion)
     }
     
     
