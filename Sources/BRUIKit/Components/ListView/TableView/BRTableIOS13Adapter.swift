@@ -10,12 +10,19 @@ import UIKit
 
 @available(iOS 13.0, *)
 open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>, UITableViewDelegate, BRTableAdapterProtocol {
-    
+    public typealias Snapshot = NSDiffableDataSourceSnapshot<BRSection, BRRow>
     
     public let tableView: UITableView
     
     
-    private(set) public var list = BRList {}
+    private var currentSnapshot: Snapshot?
+    
+    
+    public var list: BRList {
+        BRList {
+            self.snapshot().sectionIdentifiers
+        }
+    }
     
     
     public var canEditRows: Bool = false
@@ -58,13 +65,13 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     /// 更新清單
     public func update(list: BRList, animated: Bool = true, completion: (() -> Void)? = nil) {
         registerAll(in: list)
-        self.list = list
         
         var snapshot = NSDiffableDataSourceSnapshot<BRSection, BRRow>()
         for section in list.sections {
             snapshot.appendSections([section])
             snapshot.appendItems(section.rows, toSection: section)
         }
+        self.currentSnapshot = snapshot
         apply(snapshot, animatingDifferences: animated, completion: completion)
     }
 
@@ -84,6 +91,11 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
         }
         tableView.dataSource = self
         tableView.delegate = self
+    }
+    
+    
+    open override func snapshot() -> NSDiffableDataSourceSnapshot<BRSection, BRRow> {
+        currentSnapshot ?? super.snapshot()
     }
     
     
@@ -114,7 +126,7 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     
     
     public override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if case .title(let title) = list.sections[section].header.content?.storage {
+        if case .title(let title) = self.snapshot().sectionIdentifiers[section].header.content?.storage {
             return title
         }
         return nil
@@ -122,12 +134,12 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     
     
     public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        list.sections[section].header.tableReusableView(with: tableView)
+        self.snapshot().sectionIdentifiers[section].header.tableReusableView(with: tableView)
     }
     
     
     public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if list.sections[section].header.content != nil {
+        if self.snapshot().sectionIdentifiers[section].header.content != nil {
             return headerHeight?(section) ?? UITableView.automaticDimension
         }
         return headerHeight?(section) ?? 0.01
@@ -135,7 +147,7 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     
     
     public override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        if case .title(let title) = list.sections[section].footer.content?.storage {
+        if case .title(let title) = self.snapshot().sectionIdentifiers[section].footer.content?.storage {
             return title
         }
         return nil
@@ -143,12 +155,12 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     
     
     public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        list.sections[section].footer.tableReusableView(with: tableView)
+        self.snapshot().sectionIdentifiers[section].footer.tableReusableView(with: tableView)
     }
 
 
     public func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        if list.sections[section].footer.content != nil {
+        if self.snapshot().sectionIdentifiers[section].footer.content != nil {
             return footerHeight?(section) ?? UITableView.automaticDimension
         }
         return footerHeight?(section) ?? 0.01
@@ -175,7 +187,7 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let row = list.sections[indexPath.section].rows[indexPath.row]
+        let row = self.snapshot().sectionIdentifiers[indexPath.section].rows[indexPath.row]
         row.onSelect?()
         didSelectRow?(indexPath, row)
     }
@@ -186,7 +198,7 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     
     
     public override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        let row = list.sections[indexPath.section].rows[indexPath.row]
+        let row = self.snapshot().sectionIdentifiers[indexPath.section].rows[indexPath.row]
         return row.isEditable && canEditRows
     }
     
@@ -195,8 +207,7 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
         guard editingStyle == .delete else {
             return
         }
-        let row = list.sections[indexPath.section].rows[indexPath.row]
-        list.sections[indexPath.section].rows.remove(at: indexPath.row)
+        let row = self.snapshot().sectionIdentifiers[indexPath.section].rows[indexPath.row]
         
         var snapshot = self.snapshot()
         snapshot.deleteItems([row])
@@ -207,19 +218,17 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     
     
     public override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        let row = list.sections[indexPath.section].rows[indexPath.row]
+        let row = self.snapshot().sectionIdentifiers[indexPath.section].rows[indexPath.row]
         return row.isMovable && canMoveRows
     }
     
     
     public override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        let movedRow = list.sections[sourceIndexPath.section].rows.remove(at: sourceIndexPath.row)
-        list.sections[destinationIndexPath.section].rows.insert(movedRow, at: destinationIndexPath.row)
-        
         var snapshot = self.snapshot()
+        let movedRow = snapshot.sectionIdentifiers[sourceIndexPath.section].rows[sourceIndexPath.row]
         snapshot.deleteItems([movedRow])
         
-        let destSection = list.sections[destinationIndexPath.section]
+        let destSection = snapshot.sectionIdentifiers[destinationIndexPath.section]
         let destRows = snapshot.itemIdentifiers(inSection: destSection)
         
         if destinationIndexPath.row >= destRows.count {
