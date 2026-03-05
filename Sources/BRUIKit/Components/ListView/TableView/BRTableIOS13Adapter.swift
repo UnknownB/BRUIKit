@@ -9,72 +9,87 @@ import UIKit
 
 
 @available(iOS 13.0, *)
-open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>, UITableViewDelegate, BRTableAdapterProtocol {
+open class BRTableIOS13Adapter: NSObject, BRTableAdapterProtocol {
+    
+    
+    private let dataSource: BRTableViewDiffableDataSource
     
     
     public let tableView: UITableView
     
     
-    private(set) public var list = BRList {}
+    public var list: BRList {
+        dataSource.list
+    }
     
     
-    public var canEditRows: Bool = false
+    public var canEditRows: Bool {
+        get { dataSource.canEditRows }
+        set { dataSource.canEditRows = newValue }
+    }
     
     
-    public var canMoveRows: Bool = true
+    public var canMoveRows: Bool {
+        get { dataSource.canMoveRows }
+        set { dataSource.canMoveRows = newValue }
+    }
     
     
     /// 插入動畫
     public var insertAnimate: UITableView.RowAnimation {
-        get { defaultRowAnimation }
-        set { defaultRowAnimation = newValue }
+        get { dataSource.defaultRowAnimation }
+        set { dataSource.defaultRowAnimation = newValue }
     }
     
     
     /// 指定 section header 高度
-    public var headerHeight: ((Int) -> CGFloat)?
+    public var headerHeight: ((Int) -> CGFloat)? {
+        get { dataSource.headerHeight }
+        set { dataSource.headerHeight = newValue }
+    }
     
     
     /// 指定 section footer 高度
-    public var footerHeight: ((Int) -> CGFloat)?
+    public var footerHeight: ((Int) -> CGFloat)? {
+        get { dataSource.footerHeight }
+        set { dataSource.footerHeight = newValue }
+    }
     
     
     /// tableView 右邊的索引列
-    public var sectionIndexTitles: [String]?
+    public var sectionIndexTitles: [String]? {
+        get { dataSource.sectionIndexTitles }
+        set { dataSource.sectionIndexTitles = newValue }
+    }
     
     
     /// 選中 cell 的回調
-    public var didSelectRow: ((IndexPath, BRRow) -> Void)?
+    public var didSelectRow: ((IndexPath, BRRow) -> Void)? {
+        get { dataSource.didSelectRow }
+        set { dataSource.didSelectRow = newValue }
+    }
     
     
     /// 完成刪除後的回調
-    public var didDeleteRow: ((IndexPath, BRRow) -> Void)?
+    public var didDeleteRow: ((IndexPath, BRRow) -> Void)? {
+        get { dataSource.didDeleteRow }
+        set { dataSource.didDeleteRow = newValue }
+    }
     
     
     /// 完成移動後的回調
-    public var didMoveRow: ((IndexPath, IndexPath, BRRow) -> Void)?
-    
-    
-    /// 更新清單
-    public func update(list: BRList, animated: Bool = true, completion: (() -> Void)? = nil) {
-        registerAll(in: list)
-        self.list = list
-        
-        var snapshot = NSDiffableDataSourceSnapshot<BRSection, BRRow>()
-        for section in list.sections {
-            snapshot.appendSections([section])
-            snapshot.appendItems(section.rows, toSection: section)
-        }
-        apply(snapshot, animatingDifferences: animated, completion: completion)
+    public var didMoveRow: ((IndexPath, IndexPath, BRRow) -> Void)? {
+        get { dataSource.didMoveRow }
+        set { dataSource.didMoveRow = newValue }
     }
-
+    
     
     // MARK: - LifeCycle
     
     
     public init(tableView: UITableView) {
         self.tableView = tableView
-        super.init(tableView: tableView) { tableView, indexPath, row in
+        self.dataSource = .init(tableView: tableView) { tableView, indexPath, row in
             let cell = tableView.dequeueReusableCell(withIdentifier: row.reuseIdentifier, for: indexPath)
             let isFirst = indexPath.row == 0
             let isLast = indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
@@ -82,8 +97,8 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
             row.bindCell(cell, isFirst, isLast)
             return cell
         }
-        tableView.dataSource = self
-        tableView.delegate = self
+        tableView.dataSource = self.dataSource
+        tableView.delegate = self.dataSource
     }
     
     
@@ -109,6 +124,70 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
         }
     }
     
+    
+    // MARK: - Update
+    
+    
+    /// 更新清單
+    public func update(list: BRList, animated: Bool = true, completion: (() -> Void)? = nil) {
+        registerAll(in: list)
+        dataSource.list = list
+        
+        var snapshot = NSDiffableDataSourceSnapshot<BRSection, BRRow>()
+        for section in list.sections {
+            snapshot.appendSections([section])
+            snapshot.appendItems(section.rows, toSection: section)
+        }
+        dataSource.apply(snapshot, animatingDifferences: animated, completion: completion)
+    }
+    
+    
+    // MARK: - Event
+    
+    
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        dataSource.tableView(tableView, didSelectRowAt: indexPath)
+    }
+
+    
+}
+
+
+private class BRTableViewDiffableDataSource: UITableViewDiffableDataSource<BRSection, BRRow>, UITableViewDelegate {
+    
+    
+    public var list = BRList {}
+    
+    
+    public var canEditRows: Bool = false
+    
+    
+    public var canMoveRows: Bool = true
+    
+    
+    /// 指定 section header 高度
+    public var headerHeight: ((Int) -> CGFloat)?
+    
+    
+    /// 指定 section footer 高度
+    public var footerHeight: ((Int) -> CGFloat)?
+    
+    
+    /// tableView 右邊的索引列
+    public var sectionIndexTitles: [String]?
+    
+    
+    /// 選中 cell 的回調
+    public var didSelectRow: ((IndexPath, BRRow) -> Void)?
+    
+    
+    /// 完成刪除後的回調
+    public var didDeleteRow: ((IndexPath, BRRow) -> Void)?
+    
+    
+    /// 完成移動後的回調
+    public var didMoveRow: ((IndexPath, IndexPath, BRRow) -> Void)?
+
     
     // MARK: - Sections
     
@@ -181,7 +260,6 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
     }
 
     
-    
     // MARK: - Edit
     
     
@@ -231,6 +309,4 @@ open class BRTableIOS13Adapter: UITableViewDiffableDataSource<BRSection, BRRow>,
                 
         didMoveRow?(sourceIndexPath, destinationIndexPath, movedRow)
     }
-
-    
 }
