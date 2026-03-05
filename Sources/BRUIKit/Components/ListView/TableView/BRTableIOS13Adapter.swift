@@ -5,6 +5,7 @@
 //  Created by BR on 2025/8/25.
 //
 
+import BRFoundation
 import UIKit
 
 
@@ -13,6 +14,9 @@ open class BRTableIOS13Adapter: NSObject, BRTableAdapterProtocol {
     
     
     private let dataSource: BRTableViewDiffableDataSource
+    
+    
+    private var snapshot: NSDiffableDataSourceSnapshot<BRSection, BRRow> = .init()
     
     
     public let tableView: UITableView
@@ -129,7 +133,7 @@ open class BRTableIOS13Adapter: NSObject, BRTableAdapterProtocol {
     
     
     /// 更新清單
-    public func update(list: BRList, animated: Bool = true, completion: (() -> Void)? = nil) {
+    open func update(list: BRList, animated: Bool = true, completion: (() -> Void)? = nil) {
         registerAll(in: list)
         dataSource.list = list
         
@@ -138,7 +142,109 @@ open class BRTableIOS13Adapter: NSObject, BRTableAdapterProtocol {
             snapshot.appendSections([section])
             snapshot.appendItems(section.rows, toSection: section)
         }
+        self.snapshot = snapshot
         dataSource.apply(snapshot, animatingDifferences: animated, completion: completion)
+    }
+    
+    
+    /// 添加 Sections
+    open func appendSections(_ sections: [BRSection]) {
+        snapshot.appendSections(sections)
+        dataSource.list.sections.append(contentsOf: sections)
+    }
+    
+    
+    /// 添加 Items 到指定的 Section
+    open func appendItems(_ rows: [BRRow], toSection section: BRSection) {
+        guard let index = dataSource.list.sections.firstIndex(of: section) else {
+            #BRLog(.library, .error, "insertItems but section not exist")
+            return
+        }
+        if let row = rows.first {
+            tableView.register(row.viewType, forCellReuseIdentifier: row.reuseIdentifier)
+        }
+        snapshot.appendItems(rows, toSection: section)
+        dataSource.list.sections[index].rows.append(contentsOf: rows)
+    }
+    
+    
+    /// 添加 Items 到指定的 Section 索引值
+    open func appendItems(_ rows: [BRRow], toSection sectionIndex: Int = 0) {
+        if let row = rows.first {
+            tableView.register(row.viewType, forCellReuseIdentifier: row.reuseIdentifier)
+        }
+        snapshot.appendItems(rows, toSection: dataSource.list.sections[sectionIndex])
+        dataSource.list.sections[sectionIndex].rows.append(contentsOf: rows)
+    }
+    
+    
+    /// 插入 Sections 到指定的 Section 之前
+    open func insertSections(_ sections: [BRSection], beforeSection: BRSection) {
+        snapshot.insertSections(sections, beforeSection: beforeSection)
+        dataSource.list.sections.insert(contentsOf: sections, at: dataSource.list.sections.firstIndex(of: beforeSection)!)
+    }
+    
+    
+    /// 插入 Sections 到指定的 Section 之後
+    open func insertSections(_ sections: [BRSection], afterSection: BRSection) {
+        snapshot.insertSections(sections, afterSection: afterSection)
+        dataSource.list.sections.insert(contentsOf: sections, at: dataSource.list.sections.firstIndex(of: afterSection)! + 1)
+    }
+    
+    
+    /// 插入 Items 到指定的 Item 之前
+    open func insertItems(_ rows: [BRRow], beforeItem: BRRow) {
+        snapshot.insertItems(rows, beforeItem: beforeItem)
+        list.sections.indices.forEach {
+            if let index = dataSource.list.sections[$0].rows.firstIndex(of: beforeItem) {
+                dataSource.list.sections[$0].rows.insert(contentsOf: rows, at: index)
+            }
+        }
+    }
+    
+    
+    /// 插入 Items 到指定的 Items 之後
+    open func insertItems(_ rows: [BRRow], afterItem: BRRow) {
+        snapshot.insertItems(rows, afterItem: afterItem)
+        list.sections.indices.forEach {
+            if let index = dataSource.list.sections[$0].rows.firstIndex(of: afterItem) {
+                dataSource.list.sections[$0].rows.insert(contentsOf: rows, at: index + 1)
+            }
+        }
+    }
+    
+    
+    /// 刪除指定的 Sections
+    open func deleteSections(_ sections: [BRSection]) {
+        snapshot.deleteSections(sections)
+        dataSource.list.sections.removeAll(where: { sections.contains($0) })
+    }
+    
+    
+    /// 刪除指定的 Items
+    open func deleteItems(_ rows: [BRRow]) {
+        snapshot.deleteItems(rows)
+        list.sections.indices.forEach {
+            dataSource.list.sections[$0].rows.removeAll(where: { rows.contains($0) })
+        }
+    }
+    
+    
+    /// 套用 snapshot 差異
+    open func applySnapshot(animated: Bool = true, completion: (() -> Void)? = nil) {
+        dataSource.apply(snapshot, animatingDifferences: animated, completion: completion)
+    }
+    
+    
+    /// 刷新指定的 Sections
+    open func reloadSections(_ sections: [BRSection]) {
+        snapshot.reloadSections(sections)
+    }
+    
+    
+    /// 刷新指定的 Items
+    open func reloadItems(_ rows: [BRRow]) {
+        snapshot.reloadItems(rows)
     }
     
     
