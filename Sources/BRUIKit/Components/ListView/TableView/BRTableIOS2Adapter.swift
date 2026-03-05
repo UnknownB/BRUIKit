@@ -65,14 +65,18 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
             return
         }
         
-        let oldList = list
+        var oldList = list
         list = newList
         
         tableView.performBatchUpdates({
             
-            let oldSectionMap = Dictionary(uniqueKeysWithValues: oldList.sections.enumerated().map { ($0.element, $0.offset) })
             let newSectionMap = Dictionary(uniqueKeysWithValues: newList.sections.enumerated().map { ($0.element, $0.offset) })
+            for (oldIndex, section) in oldList.sections.enumerated().reversed() where newSectionMap[section] == nil {
+                tableView.deleteSections(IndexSet(integer: oldIndex), with: deleteAnimate)
+                oldList.sections.remove(at: oldIndex)
+            }
             
+            let oldSectionMap = Dictionary(uniqueKeysWithValues: oldList.sections.enumerated().map { ($0.element, $0.offset) })
             for (newIndex, section) in newList.sections.enumerated() {
                 if let oldIndex = oldSectionMap[section] {
                     if oldIndex != newIndex {
@@ -83,21 +87,22 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
                 }
             }
             
-            for (oldIndex, section) in oldList.sections.enumerated() where newSectionMap[section] == nil {
-                tableView.deleteSections(IndexSet(integer: oldIndex), with: deleteAnimate)
-            }
-            
             for (sectionIndex, newSection) in newList.sections.enumerated() {
-                guard let oldSection = oldList.sections.first(where: { $0 == newSection }) else {
-                    for (rowIndex, _) in newSection.rows.enumerated() {
-                        tableView.insertRows(at: [IndexPath(row: rowIndex, section: sectionIndex)], with: insertAnimate)
-                    }
+                guard var oldSection = oldList.sections.first(where: { $0 == newSection }) else {
+                    let indexPaths: [IndexPath] = newSection.rows.indices.map { IndexPath(row: $0, section: sectionIndex) }
+                    tableView.insertRows(at: indexPaths, with: insertAnimate)
                     continue
                 }
                 
-                let oldRowMap = Dictionary(uniqueKeysWithValues: oldSection.rows.enumerated().map { ($0.element, $0.offset) })
+                var oldRowMap = Dictionary(uniqueKeysWithValues: oldSection.rows.enumerated().map { ($0.element, $0.offset) })
                 let newRowMap = Dictionary(uniqueKeysWithValues: newSection.rows.enumerated().map { ($0.element, $0.offset) })
                 
+                for (oldIndex, row) in oldSection.rows.enumerated().reversed() where newRowMap[row] == nil {
+                    tableView.deleteRows(at: [IndexPath(row: oldIndex, section: sectionIndex)], with: deleteAnimate)
+                    oldSection.rows.remove(at: oldIndex)
+                }
+                
+                oldRowMap = Dictionary(uniqueKeysWithValues: oldSection.rows.enumerated().map { ($0.element, $0.offset) })
                 for (newIndex, row) in newSection.rows.enumerated() {
                     if let oldIndex = oldRowMap[row] {
                         if oldIndex != newIndex {
@@ -107,10 +112,6 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
                     } else {
                         tableView.insertRows(at: [IndexPath(row: newIndex, section: sectionIndex)], with: insertAnimate)
                     }
-                }
-                
-                for (oldIndex, row) in oldSection.rows.enumerated() where newRowMap[row] == nil {
-                    tableView.deleteRows(at: [IndexPath(row: oldIndex, section: sectionIndex)], with: deleteAnimate)
                 }
             }
         }) { _ in
@@ -250,6 +251,8 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
     
     
     public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        guard list.sections.count > indexPath.section else { return false }
+        guard list.sections[indexPath.section].rows.count > indexPath.row else { return false }
         let row = list.sections[indexPath.section].rows[indexPath.row]
         return row.isEditable && canEditRows
     }
