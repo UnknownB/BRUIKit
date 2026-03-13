@@ -97,8 +97,8 @@ public class BRLayout {
     ///
     /// - 特性
     ///     - 會將約束從儲存管理中移除
-    @MainActor public func deactivate(@BRConstraintBuilder _ builder: @MainActor () -> [NSLayoutConstraint]) {
-        let constraintsList = builder()
+    @MainActor public func deactivate(@BRConstraintBuilder _ builder: @MainActor () -> [NSLayoutConstraint?]) {
+        let constraintsList = builder().compactMap { $0 }
         removeConstraints(constraintsList)
         NSLayoutConstraint.deactivate(constraintsList)
     }
