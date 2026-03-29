@@ -104,6 +104,14 @@ public class BRLayout {
     }
     
     
+    /// 清空約束條件
+    @MainActor public func deactivateAll() {
+        let constraintsList = constraints.map { $0.value }
+        NSLayoutConstraint.deactivate(constraintsList)
+        constraints.removeAll()
+    }
+    
+    
     @MainActor private func disableAutoresizingMask(_ constraintsList: [NSLayoutConstraint]) {
         let views = constraintsList.compactMap { $0.firstItem as? UIView }
         views.forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
