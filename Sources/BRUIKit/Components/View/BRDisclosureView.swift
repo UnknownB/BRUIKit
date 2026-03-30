@@ -148,7 +148,6 @@ open class BRDisclosureView: BRView {
     
     /// 中間標題文字。
     public let titleLabel = UILabel()
-        .br.font(.w400, 16)
         .br.userInteractionEnabled(false)
 
     
@@ -212,6 +211,7 @@ open class BRDisclosureView: BRView {
     
     open override func setupUI() {
         super.setupUI()
+        setTitleFont(UIFont.br.font(.w400, size: 16), for: .normal)
         setArrow(.init(systemName: "chevron.down"), for: .normal)
     }
     
@@ -311,6 +311,15 @@ open class BRDisclosureView: BRView {
     }
     
     
+    /// 設定指定狀態下的標題字型。
+    @discardableResult
+    open func setTitleFont(_ font: UIFont?, for state: State) -> Self {
+        stateManager.titleFonts[state] = font
+        stateManager.setNeedsUpdateState(to: self, animated: false)
+        return self
+    }
+    
+    
     /// 設定指定狀態下的標題顏色。
     @discardableResult
     open func setTitleColor(_ color: UIColor?, for state: State) -> Self {
@@ -365,6 +374,7 @@ open class BRDisclosureView: BRView {
 private final class BRState {
     
     var titles: [BRDisclosureView.State: String] = [:]
+    var titleFonts: [BRDisclosureView.State: UIFont] = [:]
     var titleColors: [BRDisclosureView.State: UIColor] = [:]
     var iconImages: [BRDisclosureView.State: UIImage] = [:]
     var iconTintColors: [BRDisclosureView.State: UIColor] = [:]
@@ -417,6 +427,9 @@ private final class BRState {
         let state = view.state
         
         let updates = { [self] in
+            if let titleFont = fetch(titleFonts, for: state) {
+                view.titleLabel.font = titleFont
+            }
             if let title = fetch(titles, for: state) {
                 view.titleLabel.text = title
             }
