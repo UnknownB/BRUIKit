@@ -13,9 +13,11 @@ import UIKit
 public extension BRWrapper where Base: UIViewController {
     
     
-    func show(in viewController: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
-        viewController.present(base, animated: true, completion: completion)
-    }
     
+    /// 從指定的 `UIViewController` present
+    func show(in viewController: UIViewController?, animated: Bool = true, completion: (() -> Void)? = nil) {
+        viewController?.present(base, animated: animated, completion: completion)
+    }
+
     
 }
