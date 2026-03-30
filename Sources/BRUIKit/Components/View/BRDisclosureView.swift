@@ -143,6 +143,7 @@ open class BRDisclosureView: BRView {
     /// 左側圖示視圖。
     public let iconImageView = UIImageView()
         .br.contentMode(.scaleAspectFit)
+        .br.setContentHuggingPriority(.required, for: .horizontal)
         .br.userInteractionEnabled(false)
 
     
@@ -154,6 +155,7 @@ open class BRDisclosureView: BRView {
     /// 右側箭頭圖示，預設為 `chevron.down`，展開時旋轉 180°。
     public let arrowImageView = UIImageView()
         .br.contentMode(.scaleAspectFit)
+        .br.setContentHuggingPriority(.required, for: .horizontal)
         .br.userInteractionEnabled(false)
     
     
@@ -234,8 +236,6 @@ open class BRDisclosureView: BRView {
                 iconImageView.br.top == contentView.br.top
                 iconImageView.br.bottom == contentView.br.bottom
                 iconImageView.br.left == contentView.br.left
-                iconImageView.br.width == 30
-                iconImageView.br.height == 30
 
                 titleLabel.br.top == contentView.br.top
                 titleLabel.br.bottom == contentView.br.bottom
@@ -245,7 +245,6 @@ open class BRDisclosureView: BRView {
                 arrowImageView.br.bottom == contentView.br.bottom
                 arrowImageView.br.right == contentView.br.right
                 arrowImageView.br.left == titleLabel.br.right + 5
-                arrowImageView.br.width == 30
             }
         }
     }
