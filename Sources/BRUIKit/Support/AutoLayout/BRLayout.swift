@@ -62,7 +62,8 @@ import BRFoundation
 /// ```
 public class BRLayout {
     
-    public private(set) var constraints: [String: NSLayoutConstraint] = [:]
+    public private(set) var constraints: [NSLayoutConstraint] = []
+    public private(set) var identifiedConstraints: [String: NSLayoutConstraint] = [:]
     
     
     public init() {
@@ -87,7 +88,7 @@ public class BRLayout {
     ///
     @MainActor public func activate(@BRConstraintBuilder _ builder: @MainActor () -> [NSLayoutConstraint]) {
         let constraintsList = builder()
-        saveConstraintListIfNeeded(constraintsList)
+        saveConstraintList(constraintsList)
         disableAutoresizingMask(constraintsList)
         NSLayoutConstraint.activate(constraintsList)
     }
@@ -104,10 +105,24 @@ public class BRLayout {
     }
     
     
+    /// 關閉約束條件
+    ///
+    /// - 特性
+    ///     - 會將約束從儲存管理中移除
+    @MainActor public func deactivate(for ids: [String]) {
+        ids.forEach { id in
+            if let constraint = identifiedConstraints.removeValue(forKey: id) {
+                constraint.isActive = false
+            }
+            constraints.removeAll { $0.identifier == id }
+        }
+    }
+    
+    
     /// 清空約束條件
     @MainActor public func deactivateAll() {
-        let constraintsList = constraints.map { $0.value }
-        NSLayoutConstraint.deactivate(constraintsList)
+        NSLayoutConstraint.deactivate(constraints)
+        identifiedConstraints.removeAll()
         constraints.removeAll()
     }
     
@@ -118,17 +133,26 @@ public class BRLayout {
     }
     
     
-    @MainActor private func saveConstraintListIfNeeded(_ constraintsList: [NSLayoutConstraint]) {
-        let savedConstraintList = constraintsList.filter { $0.identifier != nil }
-        savedConstraintList.forEach {
-            replace($0, for: $0.identifier!)
+    @MainActor private func saveConstraintList(_ constraintsList: [NSLayoutConstraint]) {
+        constraintsList.forEach {
+            if let identifier = $0.identifier {
+                replace($0, for: identifier)
+            } else {
+                constraints.append($0)
+            }
         }
     }
     
     
     @MainActor private func removeConstraints(_ constraintsList: [NSLayoutConstraint]) {
-        let identifiers = constraintsList.compactMap(\.identifier)
-        identifiers.forEach { constraints[$0] = nil }
+        constraintsList.forEach {
+            if let identifier = $0.identifier {
+                identifiedConstraints[identifier] = nil
+            }
+            if let index = constraints.firstIndex(of: $0) {
+                constraints.remove(at: index)
+            }
+        }
     }
     
     
@@ -140,20 +164,22 @@ public class BRLayout {
     /// - 特性
     ///     - 需由使用者手動啟用
     @MainActor public func storeConstraint(_ constraint: NSLayoutConstraint, for id: String) {
-        constraints[id] = constraint
+        replace(constraint, for: id)
         disableAutoresizingMask([constraint])
     }
     
     
     /// 設定新的 content
     @MainActor public func setContent(_ value: CGFloat, for id: String) {
-        constraints[id]?.constant = value
+        identifiedConstraints[id]?.constant = value
     }
     
     
     /// 設定新的 multiplier
     @MainActor public func setMultiplier(_ value: CGFloat, for id: String) {
-        constraints[id] = constraints[id]?.br.multiplier(value)
+        if let newConstraints = identifiedConstraints[id]?.br.multiplier(value) {
+            replace(newConstraints, for: id)
+        }
     }
     
     
@@ -163,11 +189,15 @@ public class BRLayout {
     ///     - 新約束將自動啟動
     ///     - 被替換的約束將關閉、移除管理
     @MainActor public func replace(_ constraint: NSLayoutConstraint, for id: String) {
-        if let existingConstraint = constraints[id] {
+        if let existingConstraint = identifiedConstraints[id] {
             NSLayoutConstraint.deactivate([existingConstraint])
-            constraints[id] = nil
+            identifiedConstraints[id] = nil
+            if let index = constraints.firstIndex(of: existingConstraint) {
+                constraints.remove(at: index)
+            }
         }
-        constraints[id] = constraint
+        constraints.append(constraint)
+        identifiedConstraints[id] = constraint
         NSLayoutConstraint.activate([constraint])
     }
     
@@ -187,8 +217,6 @@ extension BRWrapper where Base: NSLayoutConstraint {
 
     
     @MainActor public func multiplier(_ value: CGFloat) -> NSLayoutConstraint {
-        NSLayoutConstraint.deactivate([base])
-        
         let newLayout = NSLayoutConstraint.init(item: base.firstItem!,
                                                 attribute: base.firstAttribute,
                                                 relatedBy: base.relation,
@@ -199,8 +227,6 @@ extension BRWrapper where Base: NSLayoutConstraint {
         newLayout.priority = base.priority
         newLayout.shouldBeArchived = base.shouldBeArchived
         newLayout.identifier = base.identifier
-        NSLayoutConstraint.activate([newLayout])
-        
         return newLayout
     }
     
