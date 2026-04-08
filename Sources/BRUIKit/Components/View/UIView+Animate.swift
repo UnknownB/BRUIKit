@@ -87,6 +87,38 @@ public extension BRWrapper where Base: UIView {
         }
         return base
     }
+    
+    
+    /// 從上方向下浮現滑入
+    @MainActor
+    @discardableResult
+    func animateShowDownIn(duration: TimeInterval = 0.2, offset: CGFloat = 50, completion: (() -> Void)? = nil) -> Base {
+        base.alpha = 0
+        base.transform = CGAffineTransform(translationX: 0, y: -offset)
+
+        UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseOut, .allowUserInteraction]) {
+            base.alpha = 1
+            base.transform = .identity
+        } completion: { _ in
+            completion?()
+        }
+        return base
+    }
+    
+    
+    /// 從下方向上消失滑出
+    @MainActor
+    @discardableResult
+    func animateHideUpOut(duration: TimeInterval = 0.2, offset: CGFloat = 50, completion: (() -> Void)? = nil) -> Base {
+        UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseOut, .allowUserInteraction]) {
+            base.alpha = 0
+            base.transform = CGAffineTransform(translationX: 0, y: -offset)
+        } completion: { _ in
+            base.transform = .identity
+            completion?()
+        }
+        return base
+    }
 
     
 }
