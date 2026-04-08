@@ -62,6 +62,7 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
         if !animated || list.sections.isEmpty {
             list = newList
             tableView.reloadData()
+            completion?()
             return
         }
         
