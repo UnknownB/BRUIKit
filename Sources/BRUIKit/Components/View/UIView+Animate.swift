@@ -36,7 +36,7 @@ public extension BRWrapper where Base: UIView {
         base.alpha = 0
         base.transform = CGAffineTransform(scaleX: 1, y: 0.01)
 
-        UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseOut]) {
+        UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseOut, .allowUserInteraction]) {
             base.isHidden = false
             base.alpha = 1
             base.transform = .identity
@@ -49,7 +49,7 @@ public extension BRWrapper where Base: UIView {
     @MainActor
     @discardableResult
     func animateCollapseVertically(duration: TimeInterval = 0.2) -> Base {
-        UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseIn]) {
+        UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseIn, .allowUserInteraction]) {
             base.alpha = 0
             base.transform = CGAffineTransform(scaleX: 1, y: 0.01)
         } completion: { _ in
@@ -66,7 +66,7 @@ public extension BRWrapper where Base: UIView {
         base.alpha = 0
         base.transform = CGAffineTransform(scaleX: 0.01, y: 1)
 
-        UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseOut]) {
+        UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseOut, .allowUserInteraction]) {
             base.isHidden = false
             base.alpha = 1
             base.transform = .identity
@@ -79,7 +79,7 @@ public extension BRWrapper where Base: UIView {
     @MainActor
     @discardableResult
     func animateCollapseHorizontally(duration: TimeInterval = 0.2) -> Base {
-        UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseIn]) {
+        UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseIn, .allowUserInteraction]) {
             base.alpha = 0
             base.transform = CGAffineTransform(scaleX: 0.01, y: 1)
         } completion: { _ in
