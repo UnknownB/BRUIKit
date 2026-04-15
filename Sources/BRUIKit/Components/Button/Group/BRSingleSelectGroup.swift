@@ -97,8 +97,13 @@ public class BRSingleSelectGroup<Button: UIButton> {
     
     /// 指定某個按鈕為選中
     @MainActor
-    public func selectButton(_ button: Button) {
-        guard buttons.contains(button) else { return }
+    public func selectButton(_ button: Button?) {
+        guard let button, buttons.contains(button) else {
+            selectedButton?.isSelected = false
+            selectedButton = nil
+            didChangeSelection?(nil)
+            return
+        }
         buttonTapped(button)
     }
     
