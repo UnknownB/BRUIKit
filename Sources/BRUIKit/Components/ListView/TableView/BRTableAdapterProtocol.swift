@@ -19,9 +19,11 @@ public protocol BRTableAdapterProtocol {
     var footerHeight: ((Int) -> CGFloat)? { get set }
     var sectionIndexTitles: [String]? { get set }
     var didSelectRow: ((IndexPath, BRRow) -> Void)? { get set }
+    var didDeselectRow: ((IndexPath, BRRow) -> Void)? { get set }
     var didDeleteRow: ((IndexPath, BRRow) -> Void)? { get set }
     var didMoveRow: ((IndexPath, IndexPath, BRRow) -> Void)? { get set }
-    
+    var willDisplayRow: ((IndexPath, BRRow, UITableViewCell) -> Void)? { get set }
+
     func update(list: BRList, animated: Bool, completion: (() -> Void)?)
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
 }

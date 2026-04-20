@@ -28,7 +28,9 @@ public struct BRRow: Hashable, @unchecked Sendable {
     public let isEditable: Bool
     public let isMovable: Bool
     public let onSelect: (() -> Void)?
-    
+    public let onDeselect: (() -> Void)?
+    public let onWillDisplay: (() -> Void)?
+
     
     // MARK: - Hashable
     
@@ -59,7 +61,9 @@ public struct BRRow: Hashable, @unchecked Sendable {
         model: View.Model,
         isEditable: Bool = true,
         isMovable: Bool = true,
-        onSelect: ((View.Model) -> Void)? = nil
+        onWillDisplay: ((View.Model) -> Void)? = nil,
+        onDeselect: ((View.Model) -> Void)? = nil,
+        onSelect: ((View.Model) -> Void)? = nil,
     ) {
         self.model = model
         self.viewType = viewType
@@ -74,6 +78,8 @@ public struct BRRow: Hashable, @unchecked Sendable {
         self.isEditable = isEditable
         self.isMovable = isMovable
         self.onSelect = onSelect.map { closure in { closure(model) } }
+        self.onDeselect = onDeselect.map { closure in { closure(model) } }
+        self.onWillDisplay = onWillDisplay.map { closure in { closure(model) } }
     }
     
     
@@ -84,9 +90,11 @@ public struct BRRow: Hashable, @unchecked Sendable {
         models: Models,
         isEditable: Bool = true,
         isMovable: Bool = true,
-        onSelect: ((View.Model) -> Void)? = nil
+        onWillDisplay: ((View.Model) -> Void)? = nil,
+        onDeselect: ((View.Model) -> Void)? = nil,
+        onSelect: ((View.Model) -> Void)? = nil,
     ) -> [BRRow] where Models.Element == View.Model {
-        models.map { BRRow(viewType, model: $0, onSelect: onSelect) }
+        models.map { BRRow(viewType, model: $0, onWillDisplay: onWillDisplay, onDeselect: onDeselect, onSelect: onSelect) }
     }
     
     
@@ -95,15 +103,15 @@ public struct BRRow: Hashable, @unchecked Sendable {
     
     /// 建立系統原始 tableView Cell UI 樣式
     @MainActor
-    public static func tableCell(_ text: String, onSelect: ((BRTableCellModel) -> Void)? = nil) -> BRRow {
-        .init(BRTableCell.self, model: BRTableCellModel(text), onSelect: onSelect)
+    public static func tableCell(_ text: String, onWillDisplay: ((BRTableCellModel) -> Void)? = nil, onDeselect: ((BRTableCellModel) -> Void)? = nil, onSelect: ((BRTableCellModel) -> Void)? = nil) -> BRRow {
+        .init(BRTableCell.self, model: BRTableCellModel(text), onWillDisplay: onWillDisplay, onDeselect: onDeselect, onSelect: onSelect)
     }
     
     
     /// 建立系統原始 collection ListContent UI 樣式
     @MainActor
-    public static func collCell(_ text: String, onSelect: ((BRCollectionCellModel) -> Void)? = nil) -> BRRow {
-        .init(BRCollectionCell.self, model: BRCollectionCellModel(text), onSelect: onSelect)
+    public static func collCell(_ text: String, onWillDisplay: ((BRCollectionCellModel) -> Void)? = nil, onDeselect: ((BRCollectionCellModel) -> Void)? = nil, onSelect: ((BRCollectionCellModel) -> Void)? = nil) -> BRRow {
+        .init(BRCollectionCell.self, model: BRCollectionCellModel(text), onWillDisplay: onWillDisplay, onDeselect: onDeselect, onSelect: onSelect)
     }
     
     

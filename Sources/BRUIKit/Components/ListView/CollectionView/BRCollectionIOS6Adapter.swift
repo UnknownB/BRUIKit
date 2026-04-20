@@ -29,8 +29,16 @@ public final class BRCollectionIOS6Adapter: NSObject, UICollectionViewDataSource
     public var didSelectRow: ((IndexPath, BRRow) -> Void)?
     
     
+    /// 解除選中 cell 的回調
+    public var didDeselectRow: ((IndexPath, BRRow) -> Void)?
+
+    
     /// 完成移動後的回調
     public var didMoveRow: ((IndexPath, IndexPath, BRRow) -> Void)?
+    
+    
+    /// 將顯示 row 的回調
+    public var willDisplayRow: ((IndexPath, BRRow, UICollectionViewCell) -> Void)?
     
     
     /// 滾動中
@@ -191,6 +199,20 @@ public final class BRCollectionIOS6Adapter: NSObject, UICollectionViewDataSource
         let row = list.sections[indexPath.section].rows[indexPath.row]
         row.onSelect?()
         didSelectRow?(indexPath, row)
+    }
+    
+    
+    public func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        let row = list.sections[indexPath.section].rows[indexPath.row]
+        row.onDeselect?()
+        didDeselectRow?(indexPath, row)
+    }
+    
+    
+    public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        let row = list.sections[indexPath.section].rows[indexPath.row]
+        row.onWillDisplay?()
+        willDisplayRow?(indexPath, row, cell)
     }
     
     

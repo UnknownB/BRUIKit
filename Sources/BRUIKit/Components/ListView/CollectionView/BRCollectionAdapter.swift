@@ -42,9 +42,21 @@ open class BRCollectionAdapter: NSObject, BRCollectionAdapterProtocol {
     }
     
     
+    public var didDeselectRow: ((IndexPath, BRRow) -> Void)? {
+        get { adapter.didDeselectRow }
+        set { adapter.didDeselectRow = newValue }
+    }
+
+    
     public var didMoveRow: ((IndexPath, IndexPath, BRRow) -> Void)? {
         get { adapter.didMoveRow }
         set { adapter.didMoveRow = newValue }
+    }
+    
+    
+    public var willDisplayRow: ((IndexPath, BRRow, UICollectionViewCell) -> Void)? {
+        get { adapter.willDisplayRow }
+        set { adapter.willDisplayRow = newValue }
     }
     
     

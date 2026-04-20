@@ -46,13 +46,13 @@ open class BRTableAdapter: NSObject, BRTableAdapterProtocol {
         get { adapter.headerHeight }
         set { adapter.headerHeight = newValue }
     }
-
+    
     
     public var footerHeight: ((Int) -> CGFloat)? {
         get { adapter.footerHeight }
         set { adapter.footerHeight = newValue }
     }
-
+    
     
     public var sectionIndexTitles: [String]? {
         get { adapter.sectionIndexTitles }
@@ -66,6 +66,12 @@ open class BRTableAdapter: NSObject, BRTableAdapterProtocol {
     }
     
     
+    public var didDeselectRow: ((IndexPath, BRRow) -> Void)? {
+        get { adapter.didDeselectRow }
+        set { adapter.didDeselectRow = newValue }
+    }
+    
+    
     public var didDeleteRow: ((IndexPath, BRRow) -> Void)? {
         get { adapter.didDeleteRow }
         set { adapter.didDeleteRow = newValue }
@@ -75,6 +81,12 @@ open class BRTableAdapter: NSObject, BRTableAdapterProtocol {
     public var didMoveRow: ((IndexPath, IndexPath, BRRow) -> Void)? {
         get { adapter.didMoveRow }
         set { adapter.didMoveRow = newValue }
+    }
+    
+    
+    public var willDisplayRow: ((IndexPath, BRRow, UITableViewCell) -> Void)? {
+        get { adapter.willDisplayRow }
+        set { adapter.willDisplayRow = newValue }
     }
     
     

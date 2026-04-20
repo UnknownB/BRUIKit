@@ -74,6 +74,13 @@ open class BRTableIOS13Adapter: NSObject, BRTableAdapterProtocol {
     }
     
     
+    /// 選中 cell 的回調
+    public var didDeselectRow: ((IndexPath, BRRow) -> Void)? {
+        get { dataSource.didDeselectRow }
+        set { dataSource.didDeselectRow = newValue }
+    }
+    
+    
     /// 完成刪除後的回調
     public var didDeleteRow: ((IndexPath, BRRow) -> Void)? {
         get { dataSource.didDeleteRow }
@@ -85,6 +92,13 @@ open class BRTableIOS13Adapter: NSObject, BRTableAdapterProtocol {
     public var didMoveRow: ((IndexPath, IndexPath, BRRow) -> Void)? {
         get { dataSource.didMoveRow }
         set { dataSource.didMoveRow = newValue }
+    }
+    
+    
+    /// 將顯示 row 的回調
+    public var willDisplayRow: ((IndexPath, BRRow, UITableViewCell) -> Void)? {
+        get { dataSource.willDisplayRow }
+        set { dataSource.willDisplayRow = newValue }
     }
     
     
@@ -287,12 +301,20 @@ private class BRTableViewDiffableDataSource: UITableViewDiffableDataSource<BRSec
     public var didSelectRow: ((IndexPath, BRRow) -> Void)?
     
     
+    /// 解除選中 cell 的回調
+    public var didDeselectRow: ((IndexPath, BRRow) -> Void)?
+    
+    
     /// 完成刪除後的回調
     public var didDeleteRow: ((IndexPath, BRRow) -> Void)?
     
     
     /// 完成移動後的回調
     public var didMoveRow: ((IndexPath, IndexPath, BRRow) -> Void)?
+    
+    
+    /// 將顯示 row 的回調
+    public var willDisplayRow: ((IndexPath, BRRow, UITableViewCell) -> Void)?
 
     
     // MARK: - Sections
@@ -363,6 +385,20 @@ private class BRTableViewDiffableDataSource: UITableViewDiffableDataSource<BRSec
         let row = list.sections[indexPath.section].rows[indexPath.row]
         row.onSelect?()
         didSelectRow?(indexPath, row)
+    }
+    
+    
+    public func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        let row = list.sections[indexPath.section].rows[indexPath.row]
+        row.onDeselect?()
+        didDeselectRow?(indexPath, row)
+    }
+    
+    
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let row = list.sections[indexPath.section].rows[indexPath.row]
+        row.onWillDisplay?()
+        willDisplayRow?(indexPath, row, cell)
     }
 
     

@@ -45,7 +45,11 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
     
     /// 選中 cell 的回調
     public var didSelectRow: ((IndexPath, BRRow) -> Void)?
-
+    
+    
+    /// 解除選中 cell 的回調
+    public var didDeselectRow: ((IndexPath, BRRow) -> Void)?
+    
     
     /// 完成刪除後的回調
     public var didDeleteRow: ((IndexPath, BRRow) -> Void)?
@@ -53,6 +57,10 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
     
     /// 完成移動後的回調
     public var didMoveRow: ((IndexPath, IndexPath, BRRow) -> Void)?
+    
+    
+    /// 將顯示 row 的回調
+    public var willDisplayRow: ((IndexPath, BRRow, UITableViewCell) -> Void)?
     
     
     /// 更新清單
@@ -247,6 +255,20 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
         didSelectRow?(indexPath, row)
     }
     
+    
+    public func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        let row = list.sections[indexPath.section].rows[indexPath.row]
+        row.onDeselect?()
+        didDeselectRow?(indexPath, row)
+    }
+    
+    
+    public func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let row = list.sections[indexPath.section].rows[indexPath.row]
+        row.onWillDisplay?()
+        willDisplayRow?(indexPath, row, cell)
+    }
+
     
     // MARK: - Edit
     

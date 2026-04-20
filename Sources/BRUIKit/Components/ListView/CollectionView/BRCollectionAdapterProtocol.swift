@@ -15,7 +15,9 @@ public protocol BRCollectionAdapterProtocol {
     var canMoveRows: Bool { get set }
     var sectionIndexTitles: [String]? { get set }
     var didSelectRow: ((IndexPath, BRRow) -> Void)? { get set }
+    var didDeselectRow: ((IndexPath, BRRow) -> Void)? { get set }
     var didMoveRow: ((IndexPath, IndexPath, BRRow) -> Void)? { get set }
+    var willDisplayRow: ((IndexPath, BRRow, UICollectionViewCell) -> Void)? { get set }
     var onScrollViewDidScroll: ((UIScrollView) -> Void)? { get set }
     var onScrollViewDidEnd: ((UIScrollView) -> Void)? { get set }
     var onScrollViewDidEndDragging: ((UIScrollView, Bool) -> Void)? { get set }
