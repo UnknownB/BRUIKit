@@ -102,6 +102,27 @@ open class BRTableIOS13Adapter: NSObject, BRTableAdapterProtocol {
     }
     
     
+    /// 滾動中
+    public var didScrollViewDidScroll: ((UIScrollView) -> Void)? {
+        get { dataSource.didScrollViewDidScroll }
+        set { dataSource.didScrollViewDidScroll = newValue }
+    }
+
+    
+    /// 滾動停止
+    public var didScrollViewDidEnd: ((UIScrollView) -> Void)? {
+        get { dataSource.didScrollViewDidEnd }
+        set { dataSource.didScrollViewDidEnd = newValue }
+    }
+    
+    
+    /// 拖曳停止
+    public var didScrollViewDidEndDragging: ((UIScrollView, Bool) -> Void)? {
+        get { dataSource.didScrollViewDidEndDragging }
+        set { dataSource.didScrollViewDidEndDragging = newValue }
+    }
+    
+    
     // MARK: - LifeCycle
     
     
@@ -317,6 +338,18 @@ private class BRTableViewDiffableDataSource: UITableViewDiffableDataSource<BRSec
     public var willDisplayRow: ((IndexPath, BRRow, UITableViewCell) -> Void)?
 
     
+    /// 滾動中
+    public var didScrollViewDidScroll: ((UIScrollView) -> Void)?
+
+    
+    /// 滾動停止
+    public var didScrollViewDidEnd: ((UIScrollView) -> Void)?
+    
+    
+    /// 拖曳停止
+    public var didScrollViewDidEndDragging: ((UIScrollView, Bool) -> Void)?
+
+    
     // MARK: - Sections
     
     
@@ -451,4 +484,26 @@ private class BRTableViewDiffableDataSource: UITableViewDiffableDataSource<BRSec
                 
         didMoveRow?(sourceIndexPath, destinationIndexPath, movedRow)
     }
+    
+    
+    // MARK: - Scroll
+    
+    
+    /// 滾動中
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        didScrollViewDidScroll?(scrollView)
+    }
+    
+    
+    /// 停止滾動
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        didScrollViewDidEnd?(scrollView)
+    }
+    
+    
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        didScrollViewDidEndDragging?(scrollView, decelerate)
+    }
+    
+    
 }

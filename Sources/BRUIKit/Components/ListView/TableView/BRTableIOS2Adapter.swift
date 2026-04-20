@@ -63,6 +63,18 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
     public var willDisplayRow: ((IndexPath, BRRow, UITableViewCell) -> Void)?
     
     
+    /// 滾動中
+    public var didScrollViewDidScroll: ((UIScrollView) -> Void)?
+
+    
+    /// 滾動停止
+    public var didScrollViewDidEnd: ((UIScrollView) -> Void)?
+    
+    
+    /// 拖曳停止
+    public var didScrollViewDidEndDragging: ((UIScrollView, Bool) -> Void)?
+    
+    
     /// 更新清單
     public func update(list newList: BRList, animated: Bool = true, completion: (() -> Void)? = nil) {
         registerAll(in: newList)
@@ -302,6 +314,26 @@ open class BRTableIOS2Adapter: NSObject, UITableViewDataSource, UITableViewDeleg
         let movedRow = list.sections[sourceIndexPath.section].rows.remove(at: sourceIndexPath.row)
         list.sections[destinationIndexPath.section].rows.insert(movedRow, at: destinationIndexPath.row)
         didMoveRow?(sourceIndexPath, destinationIndexPath, movedRow)
+    }
+    
+    
+    // MARK: - Scroll
+    
+    
+    /// 滾動中
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        didScrollViewDidScroll?(scrollView)
+    }
+    
+    
+    /// 停止滾動
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        didScrollViewDidEnd?(scrollView)
+    }
+    
+    
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        didScrollViewDidEndDragging?(scrollView, decelerate)
     }
     
     

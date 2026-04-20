@@ -61,23 +61,23 @@ open class BRCollectionAdapter: NSObject, BRCollectionAdapterProtocol {
     
     
     /// 滾動中
-    public var onScrollViewDidScroll: ((UIScrollView) -> Void)? {
-        get { adapter.onScrollViewDidScroll }
-        set { adapter.onScrollViewDidScroll = newValue }
+    public var didScrollViewDidScroll: ((UIScrollView) -> Void)? {
+        get { adapter.didScrollViewDidScroll }
+        set { adapter.didScrollViewDidScroll = newValue }
     }
     
     
     /// 滾動停止
-    public var onScrollViewDidEnd: ((UIScrollView) -> Void)? {
-        get { adapter.onScrollViewDidEnd }
-        set { adapter.onScrollViewDidEnd = newValue }
+    public var didScrollViewDidEnd: ((UIScrollView) -> Void)? {
+        get { adapter.didScrollViewDidEnd }
+        set { adapter.didScrollViewDidEnd = newValue }
     }
 
     
     /// 拖曳停止
-    public var onScrollViewDidEndDragging: ((UIScrollView, Bool) -> Void)? {
-        get { adapter.onScrollViewDidEndDragging }
-        set { adapter.onScrollViewDidEndDragging = newValue }
+    public var didScrollViewDidEndDragging: ((UIScrollView, Bool) -> Void)? {
+        get { adapter.didScrollViewDidEndDragging }
+        set { adapter.didScrollViewDidEndDragging = newValue }
     }
 
     

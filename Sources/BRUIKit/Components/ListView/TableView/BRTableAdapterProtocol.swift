@@ -24,6 +24,10 @@ public protocol BRTableAdapterProtocol {
     var didMoveRow: ((IndexPath, IndexPath, BRRow) -> Void)? { get set }
     var willDisplayRow: ((IndexPath, BRRow, UITableViewCell) -> Void)? { get set }
 
+    var didScrollViewDidScroll: ((UIScrollView) -> Void)? { get set }
+    var didScrollViewDidEnd: ((UIScrollView) -> Void)? { get set }
+    var didScrollViewDidEndDragging: ((UIScrollView, Bool) -> Void)? { get set }
+
     func update(list: BRList, animated: Bool, completion: (() -> Void)?)
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
 }

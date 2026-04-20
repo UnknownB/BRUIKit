@@ -18,9 +18,10 @@ public protocol BRCollectionAdapterProtocol {
     var didDeselectRow: ((IndexPath, BRRow) -> Void)? { get set }
     var didMoveRow: ((IndexPath, IndexPath, BRRow) -> Void)? { get set }
     var willDisplayRow: ((IndexPath, BRRow, UICollectionViewCell) -> Void)? { get set }
-    var onScrollViewDidScroll: ((UIScrollView) -> Void)? { get set }
-    var onScrollViewDidEnd: ((UIScrollView) -> Void)? { get set }
-    var onScrollViewDidEndDragging: ((UIScrollView, Bool) -> Void)? { get set }
+    
+    var didScrollViewDidScroll: ((UIScrollView) -> Void)? { get set }
+    var didScrollViewDidEnd: ((UIScrollView) -> Void)? { get set }
+    var didScrollViewDidEndDragging: ((UIScrollView, Bool) -> Void)? { get set }
 
     func update(list: BRList, animated: Bool)
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath)

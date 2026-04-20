@@ -90,6 +90,27 @@ open class BRTableAdapter: NSObject, BRTableAdapterProtocol {
     }
     
     
+    /// 滾動中
+    public var didScrollViewDidScroll: ((UIScrollView) -> Void)? {
+        get { adapter.didScrollViewDidScroll }
+        set { adapter.didScrollViewDidScroll = newValue }
+    }
+    
+    
+    /// 滾動停止
+    public var didScrollViewDidEnd: ((UIScrollView) -> Void)? {
+        get { adapter.didScrollViewDidEnd }
+        set { adapter.didScrollViewDidEnd = newValue }
+    }
+
+    
+    /// 拖曳停止
+    public var didScrollViewDidEndDragging: ((UIScrollView, Bool) -> Void)? {
+        get { adapter.didScrollViewDidEndDragging }
+        set { adapter.didScrollViewDidEndDragging = newValue }
+    }
+    
+    
     // MARK: - Init
     
     

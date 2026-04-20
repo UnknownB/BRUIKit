@@ -43,15 +43,15 @@ public final class BRCollectionIOS13Adapter: UICollectionViewDiffableDataSource<
     
     
     /// 滾動中
-    public var onScrollViewDidScroll: ((UIScrollView) -> Void)?
+    public var didScrollViewDidScroll: ((UIScrollView) -> Void)?
 
     
     /// 滾動停止
-    public var onScrollViewDidEnd: ((UIScrollView) -> Void)?
+    public var didScrollViewDidEnd: ((UIScrollView) -> Void)?
     
     
     /// 拖曳停止
-    public var onScrollViewDidEndDragging: ((UIScrollView, Bool) -> Void)?
+    public var didScrollViewDidEndDragging: ((UIScrollView, Bool) -> Void)?
     
     
     /// 更新清單
@@ -189,17 +189,17 @@ public final class BRCollectionIOS13Adapter: UICollectionViewDiffableDataSource<
     
     
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        onScrollViewDidScroll?(scrollView)
+        didScrollViewDidScroll?(scrollView)
     }
     
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        onScrollViewDidEnd?(scrollView)
+        didScrollViewDidEnd?(scrollView)
     }
     
     
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        onScrollViewDidEndDragging?(scrollView, decelerate)
+        didScrollViewDidEndDragging?(scrollView, decelerate)
     }
 
     
