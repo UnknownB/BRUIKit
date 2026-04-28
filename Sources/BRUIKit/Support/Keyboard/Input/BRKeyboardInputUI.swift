@@ -34,7 +34,7 @@ final class BRKeyboardInputUI: NSObject, UITextFieldDelegate {
             if enableToolbar {
                 handleToolbar(with: currentResponder, activateViewController: viewController)
             } else {
-                restoreToolbar(with: currentResponder)
+                toolbar.accessoryView.isHidden = true
             }
         }
     }
@@ -98,7 +98,6 @@ final class BRKeyboardInputUI: NSObject, UITextFieldDelegate {
     func removeResponder() {
         if let currentResponder {
             restoreReturn(with: currentResponder)
-            restoreToolbar(with: currentResponder)
         }
         currentResponderIndex = nil
         currentResponder = nil
@@ -191,24 +190,18 @@ final class BRKeyboardInputUI: NSObject, UITextFieldDelegate {
     
     
     private func handleToolbar(with responder: UIResponder, activateViewController: UIViewController) {
+        guard enableToolbar else { return }
+        
+        toolbar.accessoryView.isHidden = false
         toolbar.bind(prev: prevResponder, next: nextResponder)
         toolbar.updateToolbarMaskView(with: activateViewController)
-        if enableToolbar, let textField = responder as? UITextField, textField.inputAccessoryView == nil {
+        if let textField = responder as? UITextField, textField.inputAccessoryView == nil {
             textField.inputAccessoryView = toolbar.accessoryView
         }
-        if enableToolbar, let textView = responder as? UITextView, textView.inputAccessoryView == nil {
+        if let textView = responder as? UITextView, textView.inputAccessoryView == nil {
             textView.inputAccessoryView = toolbar.accessoryView
         }
     }
     
-    
-    private func restoreToolbar(with responder: UIResponder) {
-        if let textField = responder as? UITextField, textField.inputAccessoryView == toolbar.accessoryView {
-            textField.inputAccessoryView = nil
-        }
-        if let textView = responder as? UITextView, textView.inputAccessoryView == toolbar.accessoryView {
-            textView.inputAccessoryView = nil
-        }
-    }
-    
+        
 }
