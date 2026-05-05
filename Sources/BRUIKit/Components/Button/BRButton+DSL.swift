@@ -104,4 +104,15 @@ public extension BRWrapper where Base: BRButton {
     }
     
     
+    // MARK: - Action
+    
+    
+    @MainActor
+    @discardableResult
+    func onTap(_ action: ((BRButton) -> Void)?) -> Base {
+        base.onTap = action
+        return base
+    }
+    
+    
 }

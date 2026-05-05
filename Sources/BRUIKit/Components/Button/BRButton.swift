@@ -22,7 +22,20 @@ open class BRButton: UIButton, BRButtonStateProtocol {
     private let stateHelper = BRButtonStateHelper()
     private let layoutHelper = BRButtonLayoutHelper()
     
+    public var onTap: ((BRButton) -> Void)?
+    
     // MARK: - LifeCycle
+    
+    
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.addTarget(self, action: #selector(onTapped), for: .touchUpInside)
+    }
+    
+    
+    public required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     
     open override func layoutSubviews() {
@@ -38,6 +51,11 @@ open class BRButton: UIButton, BRButtonStateProtocol {
     open override var intrinsicContentSize: CGSize {
         let newSize = layoutHelper.intrinsicContentSize(for: self, using: super.intrinsicContentSize)
         return newSize
+    }
+    
+    
+    @objc private func onTapped() {
+        onTap?(self)
     }
     
     
