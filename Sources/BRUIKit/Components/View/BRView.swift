@@ -40,7 +40,6 @@ open class BRView: UIView {
     
     private let contentLayout = BRLayout()
     
-    
     public var contentInsets: UIEdgeInsets = .zero {
         didSet {
             contentLayout.setContent(contentInsets.top, for: .top)
@@ -49,6 +48,10 @@ open class BRView: UIView {
             contentLayout.setContent(-contentInsets.bottom, for: .bottom)
         }
     }
+    
+    private var lastBounds: CGRect = .zero
+    
+    public var onBoundsChanged: ((CGRect) -> Void)?
     
     
     // MARK: - UI 元件
@@ -74,6 +77,17 @@ open class BRView: UIView {
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if lastBounds != bounds {
+            lastBounds = bounds
+            onLayoutSubviews()
+            onBoundsChanged?(bounds)
+        }
+    }
 
     
     // MARK: - UI
@@ -96,6 +110,10 @@ open class BRView: UIView {
     
     
     open func setupLayout() {
+    }
+    
+    
+    open func onLayoutSubviews() {
     }
     
     

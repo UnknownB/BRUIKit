@@ -21,4 +21,12 @@ public extension BRWrapper where Base: BRView {
     }
     
     
+    @MainActor
+    @discardableResult
+    func onBoundsChanged(_ closure: ((CGRect) -> Void)?) -> Base {
+        base.onBoundsChanged = closure
+        return base
+    }
+    
+    
 }
