@@ -17,6 +17,9 @@ import UIKit
 /// - bindViewModel(): 資料捆綁
 open class BRViewController: UIViewController {
     
+    private var lastViewBounds: CGRect = .zero
+    
+    public var onViewBoundsChanged: ((CGRect) -> Void)?
     
     // MARK: - Lifecycle
     
@@ -28,6 +31,17 @@ open class BRViewController: UIViewController {
         setupLayout()
         setupEvent()
         bindViewModel()
+    }
+    
+    
+    open override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        if lastViewBounds != view.bounds {
+            lastViewBounds = view.bounds
+            onViewLayoutSubviews()
+            onViewBoundsChanged?(view.bounds)
+        }
     }
     
     
@@ -51,6 +65,12 @@ open class BRViewController: UIViewController {
     
     /// 添加子元件、排版設定
     open func setupLayout() {
+        
+    }
+    
+    
+    /// 當 view 完成佈局且尺寸發生變化時觸發
+    open func onViewLayoutSubviews() {
         
     }
     
