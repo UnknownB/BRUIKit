@@ -25,11 +25,15 @@ public extension BRWrapper where Base: UIImageView {
     ///     當 URL 載入失敗時顯示
     @MainActor
     @discardableResult
-    func load(_ url: URL?, updateCache: Bool = false, defaultImage: UIImage?, failedImage: UIImage? = nil) -> Base {
+    func load(_ url: URL?, updateCache: Bool = false, defaultImage: UIImage? = nil, failedImage: UIImage? = nil) -> Base {
         BRTaskStorage.task(for: base)?.cancel()
-        base.image = defaultImage
+        
+        if base.image == nil {
+            base.image = defaultImage
+        }
         
         guard let url = url else {
+            base.image = failedImage
             return base
         }
         
