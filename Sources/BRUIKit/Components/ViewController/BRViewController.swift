@@ -19,7 +19,7 @@ open class BRViewController: UIViewController {
     
     private var lastViewBounds: CGRect = .zero
     
-    public var onViewBoundsChanged: ((CGRect) -> Void)?
+    public var onViewBoundsChanged: ((BRViewController) -> Void)?
     
     // MARK: - Lifecycle
     
@@ -40,7 +40,7 @@ open class BRViewController: UIViewController {
         if lastViewBounds != view.bounds {
             lastViewBounds = view.bounds
             onViewLayoutSubviews()
-            onViewBoundsChanged?(view.bounds)
+            onViewBoundsChanged?(self)
         }
     }
     

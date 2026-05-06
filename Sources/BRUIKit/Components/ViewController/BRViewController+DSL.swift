@@ -16,7 +16,7 @@ public extension BRWrapper where Base: BRViewController {
     /// 設定 NavigationController Title
     @MainActor
     @discardableResult
-    func onViewBoundsChanged(_ closure: ((CGRect) -> Void)?) -> Base {
+    func onViewBoundsChanged(_ closure: ((BRViewController) -> Void)?) -> Base {
         base.onViewBoundsChanged = closure
         return base
     }

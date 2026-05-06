@@ -51,7 +51,7 @@ open class BRView: UIView {
     
     private var lastBounds: CGRect = .zero
     
-    public var onBoundsChanged: ((CGRect) -> Void)?
+    public var onBoundsChanged: ((BRView) -> Void)?
     
     
     // MARK: - UI 元件
@@ -85,7 +85,7 @@ open class BRView: UIView {
         if lastBounds != bounds {
             lastBounds = bounds
             onLayoutSubviews()
-            onBoundsChanged?(bounds)
+            onBoundsChanged?(self)
         }
     }
 
