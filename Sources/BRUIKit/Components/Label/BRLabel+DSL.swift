@@ -72,6 +72,7 @@ public extension BRWrapper where Base: BRLabel {
     /// 設定點擊事件
     @discardableResult
     func tappable(for word: String, action: @escaping BRLabel.TappableAction) -> Base {
+        base.isUserInteractionEnabled = true
         base.RTF.addTappable(for: word, action: action, in: base.attributedText)
         return base
     }

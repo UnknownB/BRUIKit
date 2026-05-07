@@ -35,7 +35,6 @@ open class BRLabel: UILabel {
     private func setup() {
         RTF.setup(for: self)
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        isUserInteractionEnabled = true
         addGestureRecognizer(tap)
     }
     
