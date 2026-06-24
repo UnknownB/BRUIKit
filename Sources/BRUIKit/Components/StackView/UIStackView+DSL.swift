@@ -160,5 +160,17 @@ public extension BRWrapper where Base: UIStackView {
     }
     
     
+    /// 將所有 arrangedSubviews 從 stackView 的 `arrangedSubviews` 刪除
+    @MainActor
+    @discardableResult
+    func removeAllArranged() -> Base {
+        base.arrangedSubviews.forEach {
+            base.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+        return base
+    }
+
+    
 }
 
