@@ -48,8 +48,8 @@ open class BRTextFieldView: UIStackView {
 
     
     private func bind() {
-        BRTask.bind(to: textField.$fieldState, on: self) { _ in
-            self.updateState()
+        BRTask.bind(to: textField.$fieldState, on: self) { owner, _ in
+            owner.updateState()
         }
     }
     

@@ -13,7 +13,7 @@ let package = Package(
             targets: ["BRUIKit"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/UnknownB/BRFoundation", branch: "main")
+        .package(url: "https://github.com/UnknownB/BRFoundation", from: "0.5.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.

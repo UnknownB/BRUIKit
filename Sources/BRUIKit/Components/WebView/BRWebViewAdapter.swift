@@ -144,13 +144,13 @@ open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigat
     
     
     private func setupEvent() {
-        BRTask.bind(to: $loadingURL, on: self) { [self] url in
+        BRTask.bind(to: $loadingURL, on: self) { owner, url in
             guard let url = url else { return }
-            if blacklist.contains(url) {
-                webView.stopLoading()
-                let previousURL = webView.backForwardList.backItem?.url
+            if owner.blacklist.contains(url) {
+                owner.webView.stopLoading()
+                let previousURL = owner.webView.backForwardList.backItem?.url
                 if let previous = previousURL {
-                    webView.load(URLRequest(url: previous))
+                    owner.webView.load(URLRequest(url: previous))
                 }
             }
         }

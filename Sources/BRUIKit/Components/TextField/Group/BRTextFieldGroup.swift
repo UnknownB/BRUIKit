@@ -22,8 +22,8 @@ open class BRTextFieldGroup: ObservableObject {
     @discardableResult
     public func add(_ textField: BRTextField) -> Self {
         textFields.append(textField)
-        BRTask.bind(to: textField.$fieldState, on: self) { _ in
-            self.updateValidState()
+        BRTask.bind(to: textField.$fieldState, on: self) { owner, _ in
+            owner.updateValidState()
         }
         return self
     }
