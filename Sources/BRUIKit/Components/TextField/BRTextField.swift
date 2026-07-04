@@ -147,9 +147,20 @@ open class BRTextField: UITextField, ObservableObject, BRResponderProtocol {
 
 
     /// 添加正則表示法規則
+    ///
+    /// - Warning: 傳入 pattern 建立新的 Regex 開銷較大，應盡量重複使用已建立的 NSRegularExpression
     @discardableResult
     open func addRegexRule(at events: [BRTextFieldRule.Event], pattern: String) -> BRTextFieldRule {
         let rule = BRTextFieldRule.regex(with: self, events: events, pattern: pattern)
+        rules.append(rule)
+        return rule
+    }
+    
+    
+    /// 添加正則表示法規則
+    @discardableResult
+    open func addRegexRule(at events: [BRTextFieldRule.Event], regex: NSRegularExpression) -> BRTextFieldRule {
+        let rule = BRTextFieldRule.regex(with: self, events: events, regex: regex)
         rules.append(rule)
         return rule
     }

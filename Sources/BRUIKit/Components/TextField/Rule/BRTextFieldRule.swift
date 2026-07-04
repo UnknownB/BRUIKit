@@ -123,10 +123,17 @@ public class BRTextFieldRule {
     
     
     /// 正規表示法
+    ///
+    /// - Warning: 傳入 pattern 建立新的 Regex 開銷較大，應盡量重複使用已建立的 NSRegularExpression
     public static func regex(with textField: BRTextField, events: [Event], pattern: String) -> BRTextFieldRule {
-        let regex = try? NSRegularExpression(pattern: pattern)
+        let regex = BRRegex.make(pattern: pattern)
+        return BRTextFieldRule.regex(with: textField, events: events, regex: regex)
+    }
+    
+    
+    /// 正規表示法
+    public static func regex(with textField: BRTextField, events: [Event], regex: NSRegularExpression) -> BRTextFieldRule {
         return BRTextFieldRule(textField: textField, events: events) {
-            guard let regex else { return .failed }
             guard let text = $0 else { return .failed }
             let range = NSRange(text.startIndex..., in: text)
             return (regex.firstMatch(in: text, range: range) != nil) ? .success : .failed
