@@ -48,12 +48,18 @@ public struct BRRow: Hashable, @unchecked Sendable {
     // MARK: - Init
 
     
+    /// 建立 `BRRow` 通用 `UITableView`、`UICollectionView` 資料結構
+    ///
     /// - viewType
     ///     - 遵循 BRCellProtocol 協議的 UIView 類型
     /// - model
     ///     - 遵循 BRCellProtocol 協議的 UIView 類型，其使用的 Model 物件
     /// - onSelect
-    ///     - 被選取的回調，接收對應的 model
+    ///     - Row 被選取時觸發
+    /// - onDeselect
+    ///     - Row 失去選取時觸發
+    /// - onWillDisplay
+    ///     - Row 即將顯示時觸發
     ///
     @MainActor
     public init <View: UIView & BRCellProtocol> (
@@ -83,7 +89,19 @@ public struct BRRow: Hashable, @unchecked Sendable {
     }
     
     
-    /// 批量建立 BRRow 物件
+    /// 批量建立 BRRow 結構
+    ///
+    /// - viewType
+    ///     - 遵循 BRCellProtocol 協議的 UIView 類型
+    /// - model
+    ///     - 遵循 BRCellProtocol 協議的 UIView 類型，其使用的 Model 物件
+    /// - onSelect
+    ///     - Row 被選取時觸發
+    /// - onDeselect
+    ///     - Row 失去選取時觸發
+    /// - onWillDisplay
+    ///     - Row 即將顯示時觸發
+    ///
     @MainActor
     public static func forEach <View: UIView & BRCellProtocol, Models: Swift.Collection> (
         _ viewType: View.Type,

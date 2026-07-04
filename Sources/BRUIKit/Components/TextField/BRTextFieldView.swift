@@ -13,8 +13,10 @@ open class BRTextFieldView: UIStackView {
 
     public let titleLabel = BRLabel()
     public let textField = BRTextField()
+    
     public let ruleStackView = UIStackView()
         .br.axis(.vertical)
+    
     public let hintLabel = BRLabel()
         .br.lines(0)
     
