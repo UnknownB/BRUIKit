@@ -15,10 +15,10 @@ public extension BRWrapper where Base: UIView {
     /// 震動動畫
     @MainActor
     func animateShake(duration: TimeInterval = 0.05, delta: CGFloat = 3, times: Int = 5) {
-        UIView.animate(withDuration: duration, animations: {
+        UIView.animate(withDuration: duration) {
             base.layer.setAffineTransform( CGAffineTransform(translationX: delta, y: 0))
-        }) { (_) in
-            if times != 0 {
+        } completion: { _ in
+            if times > 0 {
                 animateShake(duration: duration, delta: delta * -1, times: times - 1)
             } else {
                 UIView.animate(withDuration: duration) {

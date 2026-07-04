@@ -8,7 +8,7 @@
 import UIKit
 
 
-open class BRPageViewController: UIViewController {
+open class BRPageViewController: BRViewController {
     
     private let layout = BRLayout()
     
@@ -58,7 +58,6 @@ open class BRPageViewController: UIViewController {
         self.isDoubleSided = isDoubleSided
         self.adapter = BRPageViewAdapter(with: pageViewController)
         super.init(nibName: nil, bundle: nil)
-        setupLayout()
     }
     
     
@@ -84,7 +83,8 @@ open class BRPageViewController: UIViewController {
     }
     
     
-    private func setupLayout() {
+    open override func setupLayout() {
+        super.setupLayout()
         addChild(pageViewController)
         view.addSubview(pageViewController.view)
                 

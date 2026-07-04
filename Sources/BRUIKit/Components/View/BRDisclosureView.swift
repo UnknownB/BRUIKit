@@ -144,19 +144,16 @@ open class BRDisclosureView: BRView {
     public let iconImageView = UIImageView()
         .br.contentMode(.scaleAspectFit)
         .br.setContentHuggingPriority(.required, for: .horizontal)
-        .br.userInteractionEnabled(false)
 
     
     /// 中間標題文字。
-    public let titleLabel = UILabel()
-        .br.userInteractionEnabled(false)
+    public let titleLabel = BRLabel()
 
     
     /// 右側箭頭圖示，預設為 `chevron.down`，展開時旋轉 180°。
     public let arrowImageView = UIImageView()
         .br.contentMode(.scaleAspectFit)
         .br.setContentHuggingPriority(.required, for: .horizontal)
-        .br.userInteractionEnabled(false)
     
     
     // MARK: - LifeCycle
