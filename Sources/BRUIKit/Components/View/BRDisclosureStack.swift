@@ -79,7 +79,9 @@ open class BRDisclosureStack: UIStackView {
     
     
     private func setupEvent() {
-        self.disclosureView.setStateChange(onStateChange)
+        self.disclosureView.onStateChange = { [weak self] in
+            self?.onStateChange(view: $0, state: $1)
+        }
     }
     
     

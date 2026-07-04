@@ -22,8 +22,8 @@ public final class BRTextFieldValidator {
     
     @MainActor func onBeging(with rules: [BRTextFieldRule], completion: @escaping () -> Void) {
         beginTask?.cancel()
-        beginTask = BRTask.run(operation: {
-            try await self.runValidation(rules: rules, event: .begin)
+        beginTask = BRTask.run(operation: { [weak self] in
+            try await self?.runValidation(rules: rules, event: .begin)
         }, onSuccess: { _ in
             completion()
         })
@@ -32,9 +32,9 @@ public final class BRTextFieldValidator {
     
     @MainActor func onChange(with rules: [BRTextFieldRule], debounce: TimeInterval, completion: @escaping () -> Void) {
         changeTask?.cancel()
-        changeTask = BRTask.run(operation: {
+        changeTask = BRTask.run(operation: { [weak self] in
             try await Task.sleep(nanoseconds: UInt64(debounce * 1_000_000_000))
-            try await self.runValidation(rules: rules, event: .change)
+            try await self?.runValidation(rules: rules, event: .change)
         }, onSuccess: { _ in
             completion()
         })
@@ -43,8 +43,8 @@ public final class BRTextFieldValidator {
     
     @MainActor func onEnd(with rules: [BRTextFieldRule], completion: @escaping () -> Void) {
         endTask?.cancel()
-        endTask = BRTask.run(operation: {
-            try await self.runValidation(rules: rules, event: .end)
+        endTask = BRTask.run(operation: { [weak self] in
+            try await self?.runValidation(rules: rules, event: .end)
         }, onSuccess: { _ in
             completion()
         })

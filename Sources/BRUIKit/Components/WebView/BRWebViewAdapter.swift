@@ -19,7 +19,7 @@ open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigat
         public let request: URLRequest
     }
     
-    public let webView: WKWebView
+    public weak var webView: WKWebView?
     public let jsBridge: BRWebViewJSBridge
     public let cookieStore: BRWebViewCookieStore
     public let blacklist: BRWebViewBlacklist
@@ -113,32 +113,34 @@ open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigat
     
     
     private func setupCombineBindings() {
+        guard let webView = webView else { return }
+
         webView.publisher(for: \.title)
-            .assign(to: \.webTitle, on: self)
+            .sink { [weak self] title in self?.webTitle = title }
             .store(in: &cancellables)
-        
+
         webView.publisher(for: \.url)
-            .assign(to: \.currentURL, on: self)
+            .sink { [weak self] url in self?.currentURL = url }
             .store(in: &cancellables)
-        
+
         webView.publisher(for: \.url, options: [.new])
-            .assign(to: \.loadingURL, on: self)
+            .sink { [weak self] url in self?.loadingURL = url }
             .store(in: &cancellables)
-        
+
         webView.publisher(for: \.isLoading)
-            .assign(to: \.isLoading, on: self)
+            .sink { [weak self] isLoading in self?.isLoading = isLoading }
             .store(in: &cancellables)
 
         webView.publisher(for: \.estimatedProgress)
-            .assign(to: \.progress, on: self)
+            .sink { [weak self] progress in self?.progress = progress }
             .store(in: &cancellables)
 
         webView.publisher(for: \.canGoBack)
-            .assign(to: \.canGoBack, on: self)
+            .sink { [weak self] canGoBack in self?.canGoBack = canGoBack }
             .store(in: &cancellables)
 
         webView.publisher(for: \.canGoForward)
-            .assign(to: \.canGoForward, on: self)
+            .sink { [weak self] canGoForward in self?.canGoForward = canGoForward }
             .store(in: &cancellables)
     }
     
@@ -147,10 +149,10 @@ open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigat
         BRTask.bind(to: $loadingURL, on: self) { owner, url in
             guard let url = url else { return }
             if owner.blacklist.contains(url) {
-                owner.webView.stopLoading()
-                let previousURL = owner.webView.backForwardList.backItem?.url
+                owner.webView?.stopLoading()
+                let previousURL = owner.webView?.backForwardList.backItem?.url
                 if let previous = previousURL {
-                    owner.webView.load(URLRequest(url: previous))
+                    owner.webView?.load(URLRequest(url: previous))
                 }
             }
         }

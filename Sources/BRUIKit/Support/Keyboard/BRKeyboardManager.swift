@@ -191,10 +191,10 @@ final class BRKeyboardManager {
         let keyboard = BRKeyboardContext(sender)
         self.keyboardContext = keyboard
         
-        layout.moveDown(session: session, keyboard: keyboard) {
-            self.session = nil
-            self.keyboardContext = nil
-        }        
+        layout.moveDown(session: session, keyboard: keyboard) { [weak self] in
+            self?.session = nil
+            self?.keyboardContext = nil
+        }
     }
     
     

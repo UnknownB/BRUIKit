@@ -13,7 +13,7 @@ import WebKit
 open class BRWebViewJSBridge: NSObject, WKScriptMessageHandler {
     
     
-    private let webView: WKWebView
+    private weak var webView: WKWebView?
     private var messageHandlers: [String: (WKScriptMessage) -> Void] = [:]
     
     
@@ -34,13 +34,14 @@ open class BRWebViewJSBridge: NSObject, WKScriptMessageHandler {
     /// 執行 JavaScript
     @available(iOS 13.0.0, *)
     public func evaluateJavaScript(_ script: String) async throws -> Any? {
-        try await webView.evaluateJavaScript(script)
+        guard let webView else { return nil }
+        return try await webView.evaluateJavaScript(script)
     }
-    
-    
+
+
     /// 執行 JavaScript
     public func evaluateJavaScript(_ script: String, completion: ((Result<Any, Error>) -> Void)? = nil) {
-        webView.evaluateJavaScript(script) { result, error in
+        webView?.evaluateJavaScript(script) { result, error in
             if let error = error {
                 completion?(.failure(error))
             } else if let result = result {
@@ -48,29 +49,29 @@ open class BRWebViewJSBridge: NSObject, WKScriptMessageHandler {
             }
         }
     }
-    
-    
+
+
     // MARK: - 接收訊息
-    
-    
+
+
     /// 註冊 JavaScript Message Handler
     public func addHandler(name: String, handler: @escaping (WKScriptMessage) -> Void) {
         messageHandlers[name] = handler
-        webView.configuration.userContentController.add(self, name: name)
+        webView?.configuration.userContentController.add(self, name: name)
     }
-    
-    
+
+
     /// 移除 JavaScript Message Handler
     public func removeHandler(name: String) {
         messageHandlers.removeValue(forKey: name)
-        webView.configuration.userContentController.removeScriptMessageHandler(forName: name)
+        webView?.configuration.userContentController.removeScriptMessageHandler(forName: name)
     }
-    
-    
+
+
     /// 移除所有 JavaScript Message Handlers
     public func removeAllHandlers() {
         for name in messageHandlers.keys {
-            webView.configuration.userContentController.removeScriptMessageHandler(forName: name)
+            webView?.configuration.userContentController.removeScriptMessageHandler(forName: name)
         }
         messageHandlers.removeAll()
     }
@@ -97,13 +98,13 @@ open class BRWebViewJSBridge: NSObject, WKScriptMessageHandler {
     ///
     public func addUserScript(_ script: String, injectionTime: WKUserScriptInjectionTime = .atDocumentEnd, forMainFrameOnly: Bool = true) {
         let userScript = WKUserScript(source: script, injectionTime: injectionTime, forMainFrameOnly: forMainFrameOnly)
-        webView.configuration.userContentController.addUserScript(userScript)
+        webView?.configuration.userContentController.addUserScript(userScript)
     }
-    
-    
+
+
     /// 移除所有的 UserScripts
     public func removeAllUserScripts() {
-        webView.configuration.userContentController.removeAllUserScripts()
+        webView?.configuration.userContentController.removeAllUserScripts()
     }
 
     

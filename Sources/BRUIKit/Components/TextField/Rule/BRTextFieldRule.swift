@@ -25,7 +25,7 @@ public class BRTextFieldRule {
         case end
     }
     
-    public let textField: BRTextField
+    public weak var textField: BRTextField?
     public let events: [Event]
     private let constraint: Constraint
     public private(set) var status: Status = .none
@@ -80,6 +80,7 @@ public class BRTextFieldRule {
     @MainActor
     @discardableResult
     public func validate() async -> Status {
+        guard let textField else { return .none }
         onBeging?(textField)
         do {
             let text = textField.text

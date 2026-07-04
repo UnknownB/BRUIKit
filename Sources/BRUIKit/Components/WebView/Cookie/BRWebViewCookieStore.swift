@@ -13,7 +13,7 @@ import WebKit
 open class BRWebViewCookieStore {
     
     
-    private let webView: WKWebView
+    private weak var webView: WKWebView?
     
     
     init(webView: WKWebView) {
@@ -27,7 +27,7 @@ open class BRWebViewCookieStore {
     /// 設置 Cookie
     @available(iOS 13.0.0, *)
     public func setCookie(_ cookie: HTTPCookie) async {
-        await webView.configuration.websiteDataStore.httpCookieStore.setCookie(cookie)
+        await webView?.configuration.websiteDataStore.httpCookieStore.setCookie(cookie)
     }
     
     
@@ -43,14 +43,15 @@ open class BRWebViewCookieStore {
     /// 取得所有 Cookies
     @available(iOS 13.0.0, *)
     public func allCookies() async -> [HTTPCookie] {
-        await webView.configuration.websiteDataStore.httpCookieStore.allCookies()
+        guard let webView else { return [] }
+        return await webView.configuration.websiteDataStore.httpCookieStore.allCookies()
     }
     
     
     /// 刪除 Cookie
     @available(iOS 13.0.0, *)
     public func deleteCookie(_ cookie: HTTPCookie) async {
-        await webView.configuration.websiteDataStore.httpCookieStore.deleteCookie(cookie)
+        await webView?.configuration.websiteDataStore.httpCookieStore.deleteCookie(cookie)
     }
     
     

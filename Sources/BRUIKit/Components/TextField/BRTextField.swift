@@ -98,8 +98,8 @@ open class BRTextField: UITextField, ObservableObject, BRResponderProtocol {
     
     /// 驗證所有規則
     open func validateAll() {
-        validator.validateAll(with: rules) {
-            self.updateState()
+        validator.validateAll(with: rules) { [weak self] in
+            self?.updateState()
         }
     }
     
@@ -184,22 +184,22 @@ open class BRTextField: UITextField, ObservableObject, BRResponderProtocol {
     
     
     @objc private func onTextDidBegin() {
-        validator.onBeging(with: rules) {
-            self.updateState()
+        validator.onBeging(with: rules) { [weak self] in
+            self?.updateState()
         }
     }
 
     
     @objc private func onTextChanged() {
-        validator.onChange(with: rules, debounce: debounce) {
-            self.updateState()
+        validator.onChange(with: rules, debounce: debounce) { [weak self] in
+            self?.updateState()
         }
     }
     
     
     @objc private func onTextDidEnd() {
-        validator.onEnd(with: rules) {
-            self.updateState()
+        validator.onEnd(with: rules) { [weak self] in
+            self?.updateState()
         }
     }
     
