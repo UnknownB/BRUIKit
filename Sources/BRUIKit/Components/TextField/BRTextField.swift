@@ -39,6 +39,13 @@ open class BRTextField: UITextField, ObservableObject, BRResponderProtocol {
     }
     
     
+    open override var text: String? {
+        didSet {
+            onTextChanged()
+        }
+    }
+    
+    
     open override func textRect(forBounds bounds: CGRect) -> CGRect {
         let insetRect = bounds.inset(by: contentInsets)
         return super.textRect(forBounds: insetRect)
