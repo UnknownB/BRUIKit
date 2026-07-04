@@ -47,16 +47,16 @@ public extension BRWrapper where Base: UIAlertController {
     
     
     @discardableResult
-    func addDoneAction(style: UIAlertAction.Style = .default, handler: ((UIAlertAction) -> Void)? = nil) -> Base {
-        let action = UIAlertAction(title: "確定", style: style, handler: handler)
+    func addDoneAction(title: String = "done".br.localized, style: UIAlertAction.Style = .default, handler: ((UIAlertAction) -> Void)? = nil) -> Base {
+        let action = UIAlertAction(title: title, style: style, handler: handler)
         base.addAction(action)
         return base
     }
     
     
     @discardableResult
-    func addCancelAction(style: UIAlertAction.Style = .cancel, handler: ((UIAlertAction) -> Void)? = nil) -> Base {
-        let action = UIAlertAction(title: "取消", style: style, handler: handler)
+    func addCancelAction(title: String = "cancel".br.localized, style: UIAlertAction.Style = .cancel, handler: ((UIAlertAction) -> Void)? = nil) -> Base {
+        let action = UIAlertAction(title: title, style: style, handler: handler)
         base.addAction(action)
         return base
     }
