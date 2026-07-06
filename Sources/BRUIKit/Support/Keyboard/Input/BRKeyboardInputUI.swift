@@ -15,7 +15,7 @@ final class BRKeyboardInputUI: NSObject, UITextFieldDelegate {
     private(set) var sortedResponders: [UIResponder] = []
     private(set) var currentResponderIndex: Int? = nil
     private(set) var currentResponder: UIView? = nil
-    private(set) var viewController: UIViewController? = nil
+    private(set) weak var viewController: UIViewController? = nil
     
     private weak var originalTextFieldDelegate: UITextFieldDelegate?
     private var originalTextFieldReturnKey: UIReturnKeyType = .default
