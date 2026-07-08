@@ -195,11 +195,19 @@ final class BRKeyboardInputUI: NSObject, UITextFieldDelegate {
         toolbar.accessoryView.isHidden = false
         toolbar.bind(prev: prevResponder, next: nextResponder)
         toolbar.updateToolbarMaskView(with: activateViewController)
+
+        var didAssignAccessoryView = false
         if let textField = responder as? UITextField, textField.inputAccessoryView == nil {
             textField.inputAccessoryView = toolbar.accessoryView
+            didAssignAccessoryView = true
         }
         if let textView = responder as? UITextView, textView.inputAccessoryView == nil {
             textView.inputAccessoryView = toolbar.accessoryView
+            didAssignAccessoryView = true
+        }
+
+        if didAssignAccessoryView, let view = responder as? UIView, view.isFirstResponder {
+            view.reloadInputViews()
         }
     }
     
