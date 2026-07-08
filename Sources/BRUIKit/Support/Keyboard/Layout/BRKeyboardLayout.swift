@@ -79,7 +79,9 @@ final class BRKeyboardLayout {
     
     private func resolveLayoutMode(with activeViewController: UIViewController, and keyboard: BRKeyboardContext) -> LayoutMode {
         let rootView = activeViewController.view!
-        let scrollViews = rootView.br.findSubviews(of: UIScrollView.self).filter { $0.isScrollEnabled }
+        let scrollViews = rootView.br.findSubviews(of: UIScrollView.self)
+            .filter { $0.isScrollEnabled }
+            .filter { !($0 is UITextView) }
         let sortedMaxYScrollViews = scrollViews.sorted { $0.frame.maxY > $1.frame.maxY }
         
         for scrollView in sortedMaxYScrollViews {
