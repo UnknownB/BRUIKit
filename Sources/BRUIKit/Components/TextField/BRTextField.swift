@@ -22,7 +22,16 @@ open class BRTextField: UITextField, ObservableObject, BRResponderProtocol {
     
     /// 內邊距
     public var contentInsets: UIEdgeInsets = .zero
-    
+
+    /// 字數上限，0 為不限制
+    public var maxLength: Int = 0 {
+        didSet {
+            if self.br.isExceedingMaxLength(maxLength) {
+                self.br.removeExceedingText(maxLength: maxLength)
+            }
+        }
+    }
+
 
     // MARK: - LifeCycle
 
@@ -209,6 +218,10 @@ open class BRTextField: UITextField, ObservableObject, BRResponderProtocol {
 
     
     @objc private func onTextChanged() {
+        if self.br.isExceedingMaxLength(maxLength) {
+            self.br.removeExceedingText(maxLength: maxLength)
+            return
+        }
         validator.onChange(with: rules, debounce: debounce) { [weak self] in
             self?.updateState()
         }

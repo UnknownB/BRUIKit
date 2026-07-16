@@ -55,4 +55,13 @@ public extension BRWrapper where Base: BRTextField {
     }
     
     
+    
+    /// 設定字數上限
+    @MainActor
+    @discardableResult
+    func maxLength(_ maxLength: Int) -> Base {
+        base.maxLength = maxLength
+        return base
+    }
+    
 }
