@@ -32,6 +32,9 @@ open class BRTextField: UITextField, ObservableObject, BRResponderProtocol {
         }
     }
 
+    /// 是否啟用基礎注入攻擊樣式過濾，預設關閉
+    public var isBasicInjectionFilterEnabled: Bool = false
+
 
     // MARK: - LifeCycle
 
@@ -218,6 +221,11 @@ open class BRTextField: UITextField, ObservableObject, BRResponderProtocol {
 
     
     @objc private func onTextChanged() {
+        if isBasicInjectionFilterEnabled {
+            if self.br.removeBasicInjectionPatterns() {
+                return
+            }
+        }
         if self.br.isExceedingMaxLength(maxLength) {
             self.br.removeExceedingText(maxLength: maxLength)
             return

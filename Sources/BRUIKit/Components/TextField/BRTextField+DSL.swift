@@ -63,5 +63,14 @@ public extension BRWrapper where Base: BRTextField {
         base.maxLength = maxLength
         return base
     }
-    
+
+
+    /// 設定是否啟用基礎注入攻擊樣式過濾
+    @MainActor
+    @discardableResult
+    func isBasicInjectionFilterEnabled(_ isEnabled: Bool) -> Base {
+        base.isBasicInjectionFilterEnabled = isEnabled
+        return base
+    }
+
 }
