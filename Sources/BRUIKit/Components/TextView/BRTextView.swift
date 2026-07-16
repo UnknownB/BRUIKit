@@ -29,6 +29,9 @@ open class BRTextView: UITextView, UITextViewDelegate, BRResponderProtocol {
         }
     }
 
+    /// 是否啟用基礎注入攻擊樣式過濾，預設關閉
+    public var isBasicInjectionFilterEnabled: Bool = false
+
     
     // MARK: - LifeCycle
     
@@ -104,6 +107,11 @@ open class BRTextView: UITextView, UITextViewDelegate, BRResponderProtocol {
     
     
     @objc open func textDidChange() {
+        if isBasicInjectionFilterEnabled {
+            if self.br.removeBasicInjectionPatterns() {
+                return
+            }
+        }
         if self.br.isExceedingMaxLength(maxLength) {
             self.br.removeExceedingText(maxLength: maxLength)
             return
