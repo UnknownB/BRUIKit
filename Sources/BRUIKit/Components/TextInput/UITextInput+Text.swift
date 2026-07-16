@@ -54,4 +54,26 @@ public extension BRWrapper where Base: UITextInput {
     }
     
     
+    /// 移除輸入文字中的基礎注入攻擊樣式
+    @discardableResult
+    func removeBasicInjectionPatterns() -> Bool {
+        guard base.markedTextRange == nil else { return false }
+
+        let text = self.text
+        let filtered = text.br.removingBasicInjectionPatterns()
+        guard filtered != text else { return false }
+        
+        guard let fullRange = base.textRange(from: base.beginningOfDocument, to: base.endOfDocument) else { return false }
+        base.replace(fullRange, withText: filtered)
+
+        if let newCursorIndex = text.br.firstDifferenceIndex(with: filtered) {
+            DispatchQueue.main.async {
+                base.selectedTextRange = self.textRange(from: newCursorIndex..<newCursorIndex, in: filtered)
+            }
+        }
+        
+        return true
+    }
+
+
 }
