@@ -19,7 +19,16 @@ open class BRTextView: UITextView, UITextViewDelegate, BRResponderProtocol {
     public var keyboardPadding: CGFloat?
 
     open var onTextDidChange: ((BRTextView) -> Void)?
-    
+
+    /// 字數上限，0 為不限制
+    public var maxLength: Int = 0 {
+        didSet {
+            if self.br.isExceedingMaxLength(maxLength) {
+                self.br.removeExceedingText(maxLength: maxLength)
+            }
+        }
+    }
+
     
     // MARK: - LifeCycle
     
@@ -95,11 +104,15 @@ open class BRTextView: UITextView, UITextViewDelegate, BRResponderProtocol {
     
     
     @objc open func textDidChange() {
+        if self.br.isExceedingMaxLength(maxLength) {
+            self.br.removeExceedingText(maxLength: maxLength)
+            return
+        }
         placeholderLabel.isHidden = !text.isEmpty
         onTextDidChange?(self)
     }
-    
-    
+
+
     // MARK: - UITextViewDelegate
     
     
