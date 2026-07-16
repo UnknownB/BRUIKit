@@ -278,6 +278,7 @@ public extension BRWrapper where Base: UIScrollView {
     // MARK: - Refresh
     
     
+    @MainActor
     @discardableResult
     func refreshControl(_ control: UIRefreshControl?) -> Base {
         base.refreshControl = control

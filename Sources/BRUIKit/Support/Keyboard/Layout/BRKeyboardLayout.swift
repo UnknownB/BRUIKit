@@ -38,6 +38,7 @@ final class BRKeyboardLayout {
     private var lastResponderMinY: CGFloat = 0
     
     
+    @discardableResult
     func moveUp(session: BRKeyboardSession, keyboard: BRKeyboardContext) -> LayoutMode {
         let layoutMode = self.layoutMode ?? resolveLayoutMode(with: session.viewController, and: keyboard)
         

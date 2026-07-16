@@ -13,14 +13,16 @@ public extension BRWrapper where Base: BRTextField {
     
     
     /// 輸入緩衝，預設為1秒
+    @MainActor
     @discardableResult
-    public func debounce(_ seconds: TimeInterval) -> Base {
+    func debounce(_ seconds: TimeInterval) -> Base {
         base.debounce = seconds
         return base
     }
     
     
     /// 設定 textField 的內邊距
+    @MainActor
     @discardableResult
     func contentInsets(_ insets: UIEdgeInsets) -> Base {
         base.contentInsets = insets

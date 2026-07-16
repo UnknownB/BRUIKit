@@ -22,11 +22,11 @@ class BRTextFieldStateHelper {
             textField.layer.borderWidth = borderWidth
         }
         
-        if let borderColor = borderColors[state] ?? textField.layer.borderColor as? UIColor {
+        if let borderColor = borderColors[state] {
             textField.layer.borderColor = borderColor.cgColor
         }
         
-        if let backgroundColor = backgroundColors[state] ?? textField.backgroundColor {
+        if let backgroundColor = backgroundColors[state] {
             textField.backgroundColor = backgroundColor
         }
     }

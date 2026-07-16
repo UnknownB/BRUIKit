@@ -106,7 +106,7 @@ open class BRTextFieldGroupView: UIStackView {
         guard let textField = view as? UITextField else {
             return
         }
-        textFields.br.removingFirstOccurrence(of: textField)
+        textFields = textFields.br.removingFirstOccurrence(of: textField)
         textField.removeFromSuperview()
         NotificationCenter.default.removeObserver(self, name: UITextField.textDidBeginEditingNotification, object: textField)
         NotificationCenter.default.removeObserver(self, name: UITextField.textDidChangeNotification, object: textField)

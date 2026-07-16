@@ -9,6 +9,7 @@ import BRFoundation
 import UIKit
 
 
+@MainActor
 open class BRTextFieldGroup: ObservableObject {
 
     public private(set) var textFields: [BRTextField] = []
