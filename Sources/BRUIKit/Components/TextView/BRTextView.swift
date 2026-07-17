@@ -86,7 +86,6 @@ open class BRTextView: UITextView, UITextViewDelegate, BRResponderProtocol {
     
     
     private func setup() {
-        RTF.setup(for: self)
         delegate = self
         inputAccessoryView = BRKeyboard.toolbar.accessoryView
         

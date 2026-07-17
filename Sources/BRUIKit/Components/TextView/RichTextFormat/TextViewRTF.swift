@@ -15,13 +15,6 @@ public final class TextViewRTF {
     public var actions: [URL: BRTextView.TappableAction] = [:]
     
     
-    // MARK: - Init
-
-    
-    public func setup(for textView: UITextView) {
-    }
-    
-    
     // MARK: - 屬性設定
 
     

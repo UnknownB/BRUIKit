@@ -96,24 +96,6 @@ public extension BRWrapper where Base: UITextView {
     }
 
     
-    // MARK: - 行高與間距
-    
-    
-    /// 設定行距（line spacing）
-    @discardableResult
-    func lineSpacing(_ spacing: CGFloat) -> Base {
-        guard let mutable = base.attributedText?.mutableCopy() as? NSMutableAttributedString else {
-            return base
-        }
-        let style = NSMutableParagraphStyle()
-        style.lineSpacing = spacing
-        let attrs: [NSAttributedString.Key: Any] = [.paragraphStyle: style]
-        mutable.addAttributes(attrs, range: NSRange(location: 0, length: mutable.length))
-        base.attributedText = mutable
-        return base
-    }
-
-    
     // MARK: - 行為控制
 
     
@@ -204,6 +186,21 @@ public extension BRWrapper where Base: UITextView {
     @discardableResult
     func lineFragmentPadding(_ padding: CGFloat) -> Base {
         base.textContainer.lineFragmentPadding = padding
+        return base
+    }
+    
+    
+    /// 設定行距（line spacing）
+    @discardableResult
+    func lineSpacing(_ spacing: CGFloat) -> Base {
+        guard let mutable = base.attributedText?.mutableCopy() as? NSMutableAttributedString else {
+            return base
+        }
+        let style = NSMutableParagraphStyle()
+        style.lineSpacing = spacing
+        let attrs: [NSAttributedString.Key: Any] = [.paragraphStyle: style]
+        mutable.addAttributes(attrs, range: NSRange(location: 0, length: mutable.length))
+        base.attributedText = mutable
         return base
     }
 
