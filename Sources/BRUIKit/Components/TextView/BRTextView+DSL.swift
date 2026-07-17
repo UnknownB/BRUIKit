@@ -350,5 +350,70 @@ public extension BRWrapper where Base: BRTextView {
         return base
     }
     
+    
+    // MARK: - 字數計數（countLabel）
 
+
+    /// 設定字數計數顏色
+    @MainActor
+    @discardableResult
+    func countLabelColor(_ color: UIColor) -> Base {
+        base.countLabel.br.color(color)
+        return base
+    }
+
+
+    /// 設定字數計數字型
+    @MainActor
+    @discardableResult
+    func countLabelFont(_ weight: UIFont.Weight, _ size: CGFloat) -> Base {
+        base.countLabel.br.font(weight, size)
+        return base
+    }
+
+
+    /// 設定字數計數字型
+    @MainActor
+    @discardableResult
+    func countLabelFont(_ weight: BRFontWeight, _ size: CGFloat) -> Base {
+        base.countLabel.br.font(weight, size)
+        return base
+    }
+
+
+    /// 設定字數計數字型
+    @MainActor
+    @discardableResult
+    func countLabelFont(_ font: UIFont) -> Base {
+        base.countLabel.br.font(font)
+        return base
+    }
+    
+    
+    /// 設定字數計數文字對齊方式
+    @discardableResult
+    func countLabelAlignment(_ alignment: NSTextAlignment) -> Base {
+        base.countLabel.textAlignment = alignment
+        return base
+    }
+    
+    
+    /// 設定字數計數排版
+    @MainActor
+    @discardableResult
+    func setCountLayout(_ closure: ((BRTextView, BRLabel, BRLayout) -> Void)?) -> Base {
+        base.setCountLayout(closure)
+        return base
+    }
+    
+    
+    /// 設定字數計數字串格式
+    @MainActor
+    @discardableResult
+    func setCountFormatter(_ closure: ((_ count: Int, _ maxLength: Int) -> String)?) -> Base {
+        base.onCustomCountFormatter = closure
+        return base
+    }
+
+    
 }

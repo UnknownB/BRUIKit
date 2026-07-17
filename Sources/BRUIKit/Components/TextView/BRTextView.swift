@@ -11,6 +11,8 @@ import UIKit
 /// BRTextView 以組合（BRView 持有內部 UITextView）取代繼承，方便添加子視圖
 open class BRTextView: BRView {
 
+    private let countLayout = BRLayout()
+    
     public final class InputTextView: UITextView, BRResponderProtocol {
         public var keyboardPadding: CGFloat?
     }
@@ -22,11 +24,20 @@ open class BRTextView: BRView {
     open var onTextDidChange: ((BRTextView) -> Void)?
     
     
+    /// 自訂 countLabel 顯示字串的閉包，傳入目前字數與最大限制字數，回傳要顯示的字串
+    public var onCustomCountFormatter: ((_ count: Int, _ maxLength: Int) -> String)? {
+        didSet {
+            updateCountLabel()
+        }
+    }
+    
+    
     // MARK: - UI 元件
     
     
     public let inputTextView = InputTextView()
     public let placeholderLabel = BRLabel()
+    public let countLabel = BRLabel()
 
     
     // MARK: - 屬性
@@ -42,6 +53,8 @@ open class BRTextView: BRView {
     /// 字數上限，0 為不限制
     public var maxLength: Int = 0 {
         didSet {
+            countLabel.isHidden = maxLength <= 0
+            updateCountLabel()
             DispatchQueue.main.async { [self] in
                 if inputTextView.br.isExceedingMaxLength(maxLength) {
                     inputTextView.br.removeExceedingText(maxLength: maxLength)
@@ -214,6 +227,7 @@ open class BRTextView: BRView {
         inputTextView.backgroundColor = .clear
         placeholderLabel.numberOfLines = 0
         placeholderLabel.contentInsets = inputTextView.textContainerInset
+        countLabel.isHidden = true
     }
 
 
@@ -222,6 +236,7 @@ open class BRTextView: BRView {
 
         contentView.addSubview(inputTextView)
         contentView.addSubview(placeholderLabel)
+        contentView.addSubview(countLabel)
 
         layout.activate {
             inputTextView.br.top == contentView.br.top
@@ -232,6 +247,21 @@ open class BRTextView: BRView {
             placeholderLabel.br.top == contentView.br.top
             placeholderLabel.br.left == contentView.br.left + 6 // 視覺調整
             placeholderLabel.br.right == contentView.br.right
+        }
+
+        setCountLayout(nil)
+    }
+    
+    
+    open func setCountLayout(_ closure: ((BRTextView, BRLabel, BRLayout) -> Void)?) {
+        countLayout.deactivateAll()
+        if let closure {
+            closure(self, countLabel, countLayout)
+        } else {
+            countLayout.activate {
+                countLabel.br.right == self.br.right - 8
+                countLabel.br.bottom == self.br.bottom - 8
+            }
         }
     }
     
@@ -256,7 +286,20 @@ open class BRTextView: BRView {
             return
         }
         placeholderLabel.isHidden = !inputTextView.text.isEmpty
+        updateCountLabel()
         onTextDidChange?(self)
+    }
+
+
+    private func updateCountLabel() {
+        guard maxLength > 0 else { return }
+        let currentLength = inputTextView.text?.count ?? 0
+        
+        if let formatter = onCustomCountFormatter {
+            countLabel.text = formatter(currentLength, maxLength)
+        } else {
+            countLabel.text = "\(currentLength) / \(maxLength)"
+        }
     }
 
 
