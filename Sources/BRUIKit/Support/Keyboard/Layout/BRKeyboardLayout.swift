@@ -36,6 +36,25 @@ final class BRKeyboardLayout {
     private var originalScrollViewBottomInset: CGFloat? = nil
     private var mainScrollView: UIScrollView? = nil
     private var lastResponderMinY: CGFloat = 0
+
+
+    /// 焦點元件用來計算捲動位置的區域
+    ///
+    /// - 一般 view 使用自身 bounds
+    /// - `UITextView` 因為高度可能很高，改用游標所在位置，避免鍵盤彈出時捲動到整個 UITextView 的底部
+    private func responderRect(for responder: UIView) -> CGRect {
+        guard let textView = responder as? UITextView else {
+            return responder.bounds
+        }
+
+        let position = textView.selectedTextRange?.end ?? textView.endOfDocument
+        let caretRect = textView.caretRect(for: position)
+        guard !caretRect.isNull, !caretRect.isInfinite else {
+            return responder.bounds
+        }
+
+        return caretRect
+    }
     
     
     @discardableResult
@@ -114,7 +133,7 @@ final class BRKeyboardLayout {
         
         var responderFrame: CGRect? = nil
         if let superScrollView = session.responder.br.findSuperview(of: UIScrollView.self) {
-            responderFrame = session.responder.convert(session.responder.bounds, to: superScrollView)
+            responderFrame = session.responder.convert(responderRect(for: session.responder), to: superScrollView)
             responderFrame!.size.height += keyboardPadding
         }
         
@@ -134,7 +153,7 @@ final class BRKeyboardLayout {
     
     
     private func applyOffsetLayout(session: BRKeyboardSession, keyboard: BRKeyboardContext) {
-        let responderFrame = session.responder.convert(session.responder.bounds, to: session.containerView)
+        let responderFrame = session.responder.convert(responderRect(for: session.responder), to: session.containerView)
         let keyboardAndToolbarTop = keyboard.frame.minY
         let keyboardPadding = (session.responder as? BRResponderProtocol)?.keyboardPadding ?? self.keyboardPadding
 

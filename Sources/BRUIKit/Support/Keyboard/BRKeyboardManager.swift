@@ -62,6 +62,7 @@ final class BRKeyboardManager {
         NotificationCenter.default.addObserver(self, selector: #selector(onTextDidBegin), name: UITextView.textDidBeginEditingNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onTextDidEndEditing), name: UITextField.textDidEndEditingNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onTextDidEndEditing), name: UITextView.textDidEndEditingNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onTextViewDidChange), name: UITextView.textDidChangeNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         inputUI.addObserver()
@@ -122,6 +123,21 @@ final class BRKeyboardManager {
         }
     }
 
+    
+    /// 監聽 `UITextView` 文字內容變化事件
+    ///
+    /// - 高度較高的 `UITextView` 在鍵盤顯示中持續輸入時，游標可能隨著換行往下移出可視範圍
+    /// - 這裡重新計算一次捲動位置，讓畫面持續跟隨游標
+    @objc private func onTextViewDidChange(_ sender: Notification) {
+        guard let textView = sender.object as? UITextView else {
+            return
+        }
+        guard let session, let keyboardContext, session.responder === textView else {
+            return
+        }
+
+        layout.moveUp(session: session, keyboard: keyboardContext)
+    }
     
     
     /// 監聽鍵盤即將顯示事件
