@@ -8,128 +8,272 @@
 import UIKit
 
 
-open class BRTextView: UITextView, UITextViewDelegate, BRResponderProtocol {
-    
-    
-    public let RTF = TextViewRTF()
-    public let placeholderLabel = BRLabel()
+/// BRTextView 以組合（BRView 持有內部 UITextView）取代繼承，方便添加子視圖
+open class BRTextView: BRView {
+
+    public final class InputTextView: UITextView, BRResponderProtocol {
+        public var keyboardPadding: CGFloat?
+    }
 
     public typealias TappableAction = () -> Void
 
-    public var keyboardPadding: CGFloat?
-
+    public let RTF = TextViewRTF()
+    
     open var onTextDidChange: ((BRTextView) -> Void)?
+    
+    
+    // MARK: - UI 元件
+    
+    
+    public let inputTextView = InputTextView()
+    public let placeholderLabel = BRLabel()
+
+    
+    // MARK: - 屬性
+    
+    
+    /// 鍵盤上緣與輸入框之間的間距
+    public var keyboardPadding: CGFloat? {
+        get { inputTextView.keyboardPadding }
+        set { inputTextView.keyboardPadding = newValue }
+    }
+    
 
     /// 字數上限，0 為不限制
     public var maxLength: Int = 0 {
         didSet {
-            if self.br.isExceedingMaxLength(maxLength) {
-                self.br.removeExceedingText(maxLength: maxLength)
+            DispatchQueue.main.async { [self] in
+                if inputTextView.br.isExceedingMaxLength(maxLength) {
+                    inputTextView.br.removeExceedingText(maxLength: maxLength)
+                }
             }
         }
     }
 
+    
     /// 是否啟用基礎注入攻擊樣式過濾，預設關閉
     public var isBasicInjectionFilterEnabled: Bool = false
 
+
+    public var text: String! {
+        get { inputTextView.text }
+        set {
+            inputTextView.text = newValue
+            textDidChange()
+            RTF.actions.removeAll()
+        }
+    }
+
+
+    public var attributedText: NSAttributedString? {
+        get { inputTextView.attributedText }
+        set {
+            inputTextView.attributedText = newValue
+            RTF.setAttributedText(newValue)
+        }
+    }
+
+
+    public var font: UIFont? {
+        get { inputTextView.font }
+        set {
+            inputTextView.font = newValue
+            placeholderLabel.font = newValue
+        }
+    }
+
+
+    public var textColor: UIColor? {
+        get { inputTextView.textColor }
+        set { inputTextView.textColor = newValue }
+    }
     
+    
+    open var textBackgroundColor: UIColor? {
+        get { inputTextView.backgroundColor }
+        set { inputTextView.backgroundColor = newValue }
+    }
+
+
+    public var textAlignment: NSTextAlignment {
+        get { inputTextView.textAlignment }
+        set { inputTextView.textAlignment = newValue }
+    }
+
+
+    public var linkTextAttributes: [NSAttributedString.Key: Any]! {
+        get { inputTextView.linkTextAttributes }
+        set { inputTextView.linkTextAttributes = newValue }
+    }
+
+
+    public var isEditable: Bool {
+        get { inputTextView.isEditable }
+        set { inputTextView.isEditable = newValue }
+    }
+
+
+    public var isSelectable: Bool {
+        get { inputTextView.isSelectable }
+        set { inputTextView.isSelectable = newValue }
+    }
+
+
+    public var isScrollEnabled: Bool {
+        get { inputTextView.isScrollEnabled }
+        set { inputTextView.isScrollEnabled = newValue }
+    }
+
+
+    public var keyboardType: UIKeyboardType {
+        get { inputTextView.keyboardType }
+        set { inputTextView.keyboardType = newValue }
+    }
+
+
+    public var returnKeyType: UIReturnKeyType {
+        get { inputTextView.returnKeyType }
+        set { inputTextView.returnKeyType = newValue }
+    }
+
+
+    public var autocapitalizationType: UITextAutocapitalizationType {
+        get { inputTextView.autocapitalizationType }
+        set { inputTextView.autocapitalizationType = newValue }
+    }
+
+
+    public var autocorrectionType: UITextAutocorrectionType {
+        get { inputTextView.autocorrectionType }
+        set { inputTextView.autocorrectionType = newValue }
+    }
+
+
+    public var spellCheckingType: UITextSpellCheckingType {
+        get { inputTextView.spellCheckingType }
+        set { inputTextView.spellCheckingType = newValue }
+    }
+
+
+    public var textContainerInset: UIEdgeInsets {
+        get { inputTextView.textContainerInset }
+        set {
+            inputTextView.textContainerInset = newValue
+            placeholderLabel.br.contentInsets(newValue)
+        }
+    }
+
+
+    public var textContainer: NSTextContainer {
+        inputTextView.textContainer
+    }
+
+
+    public weak var delegate: UITextViewDelegate? {
+        get { inputTextView.delegate }
+        set { inputTextView.delegate = newValue }
+    }
+
+
+    open override var canBecomeFirstResponder: Bool {
+        inputTextView.canBecomeFirstResponder
+    }
+
+
+    open override var isFirstResponder: Bool {
+        inputTextView.isFirstResponder
+    }
+
+
+    @discardableResult
+    open override func becomeFirstResponder() -> Bool {
+        inputTextView.becomeFirstResponder()
+    }
+
+
+    @discardableResult
+    open override func resignFirstResponder() -> Bool {
+        inputTextView.resignFirstResponder()
+    }
+
+
     // MARK: - LifeCycle
-    
-    
-    public override init(frame: CGRect, textContainer: NSTextContainer?) {
-        super.init(frame: frame, textContainer: textContainer)
-        setup()
-    }
-    
-    
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setup()
-    }
-    
-    
+
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
     
     
-    open override var text: String! {
-        didSet {
-            textDidChange()
-            RTF.actions.removeAll()
-        }
-    }
-    
-    
-    open override var attributedText: NSAttributedString? {
-        didSet {
-            RTF.setAttributedText(attributedText)
-        }
-    }
-    
-    
-    open override var font: UIFont? {
-        didSet {
-            placeholderLabel.font = font
-        }
-    }
-    
-    
-    open override var textContainerInset: UIEdgeInsets {
-        didSet {
-            placeholderLabel.br.contentInsets(textContainerInset)
-        }
-    }
-    
-    
     // MARK: - UI
-    
-    
-    private func setup() {
-        delegate = self
-        inputAccessoryView = BRKeyboard.toolbar.accessoryView
-        
+
+
+    open override func setupUI() {
+        super.setupUI()
+        inputTextView.delegate = self
+        inputTextView.backgroundColor = .clear
         placeholderLabel.numberOfLines = 0
-        placeholderLabel.isUserInteractionEnabled = false
-        addSubview(placeholderLabel)
-        
-        BRLayout().activate {
-            placeholderLabel.br.top == self.br.top
-            placeholderLabel.br.left == self.br.left + 6 // 視覺調整
-            placeholderLabel.br.bottom == self.br.bottom
-            placeholderLabel.br.right == self.br.right
-            placeholderLabel.br.width <= self.br.width
+        placeholderLabel.contentInsets = inputTextView.textContainerInset
+    }
+
+
+    open override func setupLayout() {
+        super.setupLayout()
+
+        contentView.addSubview(inputTextView)
+        contentView.addSubview(placeholderLabel)
+
+        layout.activate {
+            inputTextView.br.top == contentView.br.top
+            inputTextView.br.left == contentView.br.left
+            inputTextView.br.right == contentView.br.right
+            inputTextView.br.bottom == contentView.br.bottom
+
+            placeholderLabel.br.top == contentView.br.top
+            placeholderLabel.br.left == contentView.br.left + 6 // 視覺調整
+            placeholderLabel.br.right == contentView.br.right
         }
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(textDidChange), name: UITextView.textDidChangeNotification, object: self)
     }
     
     
+    // MARK: - Event
+
+
+    open override func setupEvent() {
+        super.setupEvent()
+        NotificationCenter.default.addObserver(self, selector: #selector(textDidChange), name: UITextView.textDidChangeNotification, object: inputTextView)
+    }
+
+
     @objc open func textDidChange() {
         if isBasicInjectionFilterEnabled {
-            if self.br.removeBasicInjectionPatterns() {
+            if inputTextView.br.removeBasicInjectionPatterns() {
                 return
             }
         }
-        if self.br.isExceedingMaxLength(maxLength) {
-            self.br.removeExceedingText(maxLength: maxLength)
+        if inputTextView.br.isExceedingMaxLength(maxLength) {
+            inputTextView.br.removeExceedingText(maxLength: maxLength)
             return
         }
-        placeholderLabel.isHidden = !text.isEmpty
+        placeholderLabel.isHidden = !inputTextView.text.isEmpty
         onTextDidChange?(self)
     }
 
 
-    // MARK: - UITextViewDelegate
-    
-    
+}
+
+
+// MARK: - UITextViewDelegate
+
+
+extension BRTextView: UITextViewDelegate {
+
     open func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         if let action = RTF.actions[URL] {
             action()
-            return false // prevent system default
+            return false
         }
         return true
     }
-    
-    
+
 }
