@@ -13,6 +13,21 @@ import BRFoundation
 public extension BRWrapper where Base: UIView {
     
     
+    /// AutoLayout 約束允許的最小高度
+    func compressedFittingHeight() -> CGFloat {
+        base.layoutIfNeeded()
+        
+        let autoresizingMask = base.translatesAutoresizingMaskIntoConstraints
+        
+        base.translatesAutoresizingMaskIntoConstraints = false
+        let targetSize = CGSize(width: base.bounds.width, height: UIView.layoutFittingCompressedSize.height)
+        let fittingSize = base.systemLayoutSizeFitting(targetSize, withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+        base.translatesAutoresizingMaskIntoConstraints = autoresizingMask
+        
+        return fittingSize.height
+    }
+    
+    
     /// 從響應鏈中取得 UIViewController，如果 UIView 未加入視圖會獲得 nil
     func viewController() -> UIViewController? {
         if let nextResponder = base.next as? UIViewController {
