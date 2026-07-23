@@ -17,7 +17,7 @@ public extension BRWrapper where Base: UIView {
     
     @MainActor
     @discardableResult
-    func backgroundColor(_ color: UIColor) -> Base {
+    func backgroundColor(_ color: UIColor?) -> Base {
         base.backgroundColor = color
         return base
     }
@@ -25,7 +25,7 @@ public extension BRWrapper where Base: UIView {
     
     @MainActor
     @discardableResult
-    func tintColor(_ color: UIColor) -> Base {
+    func tintColor(_ color: UIColor?) -> Base {
         base.tintColor = color
         return base
     }
