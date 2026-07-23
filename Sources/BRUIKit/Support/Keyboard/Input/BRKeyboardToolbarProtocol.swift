@@ -36,8 +36,8 @@ public protocol BRKeyboardToolbarProtocol {
     var onToolbarMaskChange: ((UIViewController) -> Void)? { get set }
     
     
-    /// 綁定 prev、next 焦點元件
-    func bind(prev: UIResponder?, next: UIResponder?)
+    /// 綁定 prev、next 焦點元件，並套用當前焦點元件的工具列客製化設定
+    func bind(prev: UIResponder?, next: UIResponder?, config: BRKeyboardToolbarConfig?)
     
     
     /// 取得目前頁面的 viewController 更新 ToolbarMask 外觀

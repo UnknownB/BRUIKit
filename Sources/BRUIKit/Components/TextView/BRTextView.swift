@@ -15,6 +15,7 @@ open class BRTextView: BRView {
     
     public final class InputTextView: UITextView, BRResponderProtocol {
         public var keyboardPadding: CGFloat?
+        public var keyboardToolbarConfig = BRKeyboardToolbarConfig()
     }
 
     public typealias TappableAction = () -> Void

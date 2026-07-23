@@ -196,8 +196,9 @@ final class BRKeyboardInputUI: NSObject, UITextFieldDelegate {
     private func handleToolbar(with responder: UIResponder, activateViewController: UIViewController) {
         guard enableToolbar else { return }
         
+        let keyboardToolbarConfig = (responder as? BRResponderProtocol)?.keyboardToolbarConfig
         toolbar.accessoryView.isHidden = false
-        toolbar.bind(prev: prevResponder, next: nextResponder)
+        toolbar.bind(prev: prevResponder, next: nextResponder, config: keyboardToolbarConfig)
         toolbar.updateToolbarMaskView(with: activateViewController)
 
         var didAssignAccessoryView = false

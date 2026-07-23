@@ -15,6 +15,7 @@ final public class BRKeyboardToolbarIOS26: NSObject, BRKeyboardToolbarProtocol {
     private let layout = BRLayout()
     private weak var prevView: UIResponder? = nil
     private weak var nextView: UIResponder? = nil
+    private var config: BRKeyboardToolbarConfig? = nil
     
     
     public var onToolbarMaskChange: ((UIViewController) -> Void)? = nil
@@ -25,7 +26,7 @@ final public class BRKeyboardToolbarIOS26: NSObject, BRKeyboardToolbarProtocol {
     
     private let container = UIView()
     private let toolbar = UIToolbar()
-    private let flexSpaceView = UIView()
+    private let listBar = BRListBar()
     
     public let toolbarMaskView = UIView()
     public lazy var prevButton = UIBarButtonItem(title: nil, style: .plain, target: self, action: #selector(onPrevTapped))
@@ -57,6 +58,8 @@ final public class BRKeyboardToolbarIOS26: NSObject, BRKeyboardToolbarProtocol {
         nextButton.image = UIImage(systemName: "chevron.down")
         doneButton.image = UIImage(systemName: "checkmark")
         
+        listBar.scrollView.br.pagingEnabled(true)
+        
         toolbarMaskView.br.cornerRadius(30, maskedConers: [.layerMinXMinYCorner, .layerMaxXMinYCorner])
     }
     
@@ -64,6 +67,10 @@ final public class BRKeyboardToolbarIOS26: NSObject, BRKeyboardToolbarProtocol {
     func setupLayout() {
         container.addSubview(toolbarMaskView)
         container.addSubview(toolbar)
+        
+        listBar
+            .br.spacing(15)
+            .br.showsHorizontalIndicator(false)
         
         let padding: CGFloat = 7
         let maskHeight = UIScreen.main.bounds.height
@@ -79,8 +86,6 @@ final public class BRKeyboardToolbarIOS26: NSObject, BRKeyboardToolbarProtocol {
             toolbar.br.top == container.br.top + padding
             
             container.br.height == toolbar.br.height + (padding * 2) // 讓 toolbar 與鍵盤有間隙
-            
-            (flexSpaceView.br.width == 1000).br.priority(.fittingSizeLevel) // 盡可能撐開使 UI 與系統一致
         }
     }
     
@@ -88,14 +93,17 @@ final public class BRKeyboardToolbarIOS26: NSObject, BRKeyboardToolbarProtocol {
     // MARK: - Data
 
     
-    public func bind(prev: UIResponder?, next: UIResponder?) {
+    public func bind(prev: UIResponder?, next: UIResponder?, config: BRKeyboardToolbarConfig?) {
         prevView = prev
         nextView = next
-        
+        self.config = config
+
         prevButton.isEnabled = prevView != nil
         nextButton.isEnabled = nextView != nil
+        
+        listBar.stackView.br.removeAllArranged()
 
-        let hiddenPrevNext = BRKeyboard.hiddenPrevNextWhenDisabled ? (!prevButton.isEnabled && !nextButton.isEnabled) : false
+        let hiddenPrevNext = config?.hiddenPrevNext ?? (BRKeyboard.hiddenPrevNextWhenDisabled ? (!prevButton.isEnabled && !nextButton.isEnabled) : false)
 
         var items: [UIBarButtonItem] = []
         
@@ -104,8 +112,10 @@ final public class BRKeyboardToolbarIOS26: NSObject, BRKeyboardToolbarProtocol {
             items.append(nextButton)
         }
         
-        items.append(.init(customView: flexSpaceView)) // 使用 flexibleSpace 會與系統原生外觀不同
+        items.append(.init(customView: listBar))
         items.append(doneButton)
+        
+        config?.additionalItems.forEach { listBar.br.addArranged($0) }
         
         toolbar.setItems(items, animated: false)
     }
@@ -120,17 +130,29 @@ final public class BRKeyboardToolbarIOS26: NSObject, BRKeyboardToolbarProtocol {
     
     
     @objc private func onPrevTapped() {
-        prevView?.becomeFirstResponder()
+        if let onPrev = config?.onPrev {
+            onPrev(prevView)
+        } else {
+            prevView?.becomeFirstResponder()
+        }
     }
     
     
     @objc private func onNextTapped() {
-        nextView?.becomeFirstResponder()
+        if let onNext = config?.onNext {
+            onNext(nextView)
+        } else {
+            nextView?.becomeFirstResponder()
+        }
     }
     
     
     @objc private func onDoneTapped() {
-        BRKeyboard.dismissKeyboard()
+        if let onDone = config?.onDone {
+            onDone()
+        } else {
+            BRKeyboard.dismissKeyboard()
+        }
     }
 
     
