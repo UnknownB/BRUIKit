@@ -78,9 +78,11 @@ final public class BRKeyboardToolbarIOS13: NSObject, BRKeyboardToolbarProtocol {
         prevView = prev
         nextView = next
         
+        let hiddenPrevNext = BRKeyboard.hiddenPrevNextWhenDisabled ? (!prevButton.isEnabled && !nextButton.isEnabled) : false
+
         var items: [UIBarButtonItem] = []
         
-        if prevView != nil || nextView != nil {
+        if !hiddenPrevNext {
             items.append(prevButton)
             items.append(nextButton)
 

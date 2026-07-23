@@ -62,6 +62,13 @@ public enum BRKeyboard {
     }
     
     
+    /// 在 prev、next 都無法操作時隱藏按鈕，預設為 true
+    public static var hiddenPrevNextWhenDisabled: Bool {
+        get { BRKeyboardManager.shared.inputUI.hiddenPrevNextWhenDisabled }
+        set { BRKeyboardManager.shared.inputUI.hiddenPrevNextWhenDisabled = newValue }
+    }
+    
+    
     // MARK: - Configuration
     
     

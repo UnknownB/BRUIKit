@@ -24,6 +24,10 @@ final class BRKeyboardInputUI: NSObject, UITextFieldDelegate {
     /// 工具列
     lazy var toolbar = makeToolbar()
     
+
+    /// 在 prev、next 都無法操作時隱藏按鈕
+    var hiddenPrevNextWhenDisabled: Bool = true
+    
     
     /// 啟動工具列
     var enableToolbar: Bool = true {

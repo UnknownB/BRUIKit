@@ -82,14 +82,6 @@ final public class BRKeyboardToolbarIOS26: NSObject, BRKeyboardToolbarProtocol {
             
             (flexSpaceView.br.width == 1000).br.priority(.fittingSizeLevel) // 盡可能撐開使 UI 與系統一致
         }
-        
-        var items: [UIBarButtonItem] = []
-        items.append(prevButton)
-        items.append(nextButton)
-        items.append(.init(customView: flexSpaceView)) // 使用 flexibleSpace 會與系統原生外觀不同
-        items.append(doneButton)
-        
-        toolbar.setItems(items, animated: false)
     }
     
     
@@ -102,6 +94,20 @@ final public class BRKeyboardToolbarIOS26: NSObject, BRKeyboardToolbarProtocol {
         
         prevButton.isEnabled = prevView != nil
         nextButton.isEnabled = nextView != nil
+
+        let hiddenPrevNext = BRKeyboard.hiddenPrevNextWhenDisabled ? (!prevButton.isEnabled && !nextButton.isEnabled) : false
+
+        var items: [UIBarButtonItem] = []
+        
+        if !hiddenPrevNext {
+            items.append(prevButton)
+            items.append(nextButton)
+        }
+        
+        items.append(.init(customView: flexSpaceView)) // 使用 flexibleSpace 會與系統原生外觀不同
+        items.append(doneButton)
+        
+        toolbar.setItems(items, animated: false)
     }
     
     
