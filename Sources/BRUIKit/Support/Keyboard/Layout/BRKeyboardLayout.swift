@@ -43,6 +43,8 @@ final class BRKeyboardLayout {
     private var originalViewControllerBottomInset: CGFloat = 0
     private var baselineSafeAreaBottomInset: CGFloat = 0
 
+    private weak var navigationBarHiddenController: UINavigationController? = nil
+
 
     /// 焦點元件用來計算捲動位置的區域
     ///
@@ -63,8 +65,24 @@ final class BRKeyboardLayout {
     }
     
     
+    /// 當空間緊繃時，隱藏導覽列爭取可視空間
+    private func hideNavigationBarIfNeeded(session: BRKeyboardSession) {
+        guard navigationBarHiddenController == nil,
+              session.viewController.traitCollection.verticalSizeClass == .compact,
+              let navigationController = session.viewController.navigationController,
+              !navigationController.isNavigationBarHidden
+        else {
+            return
+        }
+        navigationBarHiddenController = navigationController
+        navigationController.setNavigationBarHidden(true, animated: true)
+    }
+    
+    
     @discardableResult
     func moveUp(session: BRKeyboardSession, keyboard: BRKeyboardContext) -> LayoutMode {
+        hideNavigationBarIfNeeded(session: session)
+
         let layoutMode = self.layoutMode ?? resolveLayoutMode(with: session, and: keyboard)
         
         switch layoutMode {
@@ -87,12 +105,14 @@ final class BRKeyboardLayout {
         let anchorScrollView = self.mainScrollView
         let originalViewControllerBottomInset = self.originalViewControllerBottomInset
         let originalScrollViewBottomInset = self.originalScrollViewBottomInset
+        let navigationBarHiddenController = self.navigationBarHiddenController
 
         self.layoutMode = nil
         self.originalScrollViewBottomInset = nil
         self.mainScrollView = nil
         self.lastResponderMinY = 0
         self.resizedViewController = nil
+        self.navigationBarHiddenController = nil
         self.isKeyboardVisible = false
 
         UIView.animate(withDuration: keyboard.animationDuration, delay: 0, options: keyboard.animationOptions) {
@@ -100,6 +120,7 @@ final class BRKeyboardLayout {
             session?.containerView.frame = originalFrame
             session?.containerView.setNeedsLayout()
             session?.containerView.layoutIfNeeded()
+            navigationBarHiddenController?.setNavigationBarHidden(false, animated: true)
             if let resizedViewController {
                 resizedViewController.additionalSafeAreaInsets.bottom = originalViewControllerBottomInset
                 resizedViewController.view.layoutIfNeeded()
