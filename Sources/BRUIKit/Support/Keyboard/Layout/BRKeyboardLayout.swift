@@ -13,6 +13,7 @@ import UIKit
 final class BRKeyboardLayout {
     
     enum LayoutMode: String {
+        case resize
         case inset
         case offset
     }
@@ -37,6 +38,11 @@ final class BRKeyboardLayout {
     private var mainScrollView: UIScrollView? = nil
     private var lastResponderMinY: CGFloat = 0
 
+    /// resize 模式期間被暫時調整的 VC 與其原始 additionalSafeAreaInsets.bottom，於 moveDown 還原
+    private weak var resizedViewController: UIViewController? = nil
+    private var originalViewControllerBottomInset: CGFloat = 0
+    private var baselineSafeAreaBottomInset: CGFloat = 0
+
 
     /// 焦點元件用來計算捲動位置的區域
     ///
@@ -59,9 +65,11 @@ final class BRKeyboardLayout {
     
     @discardableResult
     func moveUp(session: BRKeyboardSession, keyboard: BRKeyboardContext) -> LayoutMode {
-        let layoutMode = self.layoutMode ?? resolveLayoutMode(with: session.viewController, and: keyboard)
+        let layoutMode = self.layoutMode ?? resolveLayoutMode(with: session, and: keyboard)
         
         switch layoutMode {
+        case .resize:
+            applyResizeLayout(session: session, keyboard: keyboard)
         case .inset:
             applyInsetLayout(session: session, keyboard: keyboard)
         case .offset:
@@ -75,20 +83,32 @@ final class BRKeyboardLayout {
     
     
     func moveDown(session: BRKeyboardSession?, keyboard: BRKeyboardContext, completion: (() -> Void)? = nil) {
+        let resizedViewController = self.resizedViewController
+        let anchorScrollView = self.mainScrollView
+        let originalViewControllerBottomInset = self.originalViewControllerBottomInset
+        let originalScrollViewBottomInset = self.originalScrollViewBottomInset
+
+        self.layoutMode = nil
+        self.originalScrollViewBottomInset = nil
+        self.mainScrollView = nil
+        self.lastResponderMinY = 0
+        self.resizedViewController = nil
+        self.isKeyboardVisible = false
+
         UIView.animate(withDuration: keyboard.animationDuration, delay: 0, options: keyboard.animationOptions) {
             let originalFrame = session?.responder.window?.frame ?? .zero
             session?.containerView.frame = originalFrame
-            if self.originalScrollViewBottomInset != nil {
-                guard let anchorScrollView = self.mainScrollView else { return }
-                anchorScrollView.contentInset.bottom = self.originalScrollViewBottomInset!
-                anchorScrollView.scrollIndicatorInsets.bottom = self.originalScrollViewBottomInset!
+            session?.containerView.setNeedsLayout()
+            session?.containerView.layoutIfNeeded()
+            if let resizedViewController {
+                resizedViewController.additionalSafeAreaInsets.bottom = originalViewControllerBottomInset
+                resizedViewController.view.layoutIfNeeded()
+            }
+            if let anchorScrollView, let originalScrollViewBottomInset {
+                anchorScrollView.contentInset.bottom = originalScrollViewBottomInset
+                anchorScrollView.scrollIndicatorInsets.bottom = originalScrollViewBottomInset
             }
         } completion: { _ in
-            self.layoutMode = nil
-            self.originalScrollViewBottomInset = nil
-            self.mainScrollView = nil
-            self.lastResponderMinY = 0
-            self.isKeyboardVisible = false
             completion?()
         }
     }
@@ -97,8 +117,16 @@ final class BRKeyboardLayout {
     // MARK: - Private
     
     
-    private func resolveLayoutMode(with activeViewController: UIViewController, and keyboard: BRKeyboardContext) -> LayoutMode {
-        let rootView = activeViewController.view!
+    private func resolveLayoutMode(with session: BRKeyboardSession, and keyboard: BRKeyboardContext) -> LayoutMode {
+        let rootView = session.viewController.view!
+        
+        let fittingHeight = rootView.br.compressedFittingHeight()
+        let maxShrink = rootView.bounds.height - fittingHeight
+        
+        if maxShrink >= keyboard.frame.height {
+            return .resize
+        }
+
         let scrollViews = rootView.br.findSubviews(of: UIScrollView.self)
             .filter { $0.isScrollEnabled }
             .filter { !($0 is UITextView) }
@@ -170,4 +198,35 @@ final class BRKeyboardLayout {
     }
     
     
+    private func applyResizeLayout(session: BRKeyboardSession, keyboard: BRKeyboardContext) {
+        let viewController = session.viewController
+        
+        guard let contentView = viewController.view else {
+            return
+        }
+
+        if resizedViewController == nil {
+            resizedViewController = viewController
+            originalViewControllerBottomInset = viewController.additionalSafeAreaInsets.bottom
+            baselineSafeAreaBottomInset = contentView.safeAreaInsets.bottom
+        }
+
+        let keyboardPadding = (session.responder as? BRResponderProtocol)?.keyboardPadding ?? self.keyboardPadding
+        let keyboardOverlap = contentView.convert(contentView.bounds, to: nil).maxY - keyboard.frame.minY
+        let additional = max(0, keyboardOverlap - baselineSafeAreaBottomInset)
+
+        UIView.animate(withDuration: keyboard.animationDuration, delay: 0, options: keyboard.animationOptions) {
+            viewController.additionalSafeAreaInsets.bottom = self.originalViewControllerBottomInset + additional
+            contentView.layoutIfNeeded()
+        } completion: { _ in
+            guard let scrollView = session.responder.br.findSuperview(of: UIScrollView.self) else {
+                return
+            }
+            var responderFrame = session.responder.convert(self.responderRect(for: session.responder), to: scrollView)
+            responderFrame.size.height += keyboardPadding
+            scrollView.scrollRectToVisible(responderFrame, animated: true)
+        }
+    }
+
+
 }
