@@ -10,14 +10,14 @@ import UIKit
 
 public func * <T>(multipier: CGFloat, anchor: BRLayoutAnchor<T>) -> BRLayoutAnchor<T> {
     var builder = anchor
-    builder.multiplier *= multipier
+    builder.multiplier *= multipier == 0 ? BRLayout.minimumMultiplier : multipier
     return builder
 }
 
 
 public func * <T>(anchor: BRLayoutAnchor<T>, multipier: CGFloat) -> BRLayoutAnchor<T> {
     var builder = anchor
-    builder.multiplier *= multipier
+    builder.multiplier *= multipier == 0 ? BRLayout.minimumMultiplier : multipier
     return builder
 }
 

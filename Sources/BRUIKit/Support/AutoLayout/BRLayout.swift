@@ -62,6 +62,9 @@ import BRFoundation
 /// ```
 public class BRLayout {
     
+    static let minimumMultiplier: CGFloat = 0.0000000001
+
+    
     public private(set) var constraints: [NSLayoutConstraint] = []
     public private(set) var identifiedConstraints: [String: NSLayoutConstraint] = [:]
     
@@ -217,12 +220,13 @@ extension BRWrapper where Base: NSLayoutConstraint {
 
     
     @MainActor public func multiplier(_ value: CGFloat) -> NSLayoutConstraint {
+        let multiplier = value == 0 ? BRLayout.minimumMultiplier : value
         let newLayout = NSLayoutConstraint.init(item: base.firstItem!,
                                                 attribute: base.firstAttribute,
                                                 relatedBy: base.relation,
                                                 toItem: base.secondItem,
                                                 attribute: base.secondAttribute,
-                                                multiplier: value,
+                                                multiplier: multiplier,
                                                 constant: base.constant)
         newLayout.priority = base.priority
         newLayout.shouldBeArchived = base.shouldBeArchived
