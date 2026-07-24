@@ -75,4 +75,84 @@ public extension BRWrapper where Base: BRTextField {
         return base
     }
 
+    
+    // MARK: - Keyboard Toolbar
+    
+
+    /// 鍵盤工具列 Done Event
+    @MainActor
+    @discardableResult
+    func onToolbarDone(_ closure: (() -> Void)?) -> Base {
+        base.keyboardToolbarConfig.onDone = closure
+        return base
+    }
+    
+    
+    /// 鍵盤工具列 Prev Event
+    @MainActor
+    @discardableResult
+    func onToolbarPrev(_ closure: ((_ prevView: UIResponder?) -> Void)?) -> Base {
+        base.keyboardToolbarConfig.onPrev = closure
+        return base
+    }
+    
+    
+    /// 鍵盤工具列 Next Event
+    @MainActor
+    @discardableResult
+    func onToolbarNext(_ closure: ((_ nextView: UIResponder?) -> Void)?) -> Base {
+        base.keyboardToolbarConfig.onNext = closure
+        return base
+    }
+    
+    
+    /// 鍵盤工具列隱藏 Prev、Next 按鈕
+    @MainActor
+    @discardableResult
+    func isHiddenToolbarPrevNext(_ flag: Bool?) -> Base {
+        base.keyboardToolbarConfig.hiddenPrevNext = flag
+        return base
+    }
+    
+    
+    /// 鍵盤工具列添加仿系統元件
+    @MainActor
+    @discardableResult
+    func addToolbarItem(title: String? = nil, icon: UIImage? = nil, tintColor: UIColor? = nil, titleColor: UIColor? = nil, tip: String? = nil, action: (() -> Void)? = nil) -> Base {
+        let button = BRButton.toolbarItemStyle(tintColor: tintColor, titleColor: titleColor, tip: tip, action: action)
+            .br.title(title)
+            .br.image(icon?.withRenderingMode(.alwaysTemplate))
+            .br.imagePadding(2)
+        base.keyboardToolbarConfig.additionalItems.append(button)
+        return base
+    }
+    
+    
+    /// 鍵盤工具列添加元件
+    @MainActor
+    @discardableResult
+    func addToolbarItem(_ view: UIView) -> Base {
+        base.keyboardToolbarConfig.additionalItems.append(view)
+        return base
+    }
+
+
+    /// 鍵盤工具列添加多個元件
+    @MainActor
+    @discardableResult
+    func addToolbarItems(_ views: [UIView]) -> Base {
+        base.keyboardToolbarConfig.additionalItems.append(contentsOf: views)
+        return base
+    }
+
+
+    /// 鍵盤工具列刪除所有額外元件
+    @MainActor
+    @discardableResult
+    func removeAllAdditionalToolbarItems() -> Base {
+        base.keyboardToolbarConfig.additionalItems.removeAll()
+        return base
+    }
+    
+
 }
