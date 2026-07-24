@@ -21,8 +21,10 @@ open class BRButton: UIButton, BRButtonStateProtocol {
     private var lastWidth: CGFloat = 0
     private let stateHelper = BRButtonStateHelper()
     private let layoutHelper = BRButtonLayoutHelper()
+    private let buttonTip = BRButtonTip()
     
     public var onTap: ((BRButton) -> Void)?
+
     
     // MARK: - LifeCycle
     
@@ -30,6 +32,7 @@ open class BRButton: UIButton, BRButtonStateProtocol {
     public override init(frame: CGRect) {
         super.init(frame: frame)
         self.addTarget(self, action: #selector(onTapped), for: .touchUpInside)
+        buttonTip.setup(from: self)
     }
     
     
@@ -143,6 +146,22 @@ open class BRButton: UIButton, BRButtonStateProtocol {
     /// 設定垂直對齊模式
     open override var contentVerticalAlignment: UIControl.ContentVerticalAlignment {
         didSet { setNeedsLayout() }
+    }
+    
+    
+    // MARK: - Tip
+    
+    
+    /// 長按顯示的說明文字；設定後長按按鈕會於其上方浮出說明，放開即消失。設為 nil 則不啟用
+    public var tip: String? {
+        get { buttonTip.tip }
+        set { buttonTip.tip = newValue }
+    }
+    
+    
+    /// 長按提示 Label
+    public var tipLabel: BRLabel {
+        buttonTip.tipLabel
     }
     
     

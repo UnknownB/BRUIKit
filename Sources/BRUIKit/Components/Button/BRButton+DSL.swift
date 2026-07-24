@@ -115,4 +115,13 @@ public extension BRWrapper where Base: BRButton {
     }
     
     
+    /// 長按顯示的說明文字；設定後長按按鈕會於其上方浮出說明，放開即消失。設為 nil 則不啟用
+    @MainActor
+    @discardableResult
+    func tip(_ tip: String?) -> Base {
+        base.tip = tip
+        return base
+    }
+    
+    
 }
