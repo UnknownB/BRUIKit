@@ -165,4 +165,37 @@ open class BRButton: UIButton, BRButtonStateProtocol {
     }
     
     
+    // MARK: - KeyboardToolbar
+    
+    
+    /// 仿照系統鍵盤工具列按鈕外觀
+    public static func toolbarItemStyle(tintColor: UIColor? = nil, titleColor: UIColor? = nil, tip: String? = nil, action: (() -> Void)? = nil) -> BRButton {
+        
+        let defaultColor: UIColor
+        
+        if #available(iOS 26.0, *) {
+            defaultColor = .label
+        } else {
+            defaultColor = .systemBlue
+        }
+        
+        let tintColor = tintColor ?? defaultColor
+        let titleColor = titleColor ?? defaultColor
+        
+        let button = BRButton()
+            .br.contentInsets(.init(top: 0, left: 8, bottom: 0, right: 8))
+            .br.tintColor(tintColor)
+            .br.titleColor(titleColor)
+            .br.font(.w500, 18)
+            .br.contentHorizontalAlignment(.fill)
+            .br.contentVerticalAlignment(.fill)
+            .br.imageContentMode(.scaleAspectFit)
+            .br.imageSize(CGSize(width: 24, height: 24))
+            .br.tip(tip)
+            .br.onTap { _ in action?() }
+        
+        return button
+    }
+    
+    
 }
