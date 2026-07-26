@@ -16,6 +16,11 @@ open class BRPageViewController: BRViewController {
     
     public let adapter: BRPageViewAdapter
     
+    /// 容器轉場是否進行中，避免前一次 transition 動畫未結束時再次重建而崩潰
+    private var isRebuilding: Bool = false
+    
+    /// 轉場進行中期間又有重建需求，完成後再依最新狀態重建一次
+    private var needsRebuild: Bool = false
     
     public var isDoubleSided: Bool {
         didSet {
@@ -67,6 +72,13 @@ open class BRPageViewController: BRViewController {
     
     
     private func rebuildPageViewController() {
+        // 轉場進行中先記下需求，等完成後再依最新狀態重建一次，避免重疊 transition 造成崩潰
+        guard !isRebuilding else {
+            needsRebuild = true
+            return
+        }
+        isRebuilding = true
+
         let oldPageVC = pageViewController
         
         let newPageVC = UIPageViewController(transitionStyle: transitionStyle, navigationOrientation: navigationOrientation)
@@ -75,10 +87,17 @@ open class BRPageViewController: BRViewController {
         
         addChild(newPageVC)
         transition(from: oldPageVC, to: newPageVC, duration: 0.25, options: [.transitionCrossDissolve]) { [weak self] in
+            guard let self else { return }
             oldPageVC.removeFromParent()
             newPageVC.didMove(toParent: self)
-            self?.pageViewController = newPageVC
-            self?.setupLayout()
+            self.pageViewController = newPageVC
+            self.setupLayout()
+
+            self.isRebuilding = false
+            if self.needsRebuild {
+                self.needsRebuild = false
+                self.rebuildPageViewController()
+            }
         }
     }
     

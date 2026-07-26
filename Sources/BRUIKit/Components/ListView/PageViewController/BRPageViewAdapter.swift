@@ -22,6 +22,11 @@ public final class BRPageViewAdapter: NSObject, UIPageViewControllerDataSource, 
 
     private var hasInsertBlankPage: Bool = false
 
+    /// 轉場是否進行中，避免在前一次 setViewControllers 動畫未結束時再次呼叫而崩潰
+    private var isTransitioning: Bool = false
+
+    /// 轉場進行中時記下的最終目標頁，完成後再套用（後到的覆蓋前者）
+    private var pendingPage: (index: Int, animated: Bool)? = nil
     
     /// 是否允許開書模式（雙頁）
     public private(set) var isDoubleSided: Bool = false
@@ -62,8 +67,11 @@ public final class BRPageViewAdapter: NSObject, UIPageViewControllerDataSource, 
     
     public weak var pageViewController: UIPageViewController? {
         didSet {
+            isTransitioning = false
+            pendingPage = nil
+
             configurePageViewController()
-            
+
             // 需要小延遲才能正確顯示第一頁
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [self] in
                 goToPage(index: currentIndex, animated: false)
@@ -129,15 +137,30 @@ public final class BRPageViewAdapter: NSObject, UIPageViewControllerDataSource, 
               (0..<list.pages.count).contains(index) else {
             return
         }
-                
-        let direction: UIPageViewController.NavigationDirection = (index >= currentIndex) ? .forward : .reverse
-        let viewControllers = makeViewControllers(for: index)
+        
         let animated = needAnimate ?? animated
         needAnimate = nil
         
-        pageVC.setViewControllers(viewControllers, direction: direction, animated: animated) { [self] _ in
-            currentIndex = index
-            didChangePage?(index, list.pages[index])
+        guard !isTransitioning else {
+            pendingPage = (index, animated)
+            return
+        }
+        
+        let direction: UIPageViewController.NavigationDirection = (index >= currentIndex) ? .forward : .reverse
+        let viewControllers = makeViewControllers(for: index)
+        let targetPage = list.pages[index]
+        
+        isTransitioning = true
+        pageVC.setViewControllers(viewControllers, direction: direction, animated: animated) { [weak self] _ in
+            guard let self else { return }
+            self.isTransitioning = false
+            self.currentIndex = index
+            self.didChangePage?(index, targetPage)
+
+            if let pending = self.pendingPage {
+                self.pendingPage = nil
+                self.goToPage(index: pending.index, animated: pending.animated)
+            }
         }
     }
     
