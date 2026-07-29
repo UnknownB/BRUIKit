@@ -51,7 +51,9 @@ final class BRKeyboardTapBlank {
 
 
     @objc private func onTapBlank(_ gesture: UITapGestureRecognizer) {
-        BRKeyboard.dismissKeyboard()
+        DispatchQueue.main.async {
+            BRKeyboard.dismissKeyboard()
+        }
     }
     
     
