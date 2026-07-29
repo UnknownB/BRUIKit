@@ -31,11 +31,11 @@ final class BRKeyboardTapBlank {
     
     
     func addGesture(with session: BRKeyboardSession) {
-        if tapBlankGesture?.view != session.containerView {
+        if tapBlankGesture?.view != session.viewController.view {
             removeGesture()
             let gesture = UITapGestureRecognizer(target: self, action: #selector(onTapBlank))
             gesture.cancelsTouchesInView = false
-            session.containerView.addGestureRecognizer(gesture)
+            session.viewController.view.addGestureRecognizer(gesture)
             tapBlankGesture = gesture
         }
     }
