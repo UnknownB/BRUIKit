@@ -22,7 +22,11 @@ open class BRTextView: BRView {
 
     public let RTF = TextViewRTF()
     
+    open var onTextDidBeginEditing: ((BRTextView) -> Void)?
+    
     open var onTextDidChange: ((BRTextView) -> Void)?
+    
+    open var onTextDidEndEditing: ((BRTextView) -> Void)?
     
     
     /// 自訂 countLabel 顯示字串的閉包，傳入目前字數與最大限制字數，回傳要顯示的字串
@@ -272,7 +276,19 @@ open class BRTextView: BRView {
 
     open override func setupEvent() {
         super.setupEvent()
+        NotificationCenter.default.addObserver(self, selector: #selector(textDidBeginEditing), name: UITextView.textDidBeginEditingNotification, object: inputTextView)
         NotificationCenter.default.addObserver(self, selector: #selector(textDidChange), name: UITextView.textDidChangeNotification, object: inputTextView)
+        NotificationCenter.default.addObserver(self, selector: #selector(textDidEndEditing), name: UITextView.textDidEndEditingNotification, object: inputTextView)
+    }
+
+
+    @objc open func textDidBeginEditing() {
+        onTextDidBeginEditing?(self)
+    }
+
+
+    @objc open func textDidEndEditing() {
+        onTextDidEndEditing?(self)
     }
 
 

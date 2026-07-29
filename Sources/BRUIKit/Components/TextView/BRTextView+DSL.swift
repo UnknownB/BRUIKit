@@ -416,6 +416,36 @@ public extension BRWrapper where Base: BRTextView {
     }
 
 
+    // MARK: - 編輯事件
+    
+    
+    /// 開始編輯事件
+    @MainActor
+    @discardableResult
+    func onTextDidBeginEditing(_ closure: ((BRTextView) -> Void)?) -> Base {
+        base.onTextDidBeginEditing = closure
+        return base
+    }
+    
+    
+    /// 編輯中（文字變動）事件
+    @MainActor
+    @discardableResult
+    func onTextDidChange(_ closure: ((BRTextView) -> Void)?) -> Base {
+        base.onTextDidChange = closure
+        return base
+    }
+    
+    
+    /// 結束編輯事件
+    @MainActor
+    @discardableResult
+    func onTextDidEndEditing(_ closure: ((BRTextView) -> Void)?) -> Base {
+        base.onTextDidEndEditing = closure
+        return base
+    }
+    
+    
     // MARK: - Keyboard Toolbar
     
 
