@@ -46,22 +46,52 @@ public final class BRNavigator {
     public func detach() {
         navigationController = nil
     }
-
+    
 
     public func push(_ viewController: UIViewController, animated: Bool = true) {
-        run(animated: animated) { $0.pushViewController(viewController, animated: animated) }
+        run(animated: animated) {
+            $0.pushViewController(viewController, animated: animated)
+            return true
+        }
     }
 
 
     public func setViewControllers(_ viewControllers: [UIViewController], animated: Bool = true) {
-        run(animated: animated) { $0.setViewControllers(viewControllers, animated: animated) }
+        run(animated: animated) {
+            $0.setViewControllers(viewControllers, animated: animated)
+            return true
+        }
+    }
+    
+    
+    public func pop(animated: Bool = true) {
+        run(animated: animated) { $0.popViewController(animated: animated) != nil }
+    }
+    
+    
+    public func popToRoot(animated: Bool = true) {
+        run(animated: animated) { $0.popToRootViewController(animated: animated) != nil }
+    }
+    
+    
+    public func popTo(_ type: UIViewController.Type, animated: Bool = true) {
+        run(animated: animated) { navigationController in
+            guard let target = navigationController.viewControllers.last(where: { $0.isKind(of: type) }) else { return false }
+            navigationController.popToViewController(target, animated: animated)
+            return true
+        }
     }
 
 
-    private func run(animated: Bool, _ operation: (UINavigationController) -> Void) {
+    /// - Parameter operation: 回傳是否真的觸發了跳轉，`false` 代表沒有變化，不需等待轉場
+    private func run(animated: Bool, _ operation: (UINavigationController) -> Bool) {
         guard !isTransitioning, let navigationController else { return }
         isTransitioning = true
-        operation(navigationController)
+
+        guard operation(navigationController) else {
+            isTransitioning = false
+            return
+        }
 
         guard animated, let coordinator = navigationController.transitionCoordinator else {
             isTransitioning = false
