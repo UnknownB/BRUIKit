@@ -18,6 +18,13 @@ public extension BRWrapper where Base: UIViewController {
     func show(in viewController: UIViewController?, animated: Bool = true, completion: (() -> Void)? = nil) {
         viewController?.present(base, animated: animated, completion: completion)
     }
+    
+    
+    /// 從指定的 `UIViewController` present full screen 模式
+    func showFullScreen(in viewController: UIViewController?, animated: Bool = true, completion: (() -> Void)? = nil) {
+        base.br.modalPresentationStyle(.fullScreen)
+        viewController?.present(base, animated: animated, completion: completion)
+    }
 
     
 }
