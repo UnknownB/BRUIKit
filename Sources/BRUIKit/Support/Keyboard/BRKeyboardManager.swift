@@ -157,30 +157,33 @@ final class BRKeyboardManager {
             #BRLog(.library, .debug, #function)
         }
         
-        guard let responder = UIResponder.currentFirstResponder as? UIView else {
-            #BRLog(.library, .error, "[BRKeyboard] 鍵盤即將升起，但是不存在焦點元件")
-            return
-        }
-        guard let containerView = responder.window?.rootViewController?.view else {
-            #BRLog(.library, .error, "[BRKeyboard] 鍵盤即將升起，但是不存在焦點元件的容器")
-            return
-        }
-        guard let viewController = responder.br.viewController() else {
-            #BRLog(.library, .error, "[BRKeyboard] 焦點元件未添加至任何 ViewController")
-            return
-        }
-
-        let session = BRKeyboardSession(responder: responder, viewController: viewController, containerView: containerView)
         let keyboard = BRKeyboardContext(sender)
+        keyboardContext = keyboard
+
+        if let responder = UIResponder.currentFirstResponder as? UIView,
+           let containerView = responder.window?.rootViewController?.view,
+           let viewController = responder.br.viewController()
+        {
+            let session = BRKeyboardSession(responder: responder, viewController: viewController, containerView: containerView)
+            
+            if self.session?.viewController != session.viewController {
+                layout.moveDown(session: self.session, keyboard: keyboard)
+            }
+            
+            self.session = session
+        }
         
-        self.session = session
-        self.keyboardContext = keyboard
+        guard let session else {
+            #BRLog(.library, .error, "[BRKeyboard] 鍵盤即將升起，但是不存在 session")
+            return
+        }
+                
         
         if tapBlank.enableTapBlankToDismissKeyboard {
             tapBlank.addGesture(with: session)
         }
         
-        viewController.navigationController?.interactivePopGestureRecognizer?.addTarget(self, action: #selector(onPopGesture))
+        session.viewController.navigationController?.interactivePopGestureRecognizer?.addTarget(self, action: #selector(onPopGesture))
         
         let layoutModel = layout.moveUp(session: session, keyboard: keyboard)
         
@@ -208,8 +211,14 @@ final class BRKeyboardManager {
         self.keyboardContext = keyboard
         
         layout.moveDown(session: session, keyboard: keyboard) { [weak self] in
-            self?.session = nil
-            self?.keyboardContext = nil
+            guard let self else { return }
+            keyboardContext = nil
+            DispatchQueue.main.async {
+                // 系統顯示 Alert 等動作會收起鍵盤，關掉 Alert 會再次彈起，但是不會觸發焦點事件
+                if self.session?.viewController.presentedViewController == nil {
+                    self.session = nil
+                }
+            }
         }
     }
     
