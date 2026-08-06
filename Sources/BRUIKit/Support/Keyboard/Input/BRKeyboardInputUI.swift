@@ -184,7 +184,7 @@ final class BRKeyboardInputUI: NSObject, UITextFieldDelegate {
     // MARK: - Toolbar
     
     
-    private func makeToolbar() -> BRKeyboardToolbarProtocol {
+    func makeToolbar() -> BRKeyboardToolbarProtocol {
         if #available(iOS 26.0, *) {
             return BRKeyboardToolbarIOS26()
         } else {

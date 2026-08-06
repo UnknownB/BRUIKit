@@ -114,6 +114,12 @@ public enum BRKeyboard {
     public static func dismissKeyboard() {
         BRKeyboardManager.shared.dismissKeyboard()
     }
+    
+    
+    /// 建立仿系統外觀的 Keyboard Toolbar
+    public static func makeToolbar() -> BRKeyboardToolbarProtocol {
+        BRKeyboardManager.shared.inputUI.makeToolbar()
+    }
 
 
 }
