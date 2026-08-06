@@ -36,6 +36,9 @@ open class BRTextField: UITextField, ObservableObject, BRResponderProtocol {
     /// 是否啟用基礎注入攻擊樣式過濾，預設關閉
     public var isBasicInjectionFilterEnabled: Bool = false
 
+    /// 文字變更時是否觸發變更事件（規則驗證），預設開啟
+    public var isTextChangeEventEnabled: Bool = true
+
 
     // MARK: - LifeCycle
 
@@ -57,7 +60,15 @@ open class BRTextField: UITextField, ObservableObject, BRResponderProtocol {
             onTextChanged()
         }
     }
-    
+
+
+    open func setText(_ text: String?, triggerEvent: Bool) {
+        let isEnabled = isTextChangeEventEnabled
+        isTextChangeEventEnabled = triggerEvent
+        self.text = text
+        isTextChangeEventEnabled = isEnabled
+    }
+
     
     open override func textRect(forBounds bounds: CGRect) -> CGRect {
         let insetRect = bounds.inset(by: contentInsets)
@@ -229,6 +240,9 @@ open class BRTextField: UITextField, ObservableObject, BRResponderProtocol {
         }
         if self.br.isExceedingMaxLength(maxLength) {
             self.br.removeExceedingText(maxLength: maxLength)
+            return
+        }
+        guard isTextChangeEventEnabled else {
             return
         }
         validator.onChange(with: rules, debounce: debounce) { [weak self] in

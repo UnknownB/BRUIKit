@@ -16,10 +16,20 @@ public extension BRWrapper where Base: BRTextView {
     // MARK: - 文字與樣式
     
     
-    /// 設定文字內容
+    /// 設定文字內容，並決定這次設定是否觸發 `onTextDidChange`
+    ///
+    /// `triggerEvent` 未指定時依 `isTextChangeEventEnabled` 決定
     @discardableResult
-    func text(_ text: String?) -> Base {
-        base.text = text
+    func text(_ text: String?, triggerEvent: Bool? = nil) -> Base {
+        base.setText(text, triggerEvent: triggerEvent ?? base.isTextChangeEventEnabled)
+        return base
+    }
+
+
+    /// 設定文字變更時是否觸發 `onTextDidChange`，預設開啟
+    @discardableResult
+    func isTextChangeEventEnabled(_ isEnabled: Bool) -> Base {
+        base.isTextChangeEventEnabled = isEnabled
         return base
     }
 

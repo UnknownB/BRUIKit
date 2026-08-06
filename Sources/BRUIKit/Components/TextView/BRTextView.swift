@@ -73,13 +73,13 @@ open class BRTextView: BRView {
     public var isBasicInjectionFilterEnabled: Bool = false
 
 
+    /// 文字變更時是否觸發 `onTextDidChange`，預設開啟
+    public var isTextChangeEventEnabled: Bool = true
+
+
     public var text: String! {
         get { inputTextView.text }
-        set {
-            inputTextView.text = newValue
-            textDidChange()
-            RTF.actions.removeAll()
-        }
+        set { setText(newValue, triggerEvent: isTextChangeEventEnabled) }
     }
 
 
@@ -291,8 +291,26 @@ open class BRTextView: BRView {
         onTextDidEndEditing?(self)
     }
 
-
+    
     @objc open func textDidChange() {
+        handleTextChange()
+    }
+
+
+    /// 設定文字內容，並決定這次設定是否觸發 `onTextDidChange`
+    ///
+    /// 僅暫時覆寫 `isTextChangeEventEnabled`，設定完即還原；無論是否觸發事件，字數上限與注入過濾都仍會執行
+    open func setText(_ text: String?, triggerEvent: Bool) {
+        let isEnabled = isTextChangeEventEnabled
+        isTextChangeEventEnabled = triggerEvent
+        inputTextView.text = text
+        handleTextChange()
+        RTF.actions.removeAll()
+        isTextChangeEventEnabled = isEnabled
+    }
+
+
+    private func handleTextChange() {
         if isBasicInjectionFilterEnabled {
             if inputTextView.br.removeBasicInjectionPatterns() {
                 return
@@ -304,7 +322,9 @@ open class BRTextView: BRView {
         }
         placeholderLabel.isHidden = !inputTextView.text.isEmpty
         updateCountLabel()
-        onTextDidChange?(self)
+        if isTextChangeEventEnabled {
+            onTextDidChange?(self)
+        }
     }
 
 

@@ -10,8 +10,26 @@ import BRFoundation
 
 
 public extension BRWrapper where Base: BRTextField {
-    
-    
+
+
+    /// 設定文字內容，並決定這次設定是否觸發變更事件（規則驗證）
+    @MainActor
+    @discardableResult
+    func text(_ text: String?, triggerEvent: Bool) -> Base {
+        base.setText(text, triggerEvent: triggerEvent)
+        return base
+    }
+
+
+    /// 設定文字變更時是否觸發變更事件（規則驗證），預設開啟
+    @MainActor
+    @discardableResult
+    func isTextChangeEventEnabled(_ isEnabled: Bool) -> Base {
+        base.isTextChangeEventEnabled = isEnabled
+        return base
+    }
+
+
     /// 輸入緩衝，預設為1秒
     @MainActor
     @discardableResult
