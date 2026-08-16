@@ -59,25 +59,24 @@ public final class TextViewRTF {
     // MARK: - Help
     
     
-    public func range(of word: String, in attributed: NSAttributedString?) -> NSRange? {
-        guard let attributed = attributed else {
-            return nil
-        }
-        let nsText = attributed.string as NSString
-        let range = nsText.range(of: word)
-        return range.location == NSNotFound ? nil : range
-    }
-    
-    
     public func applyAttributes(_ attrs: [NSAttributedString.Key: Any], to word: String, in attributed: NSAttributedString?) -> NSAttributedString? {
         guard
             let attributed = attributed,
-            let range = range(of: word, in: attributed),
             let mutable = attributed.mutableCopy() as? NSMutableAttributedString
         else {
             return attributed
         }
-        mutable.addAttributes(attrs, range: range)
+        
+        let nsText = attributed.string as NSString
+        var searchRange = NSRange(location: 0, length: attributed.length)
+        
+        while searchRange.length > 0 {
+            let tokenRange = nsText.range(of: word, range: searchRange)
+            guard tokenRange.location != NSNotFound else { break }
+            mutable.addAttributes(attrs, range: tokenRange)
+            let nextLocation = tokenRange.location + tokenRange.length
+            searchRange = NSRange(location: nextLocation, length: nsText.length - nextLocation)
+        }
         return mutable
     }
     
