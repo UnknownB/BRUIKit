@@ -14,7 +14,7 @@ public extension BRWrapper where Base: UIView {
     
     /// 震動動畫
     @MainActor
-    func animateShake(duration: TimeInterval = 0.05, delta: CGFloat = 3, times: Int = 5) {
+    func animateShake(duration: TimeInterval = 0.05, delta: CGFloat = 3, times: Int = 5, completion: (() -> Void)? = nil) {
         UIView.animate(withDuration: duration) {
             base.layer.setAffineTransform( CGAffineTransform(translationX: delta, y: 0))
         } completion: { _ in
@@ -23,6 +23,8 @@ public extension BRWrapper where Base: UIView {
             } else {
                 UIView.animate(withDuration: duration) {
                     base.layer.setAffineTransform(CGAffineTransform.identity)
+                } completion: { _ in
+                    completion?()
                 }
             }
         }
@@ -32,7 +34,7 @@ public extension BRWrapper where Base: UIView {
     /// 向上下兩側展開動畫
     @MainActor
     @discardableResult
-    func animateExpandVertically(duration: TimeInterval = 0.25) -> Base {
+    func animateExpandVertically(duration: TimeInterval = 0.25, completion: (() -> Void)? = nil) -> Base {
         base.alpha = 0
         base.transform = CGAffineTransform(scaleX: 1, y: 0.01)
 
@@ -40,6 +42,8 @@ public extension BRWrapper where Base: UIView {
             base.isHidden = false
             base.alpha = 1
             base.transform = .identity
+        } completion: { _ in
+            completion?()
         }
         return base
     }
@@ -48,12 +52,13 @@ public extension BRWrapper where Base: UIView {
     /// 從上下兩側收合動畫
     @MainActor
     @discardableResult
-    func animateCollapseVertically(duration: TimeInterval = 0.2) -> Base {
+    func animateCollapseVertically(duration: TimeInterval = 0.2, completion: (() -> Void)? = nil) -> Base {
         UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseIn, .allowUserInteraction]) {
             base.alpha = 0
             base.transform = CGAffineTransform(scaleX: 1, y: 0.01)
         } completion: { _ in
             base.isHidden = true
+            completion?()
         }
         return base
     }
@@ -62,7 +67,7 @@ public extension BRWrapper where Base: UIView {
     /// 向左右兩側展開動畫
     @MainActor
     @discardableResult
-    func animateExpandHorizontally(duration: TimeInterval = 0.25) -> Base {
+    func animateExpandHorizontally(duration: TimeInterval = 0.25, completion: (() -> Void)? = nil) -> Base {
         base.alpha = 0
         base.transform = CGAffineTransform(scaleX: 0.01, y: 1)
 
@@ -70,6 +75,8 @@ public extension BRWrapper where Base: UIView {
             base.isHidden = false
             base.alpha = 1
             base.transform = .identity
+        } completion: { _ in
+            completion?()
         }
         return base
     }
@@ -78,12 +85,13 @@ public extension BRWrapper where Base: UIView {
     /// 從左右兩側收合動畫
     @MainActor
     @discardableResult
-    func animateCollapseHorizontally(duration: TimeInterval = 0.2) -> Base {
+    func animateCollapseHorizontally(duration: TimeInterval = 0.2, completion: (() -> Void)? = nil) -> Base {
         UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseIn, .allowUserInteraction]) {
             base.alpha = 0
             base.transform = CGAffineTransform(scaleX: 0.01, y: 1)
         } completion: { _ in
             base.isHidden = true
+            completion?()
         }
         return base
     }
