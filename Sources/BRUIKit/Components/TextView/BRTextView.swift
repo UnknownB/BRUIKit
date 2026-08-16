@@ -85,10 +85,7 @@ open class BRTextView: BRView {
 
     public var attributedText: NSAttributedString? {
         get { inputTextView.attributedText }
-        set {
-            inputTextView.attributedText = newValue
-            RTF.setAttributedText(newValue)
-        }
+        set { inputTextView.attributedText = newValue }
     }
 
 

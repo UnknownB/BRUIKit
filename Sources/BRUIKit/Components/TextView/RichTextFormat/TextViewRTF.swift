@@ -9,87 +9,76 @@ import Foundation
 import UIKit
 
 
+@MainActor
 public final class TextViewRTF {
-
-    public var textStorage: NSTextStorage?
+    
     public var actions: [URL: BRTextView.TappableAction] = [:]
-    
-    
-    // MARK: - 屬性設定
-
-    
-    public func setAttributedText(_ attributed: NSAttributedString?) {
-        if let attributedText = attributed {
-            textStorage = NSTextStorage(attributedString: attributedText)
-        } else {
-            textStorage = nil
-        }
-    }
-    
+        
     
     // MARK: - 添加富文本
     
     
-    public func font(for word: String, font: UIFont) -> NSAttributedString? {
-        applyAttributes([.font: font], to: word)
+    public func font(for word: String, font: UIFont, in attributed: NSAttributedString?) -> NSAttributedString? {
+        applyAttributes([.font: font], to: word, in: attributed)
     }
     
     
-    public func color(for word: String, color: UIColor) -> NSAttributedString? {
-        applyAttributes([.foregroundColor: color], to: word)
+    public func color(for word: String, color: UIColor, in attributed: NSAttributedString?) -> NSAttributedString? {
+        applyAttributes([.foregroundColor: color], to: word, in: attributed)
     }
     
     
-    public func underline(for word: String, style: NSUnderlineStyle = .single, color: UIColor? = nil) -> NSAttributedString? {
+    public func underline(for word: String, style: NSUnderlineStyle = .single, color: UIColor? = nil, in attributed: NSAttributedString?) -> NSAttributedString? {
         var attrs: [NSAttributedString.Key: Any] = [.underlineStyle: style.rawValue]
         if let color = color { attrs[.underlineColor] = color }
-        return applyAttributes(attrs, to: word)
+        return applyAttributes(attrs, to: word, in: attributed)
     }
     
     
-    public func strikethrough(for word: String, style: NSUnderlineStyle = .single, color: UIColor? = nil) -> NSAttributedString? {
+    public func strikethrough(for word: String, style: NSUnderlineStyle = .single, color: UIColor? = nil, in attributed: NSAttributedString?) -> NSAttributedString? {
         var attrs: [NSAttributedString.Key: Any] = [.strikethroughStyle: style.rawValue]
         if let color = color { attrs[.strikethroughColor] = color }
-        return applyAttributes(attrs, to: word)
+        return applyAttributes(attrs, to: word, in: attributed)
     }
     
     
     // MARK: - Tap
     
     
-    public func addTappable(for word: String, action: @escaping BRTextView.TappableAction) -> NSAttributedString? {
+    public func addTappable(for word: String, action: @escaping BRTextView.TappableAction, in attributed: NSAttributedString?) -> NSAttributedString? {
         let linkID = UUID().uuidString
         let fakeURL = URL(string: "richtext://\(linkID)")!
         actions[fakeURL] = action
         
         var attrs: [NSAttributedString.Key: Any] = [:]
         attrs[.link] = fakeURL
-        return applyAttributes(attrs, to: word)
+        return applyAttributes([.link: fakeURL], to: word, in: attributed)
     }
-
+    
     
     // MARK: - Help
     
     
-    func range(of word: String) -> NSRange? {
-        guard let textStorage = textStorage else {
+    public func range(of word: String, in attributed: NSAttributedString?) -> NSRange? {
+        guard let attributed = attributed else {
             return nil
         }
-        let nsText = textStorage.string as NSString
+        let nsText = attributed.string as NSString
         let range = nsText.range(of: word)
         return range.location == NSNotFound ? nil : range
     }
-
     
-    public func applyAttributes(_ attrs: [NSAttributedString.Key: Any], to word: String) -> NSAttributedString? {
+    
+    public func applyAttributes(_ attrs: [NSAttributedString.Key: Any], to word: String, in attributed: NSAttributedString?) -> NSAttributedString? {
         guard
-            let textStorage = textStorage,
-            let range = range(of: word)
+            let attributed = attributed,
+            let range = range(of: word, in: attributed),
+            let mutable = attributed.mutableCopy() as? NSMutableAttributedString
         else {
-            return textStorage
+            return attributed
         }
-        textStorage.addAttributes(attrs, range: range)
-        return textStorage
+        mutable.addAttributes(attrs, range: range)
+        return mutable
     }
     
     
