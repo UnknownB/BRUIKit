@@ -45,6 +45,9 @@ open class BRLabel: UILabel {
     open override var text: String? {
         didSet {
             RTF.actions.removeAll()
+            if lineSpacing > 0 {
+                attributedText = RTF.lineSpacing(lineSpacing, in: attributedText)
+            }
         }
     }
     
@@ -66,6 +69,13 @@ open class BRLabel: UILabel {
     open override var lineBreakMode: NSLineBreakMode {
         didSet {
             RTF.setLineBreakMode(lineBreakMode)
+        }
+    }
+    
+    
+    open var lineSpacing: CGFloat = 0 {
+        didSet {
+            attributedText = RTF.lineSpacing(lineSpacing, in: attributedText)
         }
     }
     

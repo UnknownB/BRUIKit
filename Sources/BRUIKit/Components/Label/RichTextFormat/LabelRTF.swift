@@ -85,6 +85,18 @@ public final class LabelRTF {
     }
     
     
+    public func lineSpacing(_ spacing: CGFloat, in attributed: NSAttributedString?) -> NSAttributedString? {
+        guard let mutable = attributed?.mutableCopy() as? NSMutableAttributedString else {
+            return attributed
+        }
+        let style = NSMutableParagraphStyle()
+        style.lineSpacing = spacing
+        let attrs: [NSAttributedString.Key: Any] = [.paragraphStyle: style]
+        mutable.addAttributes(attrs, range: NSRange(location: 0, length: mutable.length))
+        return mutable
+    }
+    
+    
     // MARK: - Tap
     
     

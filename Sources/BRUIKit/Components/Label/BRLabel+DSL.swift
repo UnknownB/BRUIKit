@@ -45,6 +45,15 @@ public extension BRWrapper where Base: BRLabel {
     }
     
     
+    /// 設定行距（line spacing）
+    @MainActor
+    @discardableResult
+    func lineSpacing(_ spacing: CGFloat) -> Base {
+        base.lineSpacing = spacing
+        return base
+    }
+
+    
     /// 設定某個字串的顏色
     @discardableResult
     func color(for word: String, color: UIColor) -> Base {
