@@ -218,19 +218,11 @@ public extension BRWrapper where Base: BRTextView {
     }
     
     
-    /// 設定行距（line spacing）
+    /// 設定行距（line spacing），設定後文字變更時會自動套用
     @MainActor
     @discardableResult
     func lineSpacing(_ spacing: CGFloat) -> Base {
-        base.placeholderLabel.br.lineSpacing(spacing)
-        guard let mutable = base.attributedText?.mutableCopy() as? NSMutableAttributedString else {
-            return base
-        }
-        let style = NSMutableParagraphStyle()
-        style.lineSpacing = spacing
-        let attrs: [NSAttributedString.Key: Any] = [.paragraphStyle: style]
-        mutable.addAttributes(attrs, range: NSRange(location: 0, length: mutable.length))
-        base.attributedText = mutable
+        base.lineSpacing = spacing
         return base
     }
     

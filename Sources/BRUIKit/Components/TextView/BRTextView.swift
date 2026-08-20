@@ -69,6 +69,15 @@ open class BRTextView: BRView {
     }
 
     
+    /// 行距，設定後文字變更時會自動套用，0 為不介入既有排版
+    open var lineSpacing: CGFloat = 0 {
+        didSet {
+            placeholderLabel.lineSpacing = lineSpacing
+            applyLineSpacing()
+        }
+    }
+
+
     /// 是否啟用基礎注入攻擊樣式過濾，預設關閉
     public var isBasicInjectionFilterEnabled: Bool = false
 
@@ -319,9 +328,48 @@ open class BRTextView: BRView {
         }
         placeholderLabel.isHidden = !inputTextView.text.isEmpty
         updateCountLabel()
+        if lineSpacing > 0 {
+            applyLineSpacing()
+        }
         if isTextChangeEventEnabled {
             onTextDidChange?(self)
         }
+    }
+
+
+    private func applyLineSpacing() {
+        guard inputTextView.markedTextRange == nil,
+              let attributedText = inputTextView.attributedText,
+              attributedText.length > 0,
+              !isLineSpacingApplied(in: attributedText)
+        else {
+            return
+        }
+
+        let style = NSMutableParagraphStyle()
+        style.lineSpacing = lineSpacing
+
+        let mutable = NSMutableAttributedString(attributedString: attributedText)
+        mutable.addAttribute(.paragraphStyle, value: style, range: NSRange(location: 0, length: mutable.length))
+
+        let selectedRange = inputTextView.selectedRange
+        self.attributedText = mutable
+        inputTextView.selectedRange = selectedRange
+    }
+
+
+    private func isLineSpacingApplied(in attributedText: NSAttributedString) -> Bool {
+        var isApplied = true
+
+        attributedText.enumerateAttribute(.paragraphStyle, in: NSRange(location: 0, length: attributedText.length)) { value, _, stop in
+            let spacing = (value as? NSParagraphStyle)?.lineSpacing ?? 0
+            if spacing != lineSpacing {
+                isApplied = false
+                stop.pointee = true
+            }
+        }
+
+        return isApplied
     }
 
 
