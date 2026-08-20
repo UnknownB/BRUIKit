@@ -120,6 +120,18 @@ public enum BRKeyboard {
     public static func makeToolbar() -> BRKeyboardToolbarProtocol {
         BRKeyboardManager.shared.inputUI.makeToolbar()
     }
+    
+    
+    /// 添加點擊空白不收起鍵盤的 View (弱引用)
+    public static func addTapBlankExcludedView(_ view: UIView) {
+        BRKeyboardManager.shared.tapBlank.addExcludedView(view)
+    }
+
+
+    /// 移除點擊空白不收起鍵盤的 View
+    public static func removeTapBlankExcludedView(_ view: UIView) {
+        BRKeyboardManager.shared.tapBlank.removeExcludedView(view)
+    }
 
 
 }

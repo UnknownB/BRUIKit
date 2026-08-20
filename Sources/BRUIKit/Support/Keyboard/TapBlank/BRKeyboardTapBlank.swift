@@ -11,7 +11,7 @@ import UIKit
 
 /// 封裝鍵盤升起時，點擊空白處關閉鍵盤功能
 @MainActor
-final class BRKeyboardTapBlank {
+final class BRKeyboardTapBlank: NSObject, UIGestureRecognizerDelegate {
     
     
     /// 啟用點擊空白處收起鍵盤，預設為 true
@@ -28,6 +28,7 @@ final class BRKeyboardTapBlank {
     }
     
     private var tapBlankGesture: UITapGestureRecognizer?
+    private let excludedViews = NSHashTable<UIView>.weakObjects()
     
     
     func addGesture(with session: BRKeyboardSession) {
@@ -35,6 +36,7 @@ final class BRKeyboardTapBlank {
             removeGesture()
             let gesture = UITapGestureRecognizer(target: self, action: #selector(onTapBlank))
             gesture.cancelsTouchesInView = false
+            gesture.delegate = self
             session.viewController.view.addGestureRecognizer(gesture)
             tapBlankGesture = gesture
         }
@@ -56,5 +58,34 @@ final class BRKeyboardTapBlank {
         }
     }
     
+    
+    // MARK: - 排除視圖
+    
+    
+    func addExcludedView(_ view: UIView) {
+        excludedViews.add(view)
+    }
+    
+    
+    func removeExcludedView(_ view: UIView) {
+        excludedViews.remove(view)
+    }
+    
+    
+    private func isExcluded(_ view: UIView) -> Bool {
+        excludedViews.allObjects.contains { view.isDescendant(of: $0) }
+    }
+    
+    
+    // MARK: - UIGestureRecognizerDelegate
+    
+    
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        guard let touchedView = touch.view else {
+            return true
+        }
+        return !isExcluded(touchedView)
+    }
+
     
 }
