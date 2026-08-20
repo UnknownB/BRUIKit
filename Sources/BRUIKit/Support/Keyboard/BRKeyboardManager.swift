@@ -161,8 +161,8 @@ final class BRKeyboardManager {
         keyboardContext = keyboard
 
         if let responder = UIResponder.currentFirstResponder as? UIView,
-           let containerView = responder.window?.rootViewController?.view,
-           let viewController = responder.br.viewController()
+           let containerView = responder.br.containerView(),
+           let viewController = responder.br.contentViewController()
         {
             let session = BRKeyboardSession(responder: responder, viewController: viewController, containerView: containerView)
             

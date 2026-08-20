@@ -68,6 +68,7 @@ final class BRKeyboardLayout {
     /// 當空間緊繃時，隱藏導覽列爭取可視空間
     private func hideNavigationBarIfNeeded(session: BRKeyboardSession) {
         guard navigationBarHiddenController == nil,
+              !session.isResponderInNavigationBar,
               session.viewController.traitCollection.verticalSizeClass == .compact,
               let navigationController = session.viewController.navigationController,
               !navigationController.isNavigationBarHidden

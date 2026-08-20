@@ -29,6 +29,8 @@ public extension BRWrapper where Base: UIView {
     
     
     /// 從響應鏈中取得 UIViewController，如果 UIView 未加入視圖會獲得 nil
+    ///
+    /// - Note: 當焦點元件在 NavigationBar 會獲得 UINavigationController
     func viewController() -> UIViewController? {
         if let nextResponder = base.next as? UIViewController {
             return nextResponder
@@ -38,6 +40,51 @@ public extension BRWrapper where Base: UIView {
         return nil
     }
     
+    
+    /// 從響應鏈中取得 UIViewController 的內容容器，如果 UIView 未加入視圖會獲得 nil
+    ///
+    /// - Note: 當焦點元件在 NavigationBar 會獲得 UINavigationController 的 topViewController
+    func contentViewController() -> UIViewController? {
+        guard var viewController = base.br.viewController() else {
+            return nil
+        }
+
+        while true {
+            switch viewController {
+            case let navigationController as UINavigationController:
+                guard let topViewController = navigationController.topViewController else {
+                    return viewController
+                }
+                viewController = topViewController
+            case let tabBarController as UITabBarController:
+                guard let selectedViewController = tabBarController.selectedViewController else {
+                    return viewController
+                }
+                viewController = selectedViewController
+            default:
+                return viewController
+            }
+        }
+    }
+    
+    
+    /// 取得響應鏈的最上層容器
+    ///
+    /// - note: 畫面以 modal 顯示時，rootViewController 的 view 並不是螢幕上的內容，需沿著 presentation 取到最上層
+    func containerView() -> UIView? {
+        guard let window = base.window else {
+            return nil
+        }
+
+        var viewController = window.rootViewController
+
+        while let presentedViewController = viewController?.presentedViewController {
+            viewController = presentedViewController
+        }
+
+        return viewController?.view
+    }
+
     
     /// 向上查找指定型別的 UIView
     ///
