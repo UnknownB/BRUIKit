@@ -85,6 +85,7 @@ public extension BRWrapper where Base: UILabel {
         }
         let style = NSMutableParagraphStyle()
         style.lineSpacing = spacing
+        style.alignment = base.textAlignment
         let attrs: [NSAttributedString.Key: Any] = [.paragraphStyle: style]
         mutable.addAttributes(attrs, range: NSRange(location: 0, length: mutable.length))
         base.attributedText = mutable

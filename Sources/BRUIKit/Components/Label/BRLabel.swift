@@ -46,7 +46,7 @@ open class BRLabel: UILabel {
         didSet {
             RTF.actions.removeAll()
             if lineSpacing > 0 {
-                attributedText = RTF.lineSpacing(lineSpacing, in: attributedText)
+                attributedText = RTF.lineSpacing(lineSpacing, alignment: textAlignment, in: attributedText)
             }
         }
     }
@@ -58,14 +58,14 @@ open class BRLabel: UILabel {
         }
     }
     
-
+    
     open override var numberOfLines: Int {
         didSet {
             RTF.setNumberOfLines(numberOfLines)
         }
     }
     
-
+    
     open override var lineBreakMode: NSLineBreakMode {
         didSet {
             RTF.setLineBreakMode(lineBreakMode)
@@ -73,9 +73,18 @@ open class BRLabel: UILabel {
     }
     
     
+    open override var textAlignment: NSTextAlignment {
+        didSet {
+            if lineSpacing > 0 {
+                attributedText = RTF.lineSpacing(lineSpacing, alignment: textAlignment, in: attributedText)
+            }
+        }
+    }
+    
+    
     open var lineSpacing: CGFloat = 0 {
         didSet {
-            attributedText = RTF.lineSpacing(lineSpacing, in: attributedText)
+            attributedText = RTF.lineSpacing(lineSpacing, alignment: textAlignment, in: attributedText)
         }
     }
     
@@ -101,7 +110,7 @@ open class BRLabel: UILabel {
     open override func drawText(in rect: CGRect) {
         super.drawText(in: rect.inset(by: contentInsets))
     }
-        
+    
     
     open override func textRect(forBounds bounds: CGRect, limitedToNumberOfLines numberOfLines: Int) -> CGRect {
         let insetRect = bounds.inset(by: contentInsets)

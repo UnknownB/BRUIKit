@@ -11,7 +11,7 @@ import UIKit
 
 @MainActor
 public final class LabelRTF {
-
+    
     public let layoutManager = NSLayoutManager()
     public let textContainer = NSTextContainer(size: .zero)
     public var textStorage: NSTextStorage?
@@ -19,7 +19,7 @@ public final class LabelRTF {
     
     
     // MARK: - Init
-
+    
     
     public func setup(for label: UILabel) {
         textContainer.lineFragmentPadding = 0
@@ -49,7 +49,6 @@ public final class LabelRTF {
     
     public func setNumberOfLines(_ numberOfLines: Int) {
         textContainer.maximumNumberOfLines = numberOfLines
-
     }
     
     
@@ -57,7 +56,7 @@ public final class LabelRTF {
         textContainer.lineBreakMode = lineBreakMode
     }
     
-
+    
     // MARK: - 添加富文本
     
     
@@ -85,12 +84,13 @@ public final class LabelRTF {
     }
     
     
-    public func lineSpacing(_ spacing: CGFloat, in attributed: NSAttributedString?) -> NSAttributedString? {
+    public func lineSpacing(_ spacing: CGFloat, alignment: NSTextAlignment, in attributed: NSAttributedString?) -> NSAttributedString? {
         guard let mutable = attributed?.mutableCopy() as? NSMutableAttributedString else {
             return attributed
         }
         let style = NSMutableParagraphStyle()
         style.lineSpacing = spacing
+        style.alignment = alignment
         let attrs: [NSAttributedString.Key: Any] = [.paragraphStyle: style]
         mutable.addAttributes(attrs, range: NSRange(location: 0, length: mutable.length))
         return mutable
@@ -110,21 +110,21 @@ public final class LabelRTF {
         actions[range] = action
         return self
     }
-
+    
     
     public func handleTap(for label: BRLabel, gesture: UITapGestureRecognizer) {
         guard
             let _ = label.attributedText,
             let storage = textStorage
         else { return }
-
+        
         let locationInLabel = gesture.location(in: label)
         let locationMinusInsets = CGPoint(x: locationInLabel.x - label.contentInsets.left, y: locationInLabel.y - label.contentInsets.top)
         
         layoutManager.ensureLayout(for: textContainer)
         let insetBounds = label.bounds.inset(by: label.contentInsets)
         let textBoundingBox = layoutManager.usedRect(for: textContainer)
-
+        
         // 根據 alignment 計算水平 offset（UILabel 會在可用寬度多餘時做置中/右對齊）
         
         let widthDiff = max(0, insetBounds.width - textBoundingBox.width)
@@ -137,31 +137,31 @@ public final class LabelRTF {
         default:
             horizontalAlignmentOffset = 0.0
         }
-
+        
         // offset（UILabel 會在可用高度多餘時垂直置中）
         
         let heightDiff = max(0, insetBounds.height - textBoundingBox.height)
         let verticalOffset = heightDiff / 2.0
-
+        
         let textOffset = CGPoint(x: horizontalAlignmentOffset - textBoundingBox.origin.x,
                                  y: verticalOffset - textBoundingBox.origin.y)
-
+        
         let locationInTextContainer = CGPoint(x: locationMinusInsets.x - textOffset.x,
                                               y: locationMinusInsets.y - textOffset.y)
-
+        
         guard locationInTextContainer.x >= 0,
               locationInTextContainer.y >= 0,
               locationInTextContainer.x <= textContainer.size.width,
               locationInTextContainer.y <= textContainer.size.height else {
             return
         }
-
+        
         let glyphIndex = layoutManager.glyphIndex(for: locationInTextContainer, in: textContainer)
         let charIndex = layoutManager.characterIndexForGlyph(at: glyphIndex)
         guard charIndex < storage.length else {
             return
         }
-
+        
         for (range, action) in actions {
             if NSLocationInRange(charIndex, range) {
                 action()
