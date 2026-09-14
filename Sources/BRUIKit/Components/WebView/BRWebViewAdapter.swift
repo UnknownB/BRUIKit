@@ -41,6 +41,10 @@ open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigat
     public var onDidFail: ((Error) -> Void)?
     
     
+    /// 開啟 URL
+    public var onOpenURL: ((URL) -> WKNavigationActionPolicy)?
+    
+    
     /// 開啟新的分頁
     public var onOpenNewTab: ((URL) -> Void)?
     
@@ -201,7 +205,7 @@ open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigat
         if blacklist.contains(url) {
             return .cancel
         }
-        
+                
         // 開新頁面
         if navigationAction.targetFrame == nil {
             if let onOpenNewTab = onOpenNewTab {
@@ -211,6 +215,11 @@ open class BRWebViewAdapter: NSObject, ObservableObject, WKUIDelegate, WKNavigat
             }
             return .cancel
         }
+        
+        if let onOpenURL {
+            return onOpenURL(url)
+        }
+
         return .allow
     }
     
