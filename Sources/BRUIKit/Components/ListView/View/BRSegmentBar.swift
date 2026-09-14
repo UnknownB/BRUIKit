@@ -9,10 +9,9 @@ import UIKit
 
 
 /// BRSegmentBar 提供在一組 Button Bar 之中單選按鈕功能
-open class BRSegmentBar<Button: UIButton>: UIView {
+open class BRSegmentBar<Button: UIButton>: BRView {
 
     
-    public let layout = BRLayout()
     private let selectionGroup = BRSingleSelectGroup<Button>()
 
 
@@ -64,7 +63,7 @@ open class BRSegmentBar<Button: UIButton>: UIView {
         .br.showsHorizontalIndicator(false)
     
     
-    private let stackView = UIStackView()
+    public let stackView = UIStackView()
         .br.axis(.horizontal)
         .br.spacing(8)
         .br.alignment(.fill)
@@ -88,15 +87,15 @@ open class BRSegmentBar<Button: UIButton>: UIView {
     // MARK: - UI
     
     
-    private func setupLayout() {
-        addSubview(scrollView)
+    open override func setupLayout() {
+        contentView.addSubview(scrollView)
         scrollView.addSubview(stackView)
         
         layout.activate {
-            scrollView.br.left == self.br.left
-            scrollView.br.right == self.br.right
-            scrollView.br.top == self.br.top
-            scrollView.br.bottom == self.br.bottom
+            scrollView.br.left == contentView.br.left
+            scrollView.br.right == contentView.br.right
+            scrollView.br.top == contentView.br.top
+            scrollView.br.bottom == contentView.br.bottom
             
             stackView.br.left == scrollView.contentLayoutGuide.br.left
             stackView.br.right == scrollView.contentLayoutGuide.br.right
@@ -108,7 +107,7 @@ open class BRSegmentBar<Button: UIButton>: UIView {
     
 
     @MainActor
-    public func addButton(_ button: Button) {
+    open func addButton(_ button: Button) {
         stackView.addArrangedSubview(button)
         selectionGroup.addButton(button)
     }
@@ -116,14 +115,14 @@ open class BRSegmentBar<Button: UIButton>: UIView {
 
     /// 指定選擇的按鈕
     @MainActor
-    public func selectButton(_ button: Button) {
+    open func selectButton(_ button: Button) {
         selectionGroup.selectButton(button)
     }
     
     
     /// 以索引值指定選擇按鈕
     @MainActor
-    public func selectButton(at index: Int) {
+    open func selectButton(at index: Int) {
         guard index >= 0, index < buttons.count else {
             return
         }
@@ -134,14 +133,14 @@ open class BRSegmentBar<Button: UIButton>: UIView {
 
     /// 滾動到指定的按鈕
     @MainActor
-    public func scrollToButton(_ button: Button, animated: Bool = true) {
+    open func scrollToButton(_ button: Button, animated: Bool = true) {
         scrollView.scrollRectToVisible(button.frame.insetBy(dx: -16, dy: 0), animated: animated)
     }
     
     
     /// 滾動到指定的索引值
     @MainActor
-    public func scrollToButton(at index: Int, animated: Bool = true) {
+    open func scrollToButton(at index: Int, animated: Bool = true) {
         guard index >= 0, index < buttons.count else {
             return
         }
