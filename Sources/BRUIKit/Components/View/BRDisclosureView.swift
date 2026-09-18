@@ -161,7 +161,6 @@ open class BRDisclosureView: BRView {
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
-        applyLayout()
         stateManager.setNeedsUpdateState(to: self, animated: false)
     }
     
@@ -220,10 +219,12 @@ open class BRDisclosureView: BRView {
         contentView.addSubview(iconImageView)
         contentView.addSubview(titleLabel)
         contentView.addSubview(arrowImageView)
+        
+        applyLayout()
     }
     
     
-    private func applyLayout() {
+    open func applyLayout() {
         layoutManager.deactivateAll()
         
         if let onLayout = onLayout {
