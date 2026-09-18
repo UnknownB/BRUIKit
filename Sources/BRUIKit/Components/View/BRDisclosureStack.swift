@@ -21,7 +21,7 @@ import UIKit
 /// - `detailStack`
 ///     - `UIStackView` 物件
 ///     - 負責提供展開後的內容
-open class BRDisclosureStack: UIStackView {
+open class BRDisclosureStack<Disclosure: BRDisclosureView>: UIStackView {
     
     
     /// 展開與收合的動畫時長，預設 0.2
@@ -32,7 +32,7 @@ open class BRDisclosureStack: UIStackView {
     
 
     /// 展開控制項，由外部建立後注入
-    public let disclosureView: BRDisclosureView
+    public let disclosureView: Disclosure
     
     
     /// 展開後顯示的內容容器
@@ -49,7 +49,7 @@ open class BRDisclosureStack: UIStackView {
     // MARK: - LifeCycle
 
     
-    public init(disclosureView: BRDisclosureView, axis: NSLayoutConstraint.Axis) {
+    public init(disclosureView: Disclosure, axis: NSLayoutConstraint.Axis) {
         self.disclosureView = disclosureView
         super.init(frame: .zero)
         setupLayout(axis: axis)
