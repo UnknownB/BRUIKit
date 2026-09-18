@@ -53,6 +53,7 @@ open class BRDisclosureStack<Disclosure: BRDisclosureView>: UIStackView {
         self.disclosureView = disclosureView
         super.init(frame: .zero)
         setupLayout(axis: axis)
+        setupUI()
         setupEvent()
     }
     
@@ -65,7 +66,12 @@ open class BRDisclosureStack<Disclosure: BRDisclosureView>: UIStackView {
     // MARK: - UI
     
     
-    private func setupLayout(axis: NSLayoutConstraint.Axis) {
+    open func setupUI() {
+        
+    }
+    
+    
+    open func setupLayout(axis: NSLayoutConstraint.Axis) {
         self.axis = axis
         self.spacing = 5
         detailStack.axis = axis
