@@ -454,7 +454,7 @@ public extension BRAlertControllerDSL where Self: BRAlertController {
 }
 
 
-@MainActor class Sheet {
+@MainActor class Sheet: NSObject {
     weak var alert: BRAlertController?
     var presentDuration: TimeInterval = 0.5
     var dismissDuration: TimeInterval = 0.35
@@ -464,11 +464,10 @@ public extension BRAlertControllerDSL where Self: BRAlertController {
     
     var dragZoneHeight: CGFloat = 60
     
-    var isDragging = false
-    
-    
+
     init(alert: BRAlertController) {
         self.alert = alert
+        super.init()
     }
     
     
@@ -483,8 +482,14 @@ public extension BRAlertControllerDSL where Self: BRAlertController {
     
     func onSetupEvent() {
         guard let alert else { return }
-        alert.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(onBackgroundTapped)))
-        alert.view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(onPanned)))
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onBackgroundTapped))
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(onPanned))
+        tapGesture.delegate = self
+        panGesture.delegate = self
+        
+        alert.view.addGestureRecognizer(tapGesture)
+        alert.view.addGestureRecognizer(panGesture)
     }
     
     
@@ -517,18 +522,14 @@ public extension BRAlertControllerDSL where Self: BRAlertController {
         
         switch sender.state {
         case .began:
-            isDragging = sender.location(in: alert.alertStack).y <= dragZoneHeight
+            return
             
         case .changed:
-            guard isDragging else { return }
             let offset = max(0, sender.translation(in: alert.view).y)
             alert.alertStack.transform = .init(translationX: 0, y: offset)
             alert.view.backgroundColor = UIColor.black.withAlphaComponent(alert.dimAlpha * (1 - progress(of: offset)))
             
         case .ended:
-            guard isDragging else { return }
-            isDragging = false
-            
             let offset = max(0, sender.translation(in: alert.view).y)
             let velocity = sender.velocity(in: alert.view).y
             
@@ -539,8 +540,6 @@ public extension BRAlertControllerDSL where Self: BRAlertController {
             }
             
         default:
-            guard isDragging else { return }
-            isDragging = false
             resetAnimated()
         }
     }
@@ -566,5 +565,26 @@ public extension BRAlertControllerDSL where Self: BRAlertController {
         return min(1, offset / alert.alertStack.bounds.height)
     }
     
+    
+}
+
+
+// MARK: -
+
+
+extension Sheet: UIGestureRecognizerDelegate {
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        guard let alert else { return false }
+
+        let location = touch.location(in: alert.alertStack)
+        let isInsideAlert = alert.alertStack.bounds.contains(location)
+
+        if gestureRecognizer is UIPanGestureRecognizer {
+            return !isInsideAlert || location.y <= dragZoneHeight
+        }
+
+        return !isInsideAlert
+    }
     
 }
