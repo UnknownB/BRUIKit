@@ -10,13 +10,9 @@ import UIKit
 
 /// 具備狀態管理功能的展開式控制項。
 ///
-/// ## 特性
-///
-/// - `BRDisclosureView` 提供 `iconImageView`、`titleLabel`、`arrowImageView` 三個子視圖，
-/// 每個子視圖的外觀皆可針對不同 `State` 個別設定。
+/// - `BRDisclosureView` 提供 `iconImageView`、`titleLabel`、`arrowImageView` 三個子視圖，每個子視圖的外觀皆可針對不同 `State` 個別設定。
 /// - 預設提供基本的水平排列佈局與箭頭旋轉動畫，兩者皆可透過 closure 替換。
 ///
-/// ## 使用範例
 /// ```swift
 /// let disclosure = BRDisclosureView()
 ///     .setTitle("展開", for: .normal)
@@ -28,77 +24,8 @@ import UIKit
 ///     }
 /// ```
 open class BRDisclosureView: BRView {
-            
-    public struct State: OptionSet, Hashable, Sendable {
-        public let rawValue: Int
-        
-        public init(rawValue: Int) {
-            self.rawValue = rawValue
-        }
-        
-        public static let normal = State([])
-        public static let selected = State(rawValue: 1 << 0)
-        public static let highlighted = State(rawValue: 1 << 1)
-        public static let disabled = State(rawValue: 1 << 2)
-        public static let expanded = State(rawValue: 1 << 3)
-    }
-    
     
     private let stateManager = BRState()
-    private let layoutManager = BRLayout()
-    
-    
-    /// 獲取目前的組合狀態（例如：[.selected, .expanded]）
-    public var state: State {
-        var state: State = .normal
-        if isSelected { state.insert(.selected) }
-        if isHighlighted { state.insert(.highlighted) }
-        if !isEnable { state.insert(.disabled) }
-        if isExpanded { state.insert(.expanded) }
-        return state
-    }
-    
-    
-    /// 是否處於選取狀態。預設為 `false`。
-    open var isSelected: Bool = false {
-        didSet {
-            if oldValue != isSelected {
-                stateManager.setNeedsUpdateState(to: self, animated: true)
-            }
-        }
-    }
-    
-    
-    /// 是否處於按壓高亮狀態。由 touch 事件自動管理，外部唯讀。
-    open private(set) var isHighlighted: Bool = false {
-        didSet {
-            if oldValue != isHighlighted {
-                stateManager.setNeedsUpdateState(to: self, animated: true)
-            }
-        }
-    }
-    
-    
-    /// 是否啟用互動。設為 `false` 時不回應觸控，外觀切換至 `.disabled` 狀態。預設為 `true`。
-    open var isEnable: Bool = true {
-        didSet {
-            if oldValue != isEnable {
-                stateManager.setNeedsUpdateState(to: self, animated: true)
-            }
-        }
-    }
-    
-    
-    /// 是否處於展開狀態。變更時會觸發外觀更新與 `onStateChange` 回調。預設為 `false`。
-    open var isExpanded: Bool = false {
-        didSet {
-            if oldValue != isExpanded {
-                stateManager.setNeedsUpdateState(to: self, animated: true)
-                onStateChange?(self, state)
-            }
-        }
-    }
-    
     
     /// 展開狀態變更時的回調，無論是使用者點擊或外部程式設值皆會觸發。
     ///
@@ -124,9 +51,7 @@ open class BRDisclosureView: BRView {
     }
     
     
-    /// 自訂箭頭動畫 closure，設定後取代預設的旋轉動畫。
-    ///
-    /// ## 範例
+    /// 自訂箭頭動畫取代預設的旋轉動畫
     ///
     /// ```swift
     /// disclosure.onArrowAnimation = { imageView, isExpanded in
@@ -140,17 +65,14 @@ open class BRDisclosureView: BRView {
     // MARK: - UI元件
     
     
-    /// 左側圖示視圖。
     public let iconImageView = UIImageView()
         .br.contentMode(.scaleAspectFit)
         .br.setContentHuggingPriority(.required, for: .horizontal)
 
     
-    /// 中間標題文字。
     public let titleLabel = BRLabel()
 
     
-    /// 右側箭頭圖示，預設為 `chevron.down`，展開時旋轉 180°。
     public let arrowImageView = UIImageView()
         .br.contentMode(.scaleAspectFit)
         .br.setContentHuggingPriority(.required, for: .horizontal)
@@ -358,6 +280,76 @@ open class BRDisclosureView: BRView {
         stateManager.arrowTintColors[state] = color
         stateManager.setNeedsUpdateState(to: self, animated: false)
         return self
+    }
+    
+    
+    // MARK: - State
+    
+    
+    public struct State: OptionSet, Hashable, Sendable {
+        public let rawValue: Int
+        
+        public init(rawValue: Int) {
+            self.rawValue = rawValue
+        }
+        
+        public static let normal = State([])
+        public static let selected = State(rawValue: 1 << 0)
+        public static let highlighted = State(rawValue: 1 << 1)
+        public static let disabled = State(rawValue: 1 << 2)
+        public static let expanded = State(rawValue: 1 << 3)
+    }
+    
+    
+    /// 獲取目前的組合狀態（例如：[.selected, .expanded]）
+    public var state: State {
+        var state: State = .normal
+        if isSelected { state.insert(.selected) }
+        if isHighlighted { state.insert(.highlighted) }
+        if !isEnable { state.insert(.disabled) }
+        if isExpanded { state.insert(.expanded) }
+        return state
+    }
+    
+    
+    /// 是否處於選取狀態。預設為 `false`。
+    open var isSelected: Bool = false {
+        didSet {
+            if oldValue != isSelected {
+                stateManager.setNeedsUpdateState(to: self, animated: true)
+            }
+        }
+    }
+    
+    
+    /// 是否處於按壓高亮狀態。由 touch 事件自動管理，外部唯讀。
+    open private(set) var isHighlighted: Bool = false {
+        didSet {
+            if oldValue != isHighlighted {
+                stateManager.setNeedsUpdateState(to: self, animated: true)
+            }
+        }
+    }
+    
+    
+    /// 是否啟用互動。設為 `false` 時不回應觸控，外觀切換至 `.disabled` 狀態。預設為 `true`。
+    open var isEnable: Bool = true {
+        didSet {
+            if oldValue != isEnable {
+                stateManager.setNeedsUpdateState(to: self, animated: true)
+            }
+        }
+    }
+    
+    
+    /// 是否處於展開狀態。變更時會觸發外觀更新與 `onStateChange` 回調。預設為 `false`。
+    open var isExpanded: Bool = false {
+        didSet {
+            if oldValue != isExpanded {
+                stateManager.setNeedsUpdateState(to: self, animated: true)
+                onStateChange?(self, state)
+            }
+        }
     }
     
     
