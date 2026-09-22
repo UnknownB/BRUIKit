@@ -85,13 +85,13 @@ open class BRDisclosureStack<Disclosure: BRDisclosureView>: UIStackView {
     
     
     private func setupEvent() {
-        self.disclosureView.onStateChange = { [weak self] in
-            self?.onStateChange(view: $0, state: $1)
+        self.disclosureView.onExpandedStateChange = { [weak self] in
+            self?.onExpandedStateChange(view: $0, state: $1)
         }
     }
     
     
-    private func onStateChange(view: BRDisclosureView, state: BRDisclosureView.State) {
+    private func onExpandedStateChange(view: BRDisclosureView, state: BRDisclosureView.State) {
         UIView.animate(withDuration: animationDuration, delay: 0, options: [.beginFromCurrentState, .allowUserInteraction]) {
             self.detailStack.isHidden = !view.isExpanded
             self.detailStack.alpha = view.isExpanded ? 1 : 0

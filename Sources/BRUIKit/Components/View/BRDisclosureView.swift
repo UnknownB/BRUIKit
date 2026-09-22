@@ -26,12 +26,14 @@ import UIKit
 open class BRDisclosureView: BRView {
     
     private let stateManager = BRState()
+
     
-    /// 展開狀態變更時的回調，無論是使用者點擊或外部程式設值皆會觸發。
-    ///
-    /// - Note: 此 closure 觸發時 UI 外觀更新尚未完成（外觀更新為非同步），
-    ///   請勿在此讀取子視圖的外觀屬性（如 `titleLabel.text`）。
+    /// 狀態變更
     open var onStateChange: ((BRDisclosureView, State) -> Void)?
+    
+    
+    /// 展開狀態變更
+    open var onExpandedStateChange: ((BRDisclosureView, State) -> Void)?
     
     
     /// 自訂箭頭動畫取代預設的旋轉動畫
@@ -43,6 +45,10 @@ open class BRDisclosureView: BRView {
     /// }
     /// ```
     open var onArrowAnimation: ((UIImageView, Bool) -> Void)?
+    
+    
+    /// 當值為 false 時，下次展開狀態變更不會觸發 onExpandedStateChange 事件
+    public var isExpandedChangeEventEnabled = true
     
     
     // MARK: - UI元件
@@ -171,7 +177,8 @@ open class BRDisclosureView: BRView {
     
     /// 設定展開狀態。
     @discardableResult
-    open func setExpanded(_ flag: Bool) -> Self {
+    open func setExpanded(_ flag: Bool, triggerEvent: Bool = true) -> Self {
+        self.isExpandedChangeEventEnabled = triggerEvent
         self.isExpanded = flag
         return self
     }
@@ -181,6 +188,14 @@ open class BRDisclosureView: BRView {
     @discardableResult
     open func setStateChange(_ closure: ((BRDisclosureView, State) -> Void)?) -> Self {
         self.onStateChange = closure
+        return self
+    }
+    
+    
+    /// 設定展開狀態變更回調。
+    @discardableResult
+    open func setExpandedStateChange(_ closure: ((BRDisclosureView, State) -> Void)?) -> Self {
+        self.onExpandedStateChange = closure
         return self
     }
     
@@ -320,7 +335,12 @@ open class BRDisclosureView: BRView {
         didSet {
             if oldValue != isExpanded {
                 stateManager.setNeedsUpdateState(to: self, animated: true)
-                onStateChange?(self, state)
+                
+                guard isExpandedChangeEventEnabled else {
+                    isExpandedChangeEventEnabled = true
+                    return
+                }
+                onExpandedStateChange?(self, state)
             }
         }
     }
@@ -355,6 +375,7 @@ private final class BRState {
             self.applyState(to: view, animated: self.pendingAnimated)
             self.isUpdateQueued = false
             self.pendingAnimated = false
+            view.onStateChange?(view, view.state)
         }
     }
     
