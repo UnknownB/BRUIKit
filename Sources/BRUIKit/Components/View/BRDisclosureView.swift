@@ -34,23 +34,6 @@ open class BRDisclosureView: BRView {
     open var onStateChange: ((BRDisclosureView, State) -> Void)?
     
     
-    /// 自訂佈局 closure，設定後取代預設的水平排列佈局。
-    ///
-    /// ## 範例
-    ///
-    /// ```swift
-    /// disclosure.onLayout = { view, layout in
-    ///     layout.activate {
-    ///         view.iconImageView.br.height == 40
-    ///         // ...
-    ///     }
-    /// }
-    /// ```
-    open var onLayout: ((BRDisclosureView, BRLayout) -> Void)? {
-        didSet { applyLayout() }
-    }
-    
-    
     /// 自訂箭頭動畫取代預設的旋轉動畫
     ///
     /// ```swift
@@ -65,12 +48,19 @@ open class BRDisclosureView: BRView {
     // MARK: - UI元件
     
     
+    public let contentStack = UIStackView()
+    
+    
+    public let itemStack = UIStackView()
+    
+    
     public let iconImageView = UIImageView()
         .br.contentMode(.scaleAspectFit)
         .br.setContentHuggingPriority(.required, for: .horizontal)
 
     
     public let titleLabel = BRLabel()
+        .br.lines(0)
 
     
     public let arrowImageView = UIImageView()
@@ -83,7 +73,6 @@ open class BRDisclosureView: BRView {
     
     public override init(frame: CGRect) {
         super.init(frame: frame)
-        applyLayout()
         stateManager.setNeedsUpdateState(to: self, animated: false)
     }
     
@@ -139,32 +128,24 @@ open class BRDisclosureView: BRView {
     
     open override func setupLayout() {
         super.setupLayout()
-        contentView.addSubview(iconImageView)
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(arrowImageView)
-    }
-    
-    
-    private func applyLayout() {
-        layoutManager.deactivateAll()
         
-        if let onLayout = onLayout {
-            onLayout(self, layoutManager)
-        } else {
-            layoutManager.activate {
-                iconImageView.br.top == contentView.br.top
-                iconImageView.br.bottom == contentView.br.bottom
-                iconImageView.br.left == contentView.br.left
-
-                titleLabel.br.top == contentView.br.top
-                titleLabel.br.bottom == contentView.br.bottom
-                titleLabel.br.left == iconImageView.br.right + 5
-
-                arrowImageView.br.top == contentView.br.top
-                arrowImageView.br.bottom == contentView.br.bottom
-                arrowImageView.br.right == contentView.br.right
-                arrowImageView.br.left == titleLabel.br.right + 5
-            }
+        contentView.addSubview(contentStack)
+        
+        itemStack
+            .br.spacing(5)
+            .br.addArranged(iconImageView)
+            .br.addArranged(titleLabel)
+            .br.addArranged(arrowImageView)
+        
+        contentStack
+            .br.axis(.vertical)
+            .br.addArranged(itemStack)
+        
+        layout.activate {
+            contentStack.br.top == contentView.br.top
+            contentStack.br.left == contentView.br.left
+            contentStack.br.right == contentView.br.right
+            contentStack.br.bottom == contentView.br.bottom
         }
     }
     
@@ -200,14 +181,6 @@ open class BRDisclosureView: BRView {
     @discardableResult
     open func setStateChange(_ closure: ((BRDisclosureView, State) -> Void)?) -> Self {
         self.onStateChange = closure
-        return self
-    }
-    
-    
-    /// 設定自訂佈局 closure，取代預設佈局。
-    @discardableResult
-    open func setLayout(_ closure: ((BRDisclosureView, BRLayout) -> Void)?) -> Self {
-        self.onLayout = closure
         return self
     }
     
