@@ -46,6 +46,10 @@ open class BRDisclosureView: BRView {
     /// ```
     open var onArrowAnimation: ((UIImageView, Bool) -> Void)?
     
+
+    /// 當值為 true 時每次點擊視圖會切換展開與收合狀態，當 false 時固定展開，預設為 true
+    public var isToggleEnabled = true
+    
     
     /// 當值為 false 時，下次展開狀態變更不會觸發 onExpandedStateChange 事件
     public var isExpandedChangeEventEnabled = true
@@ -103,7 +107,12 @@ open class BRDisclosureView: BRView {
             return
         }
         isHighlighted = false
-        isExpanded.toggle()
+        
+        if isToggleEnabled {
+            isExpanded.toggle()
+        } else {
+            isExpanded = true
+        }
     }
     
     
