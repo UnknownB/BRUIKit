@@ -152,6 +152,8 @@ final class BRKeyboardManager {
     /// - O 鍵盤顯示中觸發 pop 手勢
     /// - X 輸入框失去焦點
     /// - X 所有輸入框都失去焦點，觸發鍵盤收起
+    ///
+    /// - Note: 在 will 鍵盤高度可能不完整，然後在 did 執行會因延遲看到畫面彈跳
     @objc private func onKeyboardWillShow(_ sender: Notification) {
         if enableDebugLog {
             #BRLog(.library, .debug, #function)

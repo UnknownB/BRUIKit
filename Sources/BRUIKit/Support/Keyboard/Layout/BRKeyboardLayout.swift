@@ -102,6 +102,9 @@ final class BRKeyboardLayout {
     
     
     func moveDown(session: BRKeyboardSession?, keyboard: BRKeyboardContext, completion: (() -> Void)? = nil) {
+        if BRKeyboard.enableDebugLog {
+            #BRLog(.library, .debug, #function)
+        }
         let resizedViewController = self.resizedViewController
         let anchorScrollView = self.mainScrollView
         let originalViewControllerBottomInset = self.originalViewControllerBottomInset
@@ -144,8 +147,13 @@ final class BRKeyboardLayout {
         
         let fittingHeight = rootView.br.compressedFittingHeight()
         let maxShrink = rootView.bounds.height - fittingHeight
+        let keyboardHeight = keyboard.frame.height
         
-        if maxShrink >= keyboard.frame.height {
+        if BRKeyboard.enableDebugLog {
+            #BRLog(.library, .debug, "view: \(rootView.bounds.height), fitting:\(fittingHeight), maxShrink: \(maxShrink), keyboard:\(keyboardHeight)")
+        }
+        
+        if maxShrink >= keyboardHeight {
             return .resize
         }
 
