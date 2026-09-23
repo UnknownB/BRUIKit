@@ -63,7 +63,7 @@ final class BRKeyboardManager {
         NotificationCenter.default.addObserver(self, selector: #selector(onTextDidEndEditing), name: UITextField.textDidEndEditingNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onTextDidEndEditing), name: UITextView.textDidEndEditingNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onTextViewDidChange), name: UITextView.textDidChangeNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onKeyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         inputUI.addObserver()
     }
@@ -152,7 +152,7 @@ final class BRKeyboardManager {
     /// - O 鍵盤顯示中觸發 pop 手勢
     /// - X 輸入框失去焦點
     /// - X 所有輸入框都失去焦點，觸發鍵盤收起
-    @objc private func onKeyboardWillShow(_ sender: Notification) {
+    @objc private func onKeyboardDidShow(_ sender: Notification) {
         if enableDebugLog {
             #BRLog(.library, .debug, #function)
         }
