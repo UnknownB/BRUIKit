@@ -131,7 +131,7 @@ final class BRKeyboardLayout {
             }
             if let anchorScrollView, let originalScrollViewBottomInset {
                 anchorScrollView.contentInset.bottom = originalScrollViewBottomInset
-                anchorScrollView.scrollIndicatorInsets.bottom = originalScrollViewBottomInset
+                anchorScrollView.verticalScrollIndicatorInsets.bottom = originalScrollViewBottomInset
             }
         } completion: { _ in
             completion?()
@@ -200,7 +200,7 @@ final class BRKeyboardLayout {
         
         UIView.animate(withDuration: duration) {
             scrollView.contentInset.bottom = overlap
-            scrollView.scrollIndicatorInsets.bottom = overlap
+            scrollView.verticalScrollIndicatorInsets.bottom = overlap
         } completion: { _ in
             if let responderFrame {
                 self.lastResponderMinY = responderFrame.minY
