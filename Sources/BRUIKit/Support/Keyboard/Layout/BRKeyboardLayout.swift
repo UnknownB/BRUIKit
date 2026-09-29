@@ -37,6 +37,7 @@ final class BRKeyboardLayout {
     private var originalScrollViewBottomInset: CGFloat? = nil
     private var mainScrollView: UIScrollView? = nil
     private var lastResponderMinY: CGFloat = 0
+    private var originalContainerFrame: CGRect? = nil
 
     /// resize 模式期間被暫時調整的 VC 與其原始 additionalSafeAreaInsets.bottom，於 moveDown 還原
     private weak var resizedViewController: UIViewController? = nil
@@ -109,10 +110,12 @@ final class BRKeyboardLayout {
         let anchorScrollView = self.mainScrollView
         let originalViewControllerBottomInset = self.originalViewControllerBottomInset
         let originalScrollViewBottomInset = self.originalScrollViewBottomInset
+        let originalContainerFrame = self.originalContainerFrame
         let navigationBarHiddenController = self.navigationBarHiddenController
 
         self.layoutMode = nil
         self.originalScrollViewBottomInset = nil
+        self.originalContainerFrame = nil
         self.mainScrollView = nil
         self.lastResponderMinY = 0
         self.resizedViewController = nil
@@ -120,11 +123,12 @@ final class BRKeyboardLayout {
         self.isKeyboardVisible = false
 
         UIView.animate(withDuration: keyboard.animationDuration, delay: 0, options: keyboard.animationOptions) {
-            let originalFrame = session?.responder.window?.frame ?? .zero
-            session?.containerView.frame = originalFrame
-            session?.containerView.setNeedsLayout()
-            session?.containerView.layoutIfNeeded()
             navigationBarHiddenController?.setNavigationBarHidden(false, animated: true)
+            if let originalContainerFrame {
+                session?.containerView.frame = originalContainerFrame
+                session?.containerView.setNeedsLayout()
+                session?.containerView.layoutIfNeeded()
+            }
             if let resizedViewController {
                 resizedViewController.additionalSafeAreaInsets.bottom = originalViewControllerBottomInset
                 resizedViewController.view.layoutIfNeeded()
@@ -221,8 +225,13 @@ final class BRKeyboardLayout {
             return
         }
 
+        if originalContainerFrame == nil {
+            originalContainerFrame = session.containerView.frame
+        }
+        
+        let originalFrame = originalContainerFrame ?? session.containerView.frame
+        
         UIView.animate(withDuration: keyboard.animationDuration, delay: 0, options: keyboard.animationOptions) {
-            let originalFrame = session.responder.window?.frame ?? .zero
             session.containerView.frame = originalFrame.offsetBy(dx: 0, dy: -overlap)
         }
     }
