@@ -24,6 +24,22 @@ open class BRViewController: UIViewController {
     // MARK: - Lifecycle
     
     
+    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        onInit()
+    }
+    
+    
+    required public init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    open func onInit() {
+        
+    }
+    
+    
     open override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
