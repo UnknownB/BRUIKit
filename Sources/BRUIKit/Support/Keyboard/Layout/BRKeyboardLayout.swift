@@ -148,13 +148,8 @@ final class BRKeyboardLayout {
     
     private func resolveLayoutMode(with session: BRKeyboardSession, and keyboard: BRKeyboardContext) -> LayoutMode {
         let rootView = session.viewController.view!
-
-        let scrollViews = rootView.br.findSubviews(of: UIScrollView.self)
-            .filter { $0.isScrollEnabled }
-            .filter { !($0 is UITextView) }
-        let sortedMaxYScrollViews = scrollViews.sorted { $0.frame.maxY > $1.frame.maxY }
         
-        for scrollView in sortedMaxYScrollViews {
+        if let scrollView = session.responder.br.findSuperview(of: UIScrollView.self), scrollView.isScrollEnabled {
             mainScrollView = scrollView
             return .inset
         }
@@ -179,37 +174,43 @@ final class BRKeyboardLayout {
         guard let scrollView = mainScrollView, let rootView = session.viewController.view else {
             return
         }
-
+        
         if self.originalScrollViewBottomInset == nil {
             self.originalScrollViewBottomInset = scrollView.contentInset.bottom
         }
-
+        
+        rootView.layoutIfNeeded()
+        
         let scrollViewRect = scrollView.convert(scrollView.bounds, to: rootView)
         let keyboardPadding = (session.responder as? BRResponderProtocol)?.keyboardPadding ?? self.keyboardPadding
-        let keyboardMinY = keyboard.frame.minY
+        let keyboardMinY = rootView.convert(keyboard.frame, from: nil).minY
         let overlap = scrollViewRect.maxY - keyboardMinY
-
+        
         guard overlap > 0 else {
             return
         }
         
-        var responderFrame: CGRect? = nil
-        if let superScrollView = session.responder.br.findSuperview(of: UIScrollView.self) {
-            responderFrame = session.responder.convert(responderRect(for: session.responder), to: superScrollView)
-            responderFrame!.size.height += keyboardPadding
+        let responderFrame = session.responder.convert(responderRect(for: session.responder), to: scrollView)
+        let bottomInset = max(overlap, responderFrame.maxY + keyboardPadding + overlap - scrollView.contentSize.height)
+        let maxOffsetY = max(0, scrollView.contentSize.height + bottomInset - scrollView.bounds.height)
+        let visibleOffsetY = responderFrame.maxY + keyboardPadding + overlap - scrollView.bounds.height
+        
+        var offsetY = scrollView.contentOffset.y
+        
+        if visibleOffsetY > offsetY {
+            offsetY = min(visibleOffsetY, maxOffsetY)
+        } else if responderFrame.minY < offsetY {
+            offsetY = max(responderFrame.minY, 0)
         }
         
-        let isPrevResponder = responderFrame != nil && lastResponderMinY > (responderFrame?.minY ?? 0)
-        let duration = isPrevResponder ? 0.2 : 0.0
+        let duration = lastResponderMinY > responderFrame.minY ? 0.2 : 0.0
         
         UIView.animate(withDuration: duration) {
-            scrollView.contentInset.bottom = overlap
+            scrollView.contentInset.bottom = bottomInset
             scrollView.verticalScrollIndicatorInsets.bottom = overlap
         } completion: { _ in
-            if let responderFrame {
-                self.lastResponderMinY = responderFrame.minY
-                scrollView.scrollRectToVisible(responderFrame, animated: true)
-            }
+            self.lastResponderMinY = responderFrame.minY
+            scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: offsetY), animated: true)
         }
     }
     
