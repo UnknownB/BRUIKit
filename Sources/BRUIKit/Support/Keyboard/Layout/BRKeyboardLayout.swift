@@ -13,8 +13,8 @@ import UIKit
 final class BRKeyboardLayout {
     
     enum LayoutMode: String {
-        case resize
         case inset
+        case resize
         case offset
     }
     
@@ -88,10 +88,10 @@ final class BRKeyboardLayout {
         let layoutMode = self.layoutMode ?? resolveLayoutMode(with: session, and: keyboard)
         
         switch layoutMode {
-        case .resize:
-            applyResizeLayout(session: session, keyboard: keyboard)
         case .inset:
             applyInsetLayout(session: session, keyboard: keyboard)
+        case .resize:
+            applyResizeLayout(session: session, keyboard: keyboard)
         case .offset:
             applyOffsetLayout(session: session, keyboard: keyboard)
         }
@@ -148,6 +148,16 @@ final class BRKeyboardLayout {
     
     private func resolveLayoutMode(with session: BRKeyboardSession, and keyboard: BRKeyboardContext) -> LayoutMode {
         let rootView = session.viewController.view!
+
+        let scrollViews = rootView.br.findSubviews(of: UIScrollView.self)
+            .filter { $0.isScrollEnabled }
+            .filter { !($0 is UITextView) }
+        let sortedMaxYScrollViews = scrollViews.sorted { $0.frame.maxY > $1.frame.maxY }
+        
+        for scrollView in sortedMaxYScrollViews {
+            mainScrollView = scrollView
+            return .inset
+        }
         
         let fittingHeight = rootView.br.compressedFittingHeight()
         let maxShrink = rootView.bounds.height - fittingHeight
@@ -159,16 +169,6 @@ final class BRKeyboardLayout {
         
         if maxShrink >= keyboardHeight {
             return .resize
-        }
-
-        let scrollViews = rootView.br.findSubviews(of: UIScrollView.self)
-            .filter { $0.isScrollEnabled }
-            .filter { !($0 is UITextView) }
-        let sortedMaxYScrollViews = scrollViews.sorted { $0.frame.maxY > $1.frame.maxY }
-        
-        for scrollView in sortedMaxYScrollViews {
-            mainScrollView = scrollView
-            return .inset
         }
         
         return .offset
